@@ -16,10 +16,9 @@ public class FloorTile : Tile
         tileData.transform = transform;
         tileData.colliderType = colliderType;
         tileData.gameObject = gameObject;
-        if (position.x < 0 || position.y < 0)
+        if (position.x < 0 || position.y < 0 || position.x > PuzzleContainer.maxLevelWidth || position.y > PuzzleContainer.maxLevelHeight)
         {
             tileData.color = Color.red;
-            //Debug.LogError("YOU FOOL! Don't even THINK about painting there!");
         }
         else
         {
