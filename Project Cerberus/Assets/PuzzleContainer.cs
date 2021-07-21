@@ -52,7 +52,7 @@ public class PuzzleContainer : MonoBehaviour
         {
             for (var j = bounds.y; j < bounds.yMax; j++)
             {
-                // Get floor tile
+                // Get floor tile. Check validity.
                 var floorTile = _tilemap.GetTile<FloorTile>(new Vector3Int(i, j, 0));
                 if (floorTile != null)
                 {
