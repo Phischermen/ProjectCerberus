@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 
 public class PuzzleContainer : MonoBehaviour
 {
-    class LevelCell
+    public class LevelCell
     {
         public FloorTile floorTile;
         public List<PuzzleEntity> puzzleEntities = new List<PuzzleEntity>();
@@ -14,30 +14,38 @@ public class PuzzleContainer : MonoBehaviour
 
     public static int maxLevelWidth = 32;
     public static int maxLevelHeight = 32;
-    private LevelCell[,] _levelMap;
-    private Tilemap _tilemap;
+    public LevelCell[,] levelMap { get; protected set; }
+    public Tilemap tilemap { get; protected set; }
 
     private int turn = 0;
     private int _currentMove = 0;
     private List<Cerberus> _moveOrder;
     public bool doneMakingMoves { get; }
 
-    private Cerberus _cerberus;
+    private Laguna _laguna;
 
     // Start is called before the first frame update
     void Start()
     {
         // Get components
-        _tilemap = GetComponentInChildren<Tilemap>();
-        _cerberus = FindObjectOfType<Cerberus>();
+        tilemap = GetComponentInChildren<Tilemap>();
+        _laguna = FindObjectOfType<Laguna>();
         // Initialize collections
-        _levelMap = new LevelCell[maxLevelHeight, maxLevelHeight];
+        levelMap = new LevelCell[maxLevelWidth, maxLevelHeight];
+        for (int i = 0; i < maxLevelWidth; i++)
+        {
+            for (int j = 0; j < maxLevelHeight; j++)
+            {
+                levelMap[i, j] = new LevelCell();
+            }
+        }
+
         _moveOrder = new List<Cerberus>();
-        _moveOrder.Add(_cerberus);
+        _moveOrder.Add(_laguna);
         // Setup tilemap for parsing
-        _tilemap.CompressBounds();
-        var bounds = _tilemap.cellBounds;
-        if (_tilemap.size.x > 32 || _tilemap.size.y > 32)
+        tilemap.CompressBounds();
+        var bounds = tilemap.cellBounds;
+        if (tilemap.size.x > 32 || tilemap.size.y > 32)
         {
             NZ.NotifyZach(string.Format("Level is too big; level must be {0} x {1}", 32, 32));
         }
@@ -53,15 +61,16 @@ public class PuzzleContainer : MonoBehaviour
             for (var j = bounds.y; j < bounds.yMax; j++)
             {
                 // Get floor tile. Check validity.
-                var floorTile = _tilemap.GetTile<FloorTile>(new Vector3Int(i, j, 0));
-                if (floorTile != null)
+                var floorTile = tilemap.GetTile<FloorTile>(new Vector3Int(i, j, 0));
+                var hasTile = tilemap.HasTile(new Vector3Int(i, j, 0));
+                if (hasTile && floorTile == null)
                 {
                     NZ.NotifyZach(string.Format("Invalid tile found at {0}. Please replace with valid Tile.",
                         new Vector2Int(i, j)));
                 }
 
                 // Set levelCell's floor tile
-                var levelCell = _levelMap[i, j];
+                var levelCell = levelMap[i, j];
                 levelCell.floorTile = floorTile;
             }
         }
@@ -92,28 +101,44 @@ public class PuzzleContainer : MonoBehaviour
 
 
     // Level Map management
-    void AddEntityToCell(PuzzleEntity entity)
+    public void AddEntityToCell(PuzzleEntity entity)
     {
-        var cell = _tilemap.layoutGrid.WorldToCell(entity.transform.position);
+        var cell = entity.position;
         if (cell.x > 32 || cell.y > 32)
         {
             NZ.NotifyZach("Entity placed outside bounds: " + entity.name);
             return;
         }
 
-        _levelMap[cell.x, cell.y].puzzleEntities.Add(entity);
+        levelMap[cell.x, cell.y].puzzleEntities.Add(entity);
     }
 
-    void RemoveEntityFromCell(PuzzleEntity entity)
+    public void RemoveEntityFromCell(PuzzleEntity entity)
     {
-        var cell = _tilemap.layoutGrid.WorldToCell(entity.transform.position);
+        var cell = entity.position;
         if (cell.x > 32 || cell.y > 32)
         {
             NZ.NotifyZach("Entity placed outside bounds: " + entity.name);
             return;
         }
 
-        _levelMap[cell.x, cell.y].puzzleEntities.Remove(entity);
+        levelMap[cell.x, cell.y].puzzleEntities.Remove(entity);
+    }
+
+    public LevelCell GetCell(Vector2Int coord)
+    {
+        return levelMap[coord.x, coord.y];
+    }
+    
+    public PuzzleEntity GetPushableEntity(Vector2Int cell)
+    {
+        foreach (var entity in levelMap[cell.x, cell.y].puzzleEntities)
+        {
+            if (entity.pushable)
+                return entity;
+        }
+
+        return null;
     }
 
     // Move order management
@@ -137,6 +162,5 @@ public class PuzzleContainer : MonoBehaviour
 
     public void DeclareDoneMakingMoves()
     {
-        
     }
 }

@@ -36,3 +36,4 @@ MonoBehaviour:
   m_Flags: 1
   m_ColliderType: 1
   stopsPlayer: 1
+  stopsBlock: 1
