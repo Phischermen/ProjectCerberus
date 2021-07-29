@@ -10,6 +10,29 @@ public class PuzzleContainer : MonoBehaviour
     {
         public FloorTile floorTile;
         public List<PuzzleEntity> puzzleEntities = new List<PuzzleEntity>();
+        
+        public PuzzleEntity GetPushableEntity()
+        {
+            foreach (var entity in puzzleEntities)
+            {
+                if (entity.pushable)
+                    return entity;
+            }
+
+            return null;
+        }
+
+        public List<PuzzleEntity> GetStaticEntities()
+        {
+            var list = new List<PuzzleEntity>();
+            foreach (var entity in puzzleEntities)
+            {
+                if (entity.isStatic)
+                    list.Add(entity);
+            }
+
+            return list;
+        }
     }
 
     public static int maxLevelWidth = 32;
@@ -19,10 +42,12 @@ public class PuzzleContainer : MonoBehaviour
 
     private int turn = 0;
     private int _currentMove = 0;
+
     private List<Cerberus> _moveOrder;
-    public bool doneMakingMoves { get; }
+    //public bool doneMakingMoves { get; protected set; }
 
     private Laguna _laguna;
+    private Jack _jack;
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +55,7 @@ public class PuzzleContainer : MonoBehaviour
         // Get components
         tilemap = GetComponentInChildren<Tilemap>();
         _laguna = FindObjectOfType<Laguna>();
+        _jack = FindObjectOfType<Jack>();
         // Initialize collections
         levelMap = new LevelCell[maxLevelWidth, maxLevelHeight];
         for (int i = 0; i < maxLevelWidth; i++)
@@ -41,7 +67,8 @@ public class PuzzleContainer : MonoBehaviour
         }
 
         _moveOrder = new List<Cerberus>();
-        _moveOrder.Add(_laguna);
+        if (_laguna) _moveOrder.Add(_laguna);
+        if (_jack) _moveOrder.Add(_jack);
         // Setup tilemap for parsing
         tilemap.CompressBounds();
         var bounds = tilemap.cellBounds;
@@ -80,22 +107,21 @@ public class PuzzleContainer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_currentMove == _moveOrder.Count)
+        var currentCerberus = _moveOrder[_currentMove];
+        // Process movement of currently controlled cerberus
+        currentCerberus.ProcessMoveInput();
+        if (currentCerberus.doneWithMove)
         {
-            if (doneMakingMoves)
+            _currentMove += 1;
+            if (_currentMove == _moveOrder.Count)
             {
+                // All cerberus have moved. Start next turn
                 IncrementTurn();
+                _currentMove = 0;
             }
-        }
-        else
-        {
-            var currentCerberus = _moveOrder[_currentMove];
-            // Process movement of currently controlled cerberus
-            currentCerberus.ProcessMoveInput();
-            if (currentCerberus.doneWithMove)
-            {
-                _currentMove = (_currentMove + 1) % (_moveOrder.Count + 1);
-            }
+            // Start next cerberus's move
+            var nextCerberus = _moveOrder[_currentMove];
+            nextCerberus.StartMove();
         }
     }
 
@@ -129,17 +155,8 @@ public class PuzzleContainer : MonoBehaviour
     {
         return levelMap[coord.x, coord.y];
     }
-    
-    public PuzzleEntity GetPushableEntity(Vector2Int cell)
-    {
-        foreach (var entity in levelMap[cell.x, cell.y].puzzleEntities)
-        {
-            if (entity.pushable)
-                return entity;
-        }
 
-        return null;
-    }
+    
 
     // Move order management
     void SubmitMoves()
@@ -154,13 +171,12 @@ public class PuzzleContainer : MonoBehaviour
     void IncrementTurn()
     {
         turn += 1;
+        _currentMove = 0;
+        Debug.Log(turn);
     }
 
     void GoBackToTurn(int newTurn)
     {
     }
-
-    public void DeclareDoneMakingMoves()
-    {
-    }
+    
 }

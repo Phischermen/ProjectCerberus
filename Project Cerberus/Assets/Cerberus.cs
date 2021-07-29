@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,75 +15,61 @@ public class Cerberus : PuzzleEntity
     }
 
     public bool doneWithMove;
-    public bool _verticalAxisReleased = true;
-    public bool _horizontalAxisReleased = true;
 
-    public int _verticalAxisJustHeld = 0;
-    public int _horizontalAxisJustHeld = 0;
-
-    public int _verticalAxisJustReleased = 0;
-    public int _horizontalAxisJustReleased = 0;
+    protected PuzzleGameplayInput input;
 
     // Update is called once per frame
-    void Update()
+    private void Start()
     {
+        input = FindObjectOfType<PuzzleGameplayInput>();
     }
 
     public virtual void ProcessMoveInput()
     {
-        _verticalAxisJustHeld = _horizontalAxisJustHeld = 0;
-        _verticalAxisJustReleased = _horizontalAxisJustReleased = 0;
-        if (_verticalAxisReleased)
+        if (input.skipMove)
         {
-            if (Input.GetAxis("Vertical") > 0.5)
-            {
-                _verticalAxisJustHeld = 1;
-                _verticalAxisReleased = false;
-            }
-            else if (Input.GetAxis("Vertical") < -0.5)
-            {
-                _verticalAxisJustHeld = -1;
-                _verticalAxisReleased = false;
-            }
+            DeclareDoneWithMove();
         }
-        else if (Mathf.Abs(Input.GetAxis("Vertical")) < 0.5)
-        {
-            if (Input.GetAxis("Vertical") > 0)
-            {
-                _verticalAxisJustReleased = 1;
-                _verticalAxisReleased = true;
-            }
-            else if (Input.GetAxis("Vertical") < 0)
-            {
-                _verticalAxisJustReleased = -1;
-                _verticalAxisReleased = true;
-            }
-        }
+    }
 
-        if (_horizontalAxisReleased)
+    public void StartMove()
+    {
+        doneWithMove = false;
+    }
+
+    public void DeclareDoneWithMove()
+    {
+        doneWithMove = true;
+        input.ClearInput();
+    }
+
+    // Common movement methods
+    protected void BasicMove(Vector2Int offset)
+    {
+        var coord = position + offset;
+        var newCell = _puzzle.GetCell(coord);
+        var blocked = CollidesWith(newCell.floorTile) || CollidesWithAny(newCell.GetStaticEntities());
+        if (!blocked)
         {
-            if (Input.GetAxis("Horizontal") > 0.5)
+            var pushableEntity = newCell.GetPushableEntity();
+            if (!pushableEntity)
             {
-                _horizontalAxisJustHeld = 1;
-                _horizontalAxisReleased = false;
+                Move(coord);
+                DeclareDoneWithMove();
             }
-            else if (Input.GetAxis("Horizontal") < -0.5)
+            else
             {
-                _horizontalAxisJustHeld = -1;
-                _horizontalAxisReleased = false;
-            }
-        }
-        else if (Mathf.Abs(Input.GetAxis("Horizontal")) < 0.5)
-        {
-            if (Input.GetAxis("Horizontal") > 0)
-            {
-                _horizontalAxisJustReleased = 1;
-                _horizontalAxisReleased = true;
-            }
-            else if (Input.GetAxis("Horizontal") < 0)
-            {
-                _horizontalAxisJustReleased = -1;
-                _horizontalAxisReleased = true;
+                // Push entity one space
+                var pushCoord = pushableEntity.position + offset;
+                var pushEntityNewCell = _puzzle.GetCell(pushCoord);
+                var pushBlocked = pushableEntity.CollidesWith(pushEntityNewCell.floorTile) ||
+                                  pushableEntity.CollidesWithAny(pushEntityNewCell.puzzleEntities);
+                if (!pushBlocked)
+                {
+                    pushableEntity.Move(pushCoord);
+                    Move(coord);
+                    DeclareDoneWithMove();
+                }
             }
         }
     }

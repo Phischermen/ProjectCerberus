@@ -1,0 +1,71 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
+
+public class PuzzleGameplayInput : MonoBehaviour
+{
+    public bool leftPressed;
+    public bool rightPressed;
+    public bool upPressed;
+    public bool downPressed;
+
+    public bool leftReleased;
+    public bool rightReleased;
+    public bool upReleased;
+    public bool downReleased;
+
+    public bool specialHeld;
+    public bool skipMove;
+
+    private void Update()
+    {
+        Gamepad gamepad = Gamepad.current;
+        Keyboard keyboard = Keyboard.current;
+        if (gamepad != null)
+        {
+            leftPressed = gamepad.dpad.left.wasPressedThisFrame || gamepad.leftStick.left.wasPressedThisFrame;
+            rightPressed = gamepad.dpad.right.wasPressedThisFrame || gamepad.leftStick.right.wasPressedThisFrame;
+            upPressed = gamepad.dpad.up.wasPressedThisFrame || gamepad.leftStick.up.wasPressedThisFrame;
+            downPressed = gamepad.dpad.down.wasPressedThisFrame || gamepad.leftStick.down.wasPressedThisFrame;
+
+            leftReleased = gamepad.dpad.left.wasReleasedThisFrame || gamepad.leftStick.left.wasReleasedThisFrame;
+            rightReleased = gamepad.dpad.right.wasReleasedThisFrame || gamepad.leftStick.right.wasReleasedThisFrame;
+            upReleased = gamepad.dpad.up.wasReleasedThisFrame || gamepad.leftStick.up.wasReleasedThisFrame;
+            downReleased = gamepad.dpad.down.wasReleasedThisFrame || gamepad.leftStick.down.wasReleasedThisFrame;
+
+            specialHeld = gamepad.crossButton.isPressed;
+
+            skipMove = gamepad.triangleButton.wasPressedThisFrame;
+        }
+
+        if (keyboard != null)
+        {
+            leftPressed = leftPressed || keyboard.aKey.wasPressedThisFrame || keyboard.leftArrowKey.wasPressedThisFrame;
+            rightPressed = rightPressed || keyboard.dKey.wasPressedThisFrame ||
+                           keyboard.rightArrowKey.wasPressedThisFrame;
+            upPressed = upPressed || keyboard.wKey.wasPressedThisFrame || keyboard.upArrowKey.wasPressedThisFrame;
+            downPressed = downPressed || keyboard.sKey.wasPressedThisFrame || keyboard.downArrowKey.wasPressedThisFrame;
+
+            leftReleased = leftReleased || keyboard.aKey.wasReleasedThisFrame ||
+                           keyboard.leftArrowKey.wasReleasedThisFrame;
+            rightReleased = rightReleased || keyboard.dKey.wasReleasedThisFrame ||
+                            keyboard.rightArrowKey.wasReleasedThisFrame;
+            upReleased = upReleased || keyboard.wKey.wasReleasedThisFrame || keyboard.upArrowKey.wasReleasedThisFrame;
+            downReleased = downReleased || keyboard.sKey.wasReleasedThisFrame ||
+                           keyboard.downArrowKey.wasReleasedThisFrame;
+
+            specialHeld = specialHeld || keyboard.leftShiftKey.isPressed;
+
+            skipMove = skipMove || keyboard.enterKey.wasPressedThisFrame;
+        }
+    }
+
+    public void ClearInput()
+    {
+        leftPressed = leftReleased = rightPressed = rightReleased =
+            upPressed = upReleased = downPressed = downReleased = specialHeld = skipMove = false;
+    }
+}

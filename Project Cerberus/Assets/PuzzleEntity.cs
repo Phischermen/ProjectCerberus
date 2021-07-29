@@ -8,6 +8,7 @@ public abstract class PuzzleEntity : MonoBehaviour
     protected PuzzleContainer _puzzle;
     public Vector2Int position;
 
+    public bool isStatic { get; protected set; }
     public bool isPlayer { get; protected set; }
     public bool isBlock { get; protected set; }
     public bool stopsPlayer { get; protected set; }
@@ -52,6 +53,16 @@ public abstract class PuzzleEntity : MonoBehaviour
         _puzzle.AddEntityToCell(this);
     }
 
+    public bool CollidesWithAny(List<PuzzleEntity> entities)
+    {
+        foreach (var entity in entities)
+        {
+            if (CollidesWith(entity)) return true;
+        }
+
+        return false;
+    }
+
     public bool CollidesWith(PuzzleEntity entity)
     {
         return (isPlayer && entity.stopsPlayer) ||
@@ -63,4 +74,6 @@ public abstract class PuzzleEntity : MonoBehaviour
         return (isPlayer && floorTile.stopsPlayer) ||
                (isBlock && floorTile.stopsBlock);
     }
+    
+    
 }
