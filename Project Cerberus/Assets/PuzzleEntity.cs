@@ -13,7 +13,9 @@ public abstract class PuzzleEntity : MonoBehaviour
     public bool isBlock { get; protected set; }
     public bool stopsPlayer { get; protected set; }
     public bool stopsBlock { get; protected set; }
+    public bool stopsFireball { get; protected set; }
     public bool pushable { get; protected set; }
+    public bool landable { get; protected set; }
 
     private void Awake()
     {

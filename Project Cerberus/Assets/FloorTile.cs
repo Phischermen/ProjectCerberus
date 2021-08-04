@@ -9,6 +9,9 @@ public class FloorTile : Tile
 {
     public bool stopsPlayer;
     public bool stopsBlock;
+    public bool stopsFireball;
+    public bool jumpable;
+    public bool landable;
 
     public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
     {

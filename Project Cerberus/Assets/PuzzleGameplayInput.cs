@@ -18,6 +18,7 @@ public class PuzzleGameplayInput : MonoBehaviour
     public bool downReleased;
 
     public bool specialHeld;
+    public bool specialReleased;
     public bool skipMove;
 
     private void Update()
@@ -37,6 +38,7 @@ public class PuzzleGameplayInput : MonoBehaviour
             downReleased = gamepad.dpad.down.wasReleasedThisFrame || gamepad.leftStick.down.wasReleasedThisFrame;
 
             specialHeld = gamepad.crossButton.isPressed;
+            specialReleased = gamepad.crossButton.wasReleasedThisFrame;
 
             skipMove = gamepad.triangleButton.wasPressedThisFrame;
         }
@@ -58,6 +60,7 @@ public class PuzzleGameplayInput : MonoBehaviour
                            keyboard.downArrowKey.wasReleasedThisFrame;
 
             specialHeld = specialHeld || keyboard.leftShiftKey.isPressed;
+            specialReleased = specialReleased || keyboard.leftShiftKey.wasReleasedThisFrame;
 
             skipMove = skipMove || keyboard.enterKey.wasPressedThisFrame;
         }

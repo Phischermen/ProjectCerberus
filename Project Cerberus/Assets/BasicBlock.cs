@@ -9,6 +9,7 @@ public class BasicBlock : PuzzleEntity
         isBlock = true;
         stopsBlock = true;
         stopsPlayer = true;
+        stopsFireball = true;
         pushable = true;
     }
     // Start is called before the first frame update

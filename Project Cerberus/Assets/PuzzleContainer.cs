@@ -21,6 +21,17 @@ public class PuzzleContainer : MonoBehaviour
 
             return null;
         }
+        
+        public PuzzleEntity GetLandableEntity()
+        {
+            foreach (var entity in puzzleEntities)
+            {
+                if (entity.landable)
+                    return entity;
+            }
+
+            return null;
+        }
 
         public List<PuzzleEntity> GetStaticEntities()
         {
@@ -48,14 +59,16 @@ public class PuzzleContainer : MonoBehaviour
 
     private Laguna _laguna;
     private Jack _jack;
+    private Kahuna _kahuna;
 
     // Start is called before the first frame update
     void Start()
     {
         // Get components
         tilemap = GetComponentInChildren<Tilemap>();
-        _laguna = FindObjectOfType<Laguna>();
         _jack = FindObjectOfType<Jack>();
+        _kahuna = FindObjectOfType<Kahuna>();
+        _laguna = FindObjectOfType<Laguna>();
         // Initialize collections
         levelMap = new LevelCell[maxLevelWidth, maxLevelHeight];
         for (int i = 0; i < maxLevelWidth; i++)
@@ -67,8 +80,9 @@ public class PuzzleContainer : MonoBehaviour
         }
 
         _moveOrder = new List<Cerberus>();
-        if (_laguna) _moveOrder.Add(_laguna);
         if (_jack) _moveOrder.Add(_jack);
+        if (_kahuna) _moveOrder.Add(_kahuna);
+        if (_laguna) _moveOrder.Add(_laguna);
         // Setup tilemap for parsing
         tilemap.CompressBounds();
         var bounds = tilemap.cellBounds;
