@@ -20,11 +20,14 @@ public class PuzzleGameplayInput : MonoBehaviour
     public bool specialHeld;
     public bool specialReleased;
     public bool skipMove;
+    public bool mergeOrSplit;
 
     private void Update()
     {
         Gamepad gamepad = Gamepad.current;
         Keyboard keyboard = Keyboard.current;
+        leftPressed = rightPressed = upPressed = downPressed = leftReleased = rightReleased =
+            upReleased = downReleased = specialHeld = specialReleased = skipMove = mergeOrSplit = false;
         if (gamepad != null)
         {
             leftPressed = gamepad.dpad.left.wasPressedThisFrame || gamepad.leftStick.left.wasPressedThisFrame;
@@ -41,6 +44,7 @@ public class PuzzleGameplayInput : MonoBehaviour
             specialReleased = gamepad.crossButton.wasReleasedThisFrame;
 
             skipMove = gamepad.triangleButton.wasPressedThisFrame;
+            mergeOrSplit = gamepad.squareButton.wasPressedThisFrame;
         }
 
         if (keyboard != null)
@@ -63,6 +67,7 @@ public class PuzzleGameplayInput : MonoBehaviour
             specialReleased = specialReleased || keyboard.leftShiftKey.wasReleasedThisFrame;
 
             skipMove = skipMove || keyboard.enterKey.wasPressedThisFrame;
+            mergeOrSplit = mergeOrSplit || keyboard.leftCtrlKey.wasPressedThisFrame;
         }
     }
 
