@@ -34,12 +34,19 @@ public class CerberusMajor : Cerberus
     private List<JumpInfo> _jumpSpaces;
     private static int _maxJumpArrows = 32;
 
+    CerberusMajor()
+    {
+        isCerberusMajor = true;
+    }
+
     private void Start()
     {
+        _jumpSpaces = new List<JumpInfo>();
         _jumpArrows = new GameObject[_maxJumpArrows];
         for (int i = 0; i < _maxJumpArrows; i++)
         {
             _jumpArrows[i] = Instantiate(jumpArrowSource);
+            jumpArrowSource.gameObject.SetActive(false);
         }
     }
 
@@ -70,7 +77,13 @@ public class CerberusMajor : Cerberus
         }
         else if (input.specialReleased)
         {
-            // Travel across jump spaces
+            if (_jumpSpaces.Count > 0)
+            {
+                // Travel across jump spaces
+                Move(_jumpSpaces[_jumpSpaces.Count - 1].position);
+                _jumpSpaces.Clear();
+                RenderJumpPath();
+            }
         }
         else
         {
@@ -98,12 +111,14 @@ public class CerberusMajor : Cerberus
 
     private void AddJumpSpace(Vector2Int offset, float rotation)
     {
-        var jumpedOverSpace = position + offset;
+        var lastJumpPosition = (_jumpSpaces.Count > 0) ? _jumpSpaces[_jumpSpaces.Count - 1].position : position;
+        var jumpedOverSpace = lastJumpPosition + offset;
         var jumpedOverCell = _puzzle.GetCell(jumpedOverSpace);
         var newJumpSpace = jumpedOverSpace + offset;
         var newJumpCell = _puzzle.GetCell(newJumpSpace);
         // Check for entity to jump over
-        var canJump = jumpedOverCell.puzzleEntities.Count > 0 || jumpedOverCell.floorTile.jumpable;
+        var canJump = (jumpedOverCell.puzzleEntities.Count > 0 || jumpedOverCell.floorTile.jumpable) &&
+                      newJumpCell.floorTile != null;
 
         if (canJump)
         {
@@ -116,8 +131,8 @@ public class CerberusMajor : Cerberus
                 if (_jumpSpaces.Contains(newJumpInfo))
                 {
                     // Erase part of jump space path
-                    var idxOfSpace = _jumpSpaces.IndexOf(newJumpInfo);
-                    _jumpSpaces.RemoveRange(idxOfSpace, _jumpSpaces.Count - idxOfSpace);
+                    var idxOfSpaceToRemove = _jumpSpaces.IndexOf(newJumpInfo) + 1;
+                    _jumpSpaces.RemoveRange(idxOfSpaceToRemove, _jumpSpaces.Count - idxOfSpaceToRemove);
                     RenderJumpPath();
                 }
                 else
@@ -135,7 +150,7 @@ public class CerberusMajor : Cerberus
         for (int i = 0; i < _jumpArrows.Length; i++)
         {
             var arrow = _jumpArrows[i];
-            if (i > _jumpSpaces.Count)
+            if (i >= _jumpSpaces.Count)
             {
                 arrow.SetActive(false);
             }
@@ -143,7 +158,7 @@ public class CerberusMajor : Cerberus
             {
                 arrow.SetActive(true);
                 arrow.transform.position = new Vector3(_jumpSpaces[i].position.x, _jumpSpaces[i].position.y);
-                arrow.transform.eulerAngles = new Vector3(0,0,_jumpSpaces[i].rotation);
+                arrow.transform.eulerAngles = new Vector3(0, 0, _jumpSpaces[i].rotation);
             }
         }
     }

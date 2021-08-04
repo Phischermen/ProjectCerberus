@@ -38,3 +38,5 @@ MonoBehaviour:
   stopsPlayer: 1
   stopsBlock: 1
   stopsFireball: 1
+  jumpable: 1
+  landable: 0

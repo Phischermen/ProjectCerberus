@@ -17,7 +17,7 @@ public abstract class PuzzleEntity : MonoBehaviour
     public bool pushable { get; protected set; }
     public bool landable { get; protected set; }
 
-    private void Awake()
+    protected void Awake()
     {
         var vec3Position = FindObjectOfType<Grid>().WorldToCell(transform.position);
         position = new Vector2Int(vec3Position.x, vec3Position.y);

@@ -16,11 +16,12 @@ public class Cerberus : PuzzleEntity
 
     public bool doneWithMove;
 
+    protected bool isCerberusMajor = false;
     protected PuzzleGameplayInput input;
-
-    // Update is called once per frame
-    private void Start()
+    
+    private new void Awake()
     {
+        base.Awake();
         input = FindObjectOfType<PuzzleGameplayInput>();
     }
 
@@ -29,6 +30,20 @@ public class Cerberus : PuzzleEntity
         if (input.skipMove)
         {
             DeclareDoneWithMove();
+        }
+
+        if (input.mergeOrSplit)
+        {
+            if (isCerberusMajor)
+            {
+                _puzzle.SplitCerberusMajor();
+                DeclareDoneWithMove();
+            }
+            else
+            {
+                _puzzle.FormCerberusMajor();
+                DeclareDoneWithMove();
+            }
         }
     }
 

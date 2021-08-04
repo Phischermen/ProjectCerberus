@@ -11,6 +11,9 @@ TextureImporter:
   - first:
       213: -5437494421564683933
     second: PlaceholderTiles_2
+  - first:
+      213: 3121998597706072634
+    second: PlaceholderTiles_3
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -166,6 +169,27 @@ TextureImporter:
       bones: []
       spriteID: 3690876f1a32a84b0800000000000000
       internalID: -5437494421564683933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlaceholderTiles_3
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 512
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a32c98dfe21935b20800000000000000
+      internalID: 3121998597706072634
       vertices: []
       indices: 
       edges: []
