@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7763864758744611990}
   - component: {fileID: 2289188658699984469}
   - component: {fileID: 4956093314461372766}
+  - component: {fileID: 5579541885077365478}
   m_Layer: 5
   m_Name: Placeholder UI
   m_TagString: Untagged
@@ -100,6 +101,20 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &5579541885077365478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5552925204807599473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad1020ff7b005ea41a93c39d1b907fcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turnCounter: {fileID: 7566912405371386363}
+  currentDog: {fileID: 3031612095214863058}
 --- !u!1 &6013021953963667286
 GameObject:
   m_ObjectHideFlags: 0
@@ -174,8 +189,8 @@ MonoBehaviour:
     m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_HorizontalOverflow: 1
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: Turn
 --- !u!1 &7279647248001980257
@@ -252,7 +267,7 @@ MonoBehaviour:
     m_Alignment: 2
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_HorizontalOverflow: 1
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: Cerberus

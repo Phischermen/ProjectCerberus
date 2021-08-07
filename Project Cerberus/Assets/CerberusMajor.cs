@@ -46,6 +46,7 @@ public class CerberusMajor : Cerberus
         for (int i = 0; i < _maxJumpArrows; i++)
         {
             _jumpArrows[i] = Instantiate(jumpArrowSource);
+            _jumpArrows[i].gameObject.SetActive(false);
             jumpArrowSource.gameObject.SetActive(false);
         }
     }
@@ -83,6 +84,7 @@ public class CerberusMajor : Cerberus
                 Move(_jumpSpaces[_jumpSpaces.Count - 1].position);
                 _jumpSpaces.Clear();
                 RenderJumpPath();
+                DeclareDoneWithMove();
             }
         }
         else
@@ -157,7 +159,8 @@ public class CerberusMajor : Cerberus
             else
             {
                 arrow.SetActive(true);
-                arrow.transform.position = new Vector3(_jumpSpaces[i].position.x, _jumpSpaces[i].position.y);
+                arrow.transform.position = _puzzle.tilemap.GetCellCenterWorld(new Vector3Int(_jumpSpaces[i].position.x,
+                    _jumpSpaces[i].position.y, 0));
                 arrow.transform.eulerAngles = new Vector3(0, 0, _jumpSpaces[i].rotation);
             }
         }

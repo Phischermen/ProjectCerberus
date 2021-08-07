@@ -15,7 +15,8 @@ public class Cerberus : PuzzleEntity
     }
 
     public bool doneWithMove;
-
+    public bool finishedPuzzle;
+    
     protected bool isCerberusMajor = false;
     protected PuzzleGameplayInput input;
     
@@ -36,12 +37,12 @@ public class Cerberus : PuzzleEntity
         {
             if (isCerberusMajor)
             {
-                _puzzle.SplitCerberusMajor();
+                _puzzle.wantsToSplit = true;
                 DeclareDoneWithMove();
             }
             else
             {
-                _puzzle.FormCerberusMajor();
+                _puzzle.wantsToJoin = true;
                 DeclareDoneWithMove();
             }
         }

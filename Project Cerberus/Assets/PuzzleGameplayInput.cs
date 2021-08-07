@@ -28,8 +28,7 @@ public class PuzzleGameplayInput : MonoBehaviour
     {
         Gamepad gamepad = Gamepad.current;
         Keyboard keyboard = Keyboard.current;
-        leftPressed = rightPressed = upPressed = downPressed = leftReleased = rightReleased =
-            upReleased = downReleased = specialHeld = specialReleased = skipMove = mergeOrSplit = undoPressed = false;
+        ClearInput();
         if (gamepad != null)
         {
             leftPressed = gamepad.dpad.left.wasPressedThisFrame || gamepad.leftStick.left.wasPressedThisFrame;
@@ -79,7 +78,7 @@ public class PuzzleGameplayInput : MonoBehaviour
 
     public void ClearInput()
     {
-        leftPressed = leftReleased = rightPressed = rightReleased =
-            upPressed = upReleased = downPressed = downReleased = specialHeld = skipMove = false;
+        leftPressed = rightPressed = upPressed = downPressed = leftReleased = rightReleased =
+            upReleased = downReleased = specialHeld = specialReleased = skipMove = mergeOrSplit = undoPressed = false;
     }
 }

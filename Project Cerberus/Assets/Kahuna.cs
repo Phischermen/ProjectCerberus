@@ -4,36 +4,47 @@ using UnityEngine;
 
 public class Kahuna : Cerberus
 {
+    [SerializeField] private GameObject _fireArrow;
     Vector2Int aim = Vector2Int.zero;
+    private static int _fireballRange = 32;
 
     public override void ProcessMoveInput()
     {
         base.ProcessMoveInput();
+        _fireArrow.SetActive(false);
         if (input.specialHeld)
         {
+            _fireArrow.SetActive(true);
             if (input.upPressed)
             {
+                _fireArrow.transform.eulerAngles = new Vector3(0, 0, 90);
                 aim = Vector2Int.up;
             }
 
             else if (input.downPressed)
             {
+                _fireArrow.transform.eulerAngles = new Vector3(0, 0, 270);
                 aim = Vector2Int.down;
             }
 
             else if (input.rightPressed)
             {
+                _fireArrow.transform.eulerAngles = new Vector3(0, 0, 0);
                 aim = Vector2Int.right;
             }
 
             else if (input.leftPressed)
             {
+                _fireArrow.transform.eulerAngles = new Vector3(0, 0, 180);
                 aim = Vector2Int.left;
             }
         }
         else if (input.specialReleased)
         {
-            FireBall(aim);
+            if (aim != Vector2Int.zero)
+            {
+                FireBall(aim);
+            }
         }
         else
         {
@@ -65,7 +76,8 @@ public class Kahuna : Cerberus
         var searchCoord = position + offset;
         var searchCell = _puzzle.GetCell(searchCoord);
         PuzzleEntity entityToPush = null;
-        while (true)
+        var range = _fireballRange;
+        while (range > 0)
         {
             if (searchCell.floorTile.stopsFireball)
             {
@@ -89,6 +101,7 @@ public class Kahuna : Cerberus
 
             searchCoord += offset;
             searchCell = _puzzle.GetCell(searchCoord);
+            range -= 1;
         }
 
         if (entityToPush != null)

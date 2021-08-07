@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.ConstrainedExecution;
 using UnityEngine;
@@ -51,10 +52,10 @@ public class PuzzleContainer : MonoBehaviour
     public LevelCell[,] levelMap { get; protected set; }
     public Tilemap tilemap { get; protected set; }
 
-    private int turn = 0;
-    private int _currentMove = 0;
+    public int turn { get; protected set; }
+    public int currentMove { get; protected set; }
 
-    private List<Cerberus> _moveOrder;
+    public List<Cerberus> moveOrder { get; protected set; }
     //public bool doneMakingMoves { get; protected set; }
 
     private Laguna _laguna;
@@ -64,7 +65,11 @@ public class PuzzleContainer : MonoBehaviour
 
     private CerberusMajorSpawnPoint _cerberusMajorSpawnPoint;
 
-    private bool _joinAndSplitEnabled;
+    public bool joinAndSplitEnabled { get; protected set; }
+    [HideInInspector] public bool wantsToJoin;
+    [HideInInspector] public bool wantsToSplit;
+
+    private int _cerberusYetToReachGoal;
 
     // Start is called before the first frame update
     void Start()
@@ -76,7 +81,7 @@ public class PuzzleContainer : MonoBehaviour
         _laguna = FindObjectOfType<Laguna>();
         _cerberusMajor = FindObjectOfType<CerberusMajor>();
         _cerberusMajorSpawnPoint = FindObjectOfType<CerberusMajorSpawnPoint>();
-        
+
         // Initialize collections
         levelMap = new LevelCell[maxLevelWidth, maxLevelHeight];
         for (int i = 0; i < maxLevelWidth; i++)
@@ -87,17 +92,21 @@ public class PuzzleContainer : MonoBehaviour
             }
         }
 
-        _moveOrder = new List<Cerberus>();
-        if (_jack) _moveOrder.Add(_jack);
-        if (_kahuna) _moveOrder.Add(_kahuna);
-        if (_laguna) _moveOrder.Add(_laguna);
-        if (_cerberusMajor && _cerberusMajorSpawnPoint) _joinAndSplitEnabled = true;
+        moveOrder = new List<Cerberus>();
+        if (_jack) moveOrder.Add(_jack);
+        if (_kahuna) moveOrder.Add(_kahuna);
+        if (_laguna) moveOrder.Add(_laguna);
+
+        // Set initial gameplay variables
+        if (_cerberusMajor && _cerberusMajorSpawnPoint) joinAndSplitEnabled = true;
+        _cerberusYetToReachGoal = moveOrder.Count;
+
         // Setup tilemap for parsing
         tilemap.CompressBounds();
         var bounds = tilemap.cellBounds;
-        if (tilemap.size.x > 32 || tilemap.size.y > 32)
+        if (tilemap.size.x > maxLevelWidth || tilemap.size.y > maxLevelHeight)
         {
-            NZ.NotifyZach(string.Format("Level is too big; level must be {0} x {1}", 32, 32));
+            NZ.NotifyZach($"Level is too big; level must be {maxLevelWidth} x {maxLevelHeight}");
         }
 
         // Add entities to map
@@ -115,8 +124,7 @@ public class PuzzleContainer : MonoBehaviour
                 var hasTile = tilemap.HasTile(new Vector3Int(i, j, 0));
                 if (hasTile && floorTile == null)
                 {
-                    NZ.NotifyZach(string.Format("Invalid tile found at {0}. Please replace with valid Tile.",
-                        new Vector2Int(i, j)));
+                    NZ.NotifyZach($"Invalid tile found at ({i}, {j}). Please replace with valid Tile.");
                 }
 
                 // Set levelCell's floor tile
@@ -124,28 +132,60 @@ public class PuzzleContainer : MonoBehaviour
                 levelCell.floorTile = floorTile;
             }
         }
+
         // Hide Cerberus
-        _cerberusMajor?.gameObject.SetActive(false);
+        if (_cerberusMajor) _cerberusMajor.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        var currentCerberus = _moveOrder[_currentMove];
+        var currentCerberus = moveOrder[currentMove];
         // Process movement of currently controlled cerberus
         currentCerberus.ProcessMoveInput();
         if (currentCerberus.doneWithMove)
         {
-            _currentMove += 1;
-            if (_currentMove == _moveOrder.Count)
+            // Check if they finished the puzzle
+            if (currentCerberus.finishedPuzzle)
             {
-                // All cerberus have moved. Start next turn
+                // Cerberus has finished puzzle. Disable control of Cerberus
+                currentCerberus.gameObject.SetActive(false);
+                moveOrder.Remove(currentCerberus);
+                joinAndSplitEnabled = false;
+                _cerberusYetToReachGoal -= 1;
+                if (_cerberusYetToReachGoal == 0)
+                {
+                    Debug.Log("You win!");
+                    gameObject.SetActive(false);
+                }
+            }
+
+
+            // Handle request to split/join
+            if (wantsToJoin && joinAndSplitEnabled)
+            {
+                wantsToJoin = false;
+                FormCerberusMajor();
                 IncrementTurn();
-                _currentMove = 0;
+            }
+            else if (wantsToSplit && joinAndSplitEnabled)
+            {
+                wantsToSplit = false;
+                SplitCerberusMajor();
+                IncrementTurn();
+            }
+            else
+            {
+                currentMove += 1;
+                if (currentMove >= moveOrder.Count)
+                {
+                    // All cerberus have moved. Start next turn
+                    IncrementTurn();
+                }
             }
 
             // Start next cerberus's move
-            var nextCerberus = _moveOrder[_currentMove];
+            var nextCerberus = moveOrder[currentMove];
             nextCerberus.StartMove();
         }
     }
@@ -195,7 +235,7 @@ public class PuzzleContainer : MonoBehaviour
     void IncrementTurn()
     {
         turn += 1;
-        _currentMove = 0;
+        currentMove = 0;
         Debug.Log(turn);
     }
 
@@ -211,23 +251,26 @@ public class PuzzleContainer : MonoBehaviour
         _jack.gameObject.SetActive(false);
         _kahuna.gameObject.SetActive(false);
         _laguna.gameObject.SetActive(false);
-        
-        _moveOrder.Clear();
-        _moveOrder.Add(_cerberusMajor);
-        _currentMove = 0;
+
+        moveOrder.Clear();
+        moveOrder.Add(_cerberusMajor);
     }
 
     public void SplitCerberusMajor()
     {
         _cerberusMajor.gameObject.SetActive(false);
-        _jack.gameObject.SetActive(true);
-        _kahuna.gameObject.SetActive(true);
-        _laguna.gameObject.SetActive(true);
+        moveOrder.Clear();
+        ReenableCerberusIfYetToFinishPuzzle(_jack);
+        ReenableCerberusIfYetToFinishPuzzle(_kahuna);
+        ReenableCerberusIfYetToFinishPuzzle(_laguna);
+    }
 
-        _moveOrder.Clear();
-        if (_jack) _moveOrder.Add(_jack);
-        if (_kahuna) _moveOrder.Add(_kahuna);
-        if (_laguna) _moveOrder.Add(_laguna);
-        _currentMove = 0;
+    private void ReenableCerberusIfYetToFinishPuzzle(Cerberus cerberus)
+    {
+        if (!cerberus.finishedPuzzle)
+        {
+            cerberus.gameObject.SetActive(true);
+            moveOrder.Add(cerberus);
+        }
     }
 }
