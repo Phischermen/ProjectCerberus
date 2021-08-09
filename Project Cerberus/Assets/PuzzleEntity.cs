@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public abstract class PuzzleEntity : MonoBehaviour
 {
-    protected PuzzleContainer _puzzle;
+    protected PuzzleContainer puzzle;
+    protected GameManager manager;
     public Vector2Int position;
 
     public bool isStatic { get; protected set; }
@@ -22,7 +24,7 @@ public abstract class PuzzleEntity : MonoBehaviour
         var vec3Position = FindObjectOfType<Grid>().WorldToCell(transform.position);
         position = new Vector2Int(vec3Position.x, vec3Position.y);
 
-        _puzzle = FindObjectOfType<PuzzleContainer>();
+        puzzle = FindObjectOfType<PuzzleContainer>();
     }
 
     public virtual void OnEnterCollisionWithEntity(PuzzleEntity other)
@@ -37,22 +39,22 @@ public abstract class PuzzleEntity : MonoBehaviour
 
     public void Move(Vector2Int cell)
     {
-        var newCell = _puzzle.GetCell(cell);
-        var currentCell = _puzzle.GetCell(position);
-        _puzzle.RemoveEntityFromCell(this);
+        var newCell = puzzle.GetCell(cell);
+        var currentCell = puzzle.GetCell(position);
+        puzzle.RemoveEntityFromCell(this);
         foreach (var currentCellPuzzleEntity in currentCell.puzzleEntities)
         {
             currentCellPuzzleEntity.OnExitCollisionWithEntity(this);
         }
 
         position = cell;
-        transform.position = _puzzle.tilemap.layoutGrid.GetCellCenterWorld(new Vector3Int(cell.x, cell.y, 0));
+        transform.position = puzzle.tilemap.layoutGrid.GetCellCenterWorld(new Vector3Int(cell.x, cell.y, 0));
         foreach (var newCellPuzzleEntity in newCell.puzzleEntities)
         {
             newCellPuzzleEntity.OnEnterCollisionWithEntity(this);
         }
 
-        _puzzle.AddEntityToCell(this);
+        puzzle.AddEntityToCell(this);
     }
 
     public bool CollidesWithAny(List<PuzzleEntity> entities)

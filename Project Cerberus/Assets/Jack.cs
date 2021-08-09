@@ -56,7 +56,7 @@ public class Jack : Cerberus
     private void SuperPushMove(Vector2Int offset)
     {
         var coord = position + offset;
-        var newCell = _puzzle.GetCell(coord);
+        var newCell = puzzle.GetCell(coord);
         var blocked = CollidesWith(newCell.floorTile) || CollidesWithAny(newCell.GetStaticEntities());
         if (!blocked)
         {
@@ -73,7 +73,7 @@ public class Jack : Cerberus
                 var searchPosition = pushableEntity.position + offset;
                 while (true)
                 {
-                    var searchCell = _puzzle.GetCell(searchPosition);
+                    var searchCell = puzzle.GetCell(searchPosition);
                     var pushBlocked = pushableEntity.CollidesWith(searchCell.floorTile) ||
                                       pushableEntity.CollidesWithAny(searchCell.puzzleEntities);
                     if (!pushBlocked)
@@ -95,7 +95,7 @@ public class Jack : Cerberus
                 // Check if last entity can move
                 var lastPushableEntity = entitiesToPush[entitiesToPush.Count - 1];
                 var pushCoord = lastPushableEntity.position + offset;
-                var pushEntityNewCell = _puzzle.GetCell(pushCoord);
+                var pushEntityNewCell = puzzle.GetCell(pushCoord);
                 var pushBlocked = lastPushableEntity.CollidesWith(pushEntityNewCell.floorTile) ||
                                   lastPushableEntity.CollidesWithAny(pushEntityNewCell.GetStaticEntities());
                 if (!pushBlocked)
@@ -120,7 +120,7 @@ public class Jack : Cerberus
         var searchPosition = position;
         while (true)
         {
-            var nextPushableEntity = _puzzle.GetCell(searchPosition + offset).GetPushableEntity();
+            var nextPushableEntity = puzzle.GetCell(searchPosition + offset).GetPushableEntity();
             if (nextPushableEntity == null)
             {
                 // Last entity found.

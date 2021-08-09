@@ -74,7 +74,7 @@ public class Kahuna : Cerberus
     {
         // Search for pushable block
         var searchCoord = position + offset;
-        var searchCell = _puzzle.GetCell(searchCoord);
+        var searchCell = puzzle.GetCell(searchCoord);
         PuzzleEntity entityToPush = null;
         var range = _fireballRange;
         while (range > 0)
@@ -100,7 +100,7 @@ public class Kahuna : Cerberus
             }
 
             searchCoord += offset;
-            searchCell = _puzzle.GetCell(searchCoord);
+            searchCell = puzzle.GetCell(searchCoord);
             range -= 1;
         }
 
@@ -108,7 +108,7 @@ public class Kahuna : Cerberus
         {
             // Push entity in front of Laguna one space
             var pushCoord = entityToPush.position + offset;
-            var pushEntityNewCell = _puzzle.GetCell(pushCoord);
+            var pushEntityNewCell = puzzle.GetCell(pushCoord);
             var pushBlocked = entityToPush.CollidesWith(pushEntityNewCell.floorTile) ||
                               entityToPush.CollidesWithAny(pushEntityNewCell.puzzleEntities);
             if (!pushBlocked)

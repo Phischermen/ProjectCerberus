@@ -8,17 +8,17 @@ public class PuzzleUI : MonoBehaviour
     public Text turnCounter;
     public Text currentDog;
     
-    private PuzzleContainer _puzzle;
+    private GameManager _manager;
 
     void Awake()
     {
-        _puzzle = FindObjectOfType<PuzzleContainer>();
+        _manager = FindObjectOfType<GameManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        turnCounter.text = $"Turn:\n{_puzzle.turn}";
-        currentDog.text = _puzzle.moveOrder[_puzzle.currentMove].name;
+        turnCounter.text = $"Turn:\n{_manager.turn}";
+        currentDog.text = _manager.moveOrder[_manager.currentMove].name;
     }
 }

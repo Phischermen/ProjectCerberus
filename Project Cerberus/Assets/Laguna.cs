@@ -58,8 +58,8 @@ public class Laguna : Cerberus
     {
         var coord = position + offset;
         var pullCoord = position - offset;
-        var newCell = _puzzle.GetCell(coord);
-        var pullCell = _puzzle.GetCell(pullCoord);
+        var newCell = puzzle.GetCell(coord);
+        var pullCell = puzzle.GetCell(pullCoord);
         var blocked = CollidesWith(newCell.floorTile) || CollidesWithAny(newCell.GetStaticEntities());
         if (!blocked)
         {
@@ -75,7 +75,7 @@ public class Laguna : Cerberus
             {
                 // Push entity in front of Laguna one space
                 var pushCoord = pushableEntity.position + offset;
-                var pushEntityNewCell = _puzzle.GetCell(pushCoord);
+                var pushEntityNewCell = puzzle.GetCell(pushCoord);
                 var pushBlocked = pushableEntity.CollidesWith(pushEntityNewCell.floorTile) ||
                                   pushableEntity.CollidesWithAny(pushEntityNewCell.puzzleEntities);
                 if (!pushBlocked)

@@ -52,35 +52,12 @@ public class PuzzleContainer : MonoBehaviour
     public LevelCell[,] levelMap { get; protected set; }
     public Tilemap tilemap { get; protected set; }
 
-    public int turn { get; protected set; }
-    public int currentMove { get; protected set; }
-
-    public List<Cerberus> moveOrder { get; protected set; }
-    //public bool doneMakingMoves { get; protected set; }
-
-    private Laguna _laguna;
-    private Jack _jack;
-    private Kahuna _kahuna;
-    private CerberusMajor _cerberusMajor;
-
-    private CerberusMajorSpawnPoint _cerberusMajorSpawnPoint;
-
-    public bool joinAndSplitEnabled { get; protected set; }
-    [HideInInspector] public bool wantsToJoin;
-    [HideInInspector] public bool wantsToSplit;
-
-    private int _cerberusYetToReachGoal;
-
     // Start is called before the first frame update
     void Start()
     {
         // Get components
         tilemap = GetComponentInChildren<Tilemap>();
-        _jack = FindObjectOfType<Jack>();
-        _kahuna = FindObjectOfType<Kahuna>();
-        _laguna = FindObjectOfType<Laguna>();
-        _cerberusMajor = FindObjectOfType<CerberusMajor>();
-        _cerberusMajorSpawnPoint = FindObjectOfType<CerberusMajorSpawnPoint>();
+
 
         // Initialize collections
         levelMap = new LevelCell[maxLevelWidth, maxLevelHeight];
@@ -92,14 +69,6 @@ public class PuzzleContainer : MonoBehaviour
             }
         }
 
-        moveOrder = new List<Cerberus>();
-        if (_jack) moveOrder.Add(_jack);
-        if (_kahuna) moveOrder.Add(_kahuna);
-        if (_laguna) moveOrder.Add(_laguna);
-
-        // Set initial gameplay variables
-        if (_cerberusMajor && _cerberusMajorSpawnPoint) joinAndSplitEnabled = true;
-        _cerberusYetToReachGoal = moveOrder.Count;
 
         // Setup tilemap for parsing
         tilemap.CompressBounds();
@@ -132,62 +101,6 @@ public class PuzzleContainer : MonoBehaviour
                 levelCell.floorTile = floorTile;
             }
         }
-
-        // Hide Cerberus
-        if (_cerberusMajor) _cerberusMajor.gameObject.SetActive(false);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        var currentCerberus = moveOrder[currentMove];
-        // Process movement of currently controlled cerberus
-        currentCerberus.ProcessMoveInput();
-        if (currentCerberus.doneWithMove)
-        {
-            // Check if they finished the puzzle
-            if (currentCerberus.finishedPuzzle)
-            {
-                // Cerberus has finished puzzle. Disable control of Cerberus
-                currentCerberus.gameObject.SetActive(false);
-                moveOrder.Remove(currentCerberus);
-                joinAndSplitEnabled = false;
-                _cerberusYetToReachGoal -= 1;
-                if (_cerberusYetToReachGoal == 0)
-                {
-                    Debug.Log("You win!");
-                    gameObject.SetActive(false);
-                }
-            }
-
-
-            // Handle request to split/join
-            if (wantsToJoin && joinAndSplitEnabled)
-            {
-                wantsToJoin = false;
-                FormCerberusMajor();
-                IncrementTurn();
-            }
-            else if (wantsToSplit && joinAndSplitEnabled)
-            {
-                wantsToSplit = false;
-                SplitCerberusMajor();
-                IncrementTurn();
-            }
-            else
-            {
-                currentMove += 1;
-                if (currentMove >= moveOrder.Count)
-                {
-                    // All cerberus have moved. Start next turn
-                    IncrementTurn();
-                }
-            }
-
-            // Start next cerberus's move
-            var nextCerberus = moveOrder[currentMove];
-            nextCerberus.StartMove();
-        }
     }
 
 
@@ -219,58 +132,5 @@ public class PuzzleContainer : MonoBehaviour
     public LevelCell GetCell(Vector2Int coord)
     {
         return levelMap[coord.x, coord.y];
-    }
-
-
-    // Move order management
-    void SubmitMoves()
-    {
-    }
-
-    void ChangeCerberusSpot(Cerberus cerberus, int newSpot)
-    {
-    }
-
-    // Turn management
-    void IncrementTurn()
-    {
-        turn += 1;
-        currentMove = 0;
-        Debug.Log(turn);
-    }
-
-    void GoBackToTurn(int newTurn)
-    {
-    }
-
-    // Merge and split Management
-    public void FormCerberusMajor()
-    {
-        _cerberusMajor.gameObject.SetActive(true);
-        _cerberusMajor.Move(_cerberusMajorSpawnPoint.position);
-        _jack.gameObject.SetActive(false);
-        _kahuna.gameObject.SetActive(false);
-        _laguna.gameObject.SetActive(false);
-
-        moveOrder.Clear();
-        moveOrder.Add(_cerberusMajor);
-    }
-
-    public void SplitCerberusMajor()
-    {
-        _cerberusMajor.gameObject.SetActive(false);
-        moveOrder.Clear();
-        ReenableCerberusIfYetToFinishPuzzle(_jack);
-        ReenableCerberusIfYetToFinishPuzzle(_kahuna);
-        ReenableCerberusIfYetToFinishPuzzle(_laguna);
-    }
-
-    private void ReenableCerberusIfYetToFinishPuzzle(Cerberus cerberus)
-    {
-        if (!cerberus.finishedPuzzle)
-        {
-            cerberus.gameObject.SetActive(true);
-            moveOrder.Add(cerberus);
-        }
     }
 }

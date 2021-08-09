@@ -115,9 +115,9 @@ public class CerberusMajor : Cerberus
     {
         var lastJumpPosition = (_jumpSpaces.Count > 0) ? _jumpSpaces[_jumpSpaces.Count - 1].position : position;
         var jumpedOverSpace = lastJumpPosition + offset;
-        var jumpedOverCell = _puzzle.GetCell(jumpedOverSpace);
+        var jumpedOverCell = puzzle.GetCell(jumpedOverSpace);
         var newJumpSpace = jumpedOverSpace + offset;
-        var newJumpCell = _puzzle.GetCell(newJumpSpace);
+        var newJumpCell = puzzle.GetCell(newJumpSpace);
         // Check for entity to jump over
         var canJump = (jumpedOverCell.puzzleEntities.Count > 0 || jumpedOverCell.floorTile.jumpable) &&
                       newJumpCell.floorTile != null;
@@ -159,7 +159,7 @@ public class CerberusMajor : Cerberus
             else
             {
                 arrow.SetActive(true);
-                arrow.transform.position = _puzzle.tilemap.GetCellCenterWorld(new Vector3Int(_jumpSpaces[i].position.x,
+                arrow.transform.position = puzzle.tilemap.GetCellCenterWorld(new Vector3Int(_jumpSpaces[i].position.x,
                     _jumpSpaces[i].position.y, 0));
                 arrow.transform.eulerAngles = new Vector3(0, 0, _jumpSpaces[i].rotation);
             }

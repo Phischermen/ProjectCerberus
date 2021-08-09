@@ -37,12 +37,12 @@ public class Cerberus : PuzzleEntity
         {
             if (isCerberusMajor)
             {
-                _puzzle.wantsToSplit = true;
+                manager.wantsToSplit = true;
                 DeclareDoneWithMove();
             }
             else
             {
-                _puzzle.wantsToJoin = true;
+                manager.wantsToJoin = true;
                 DeclareDoneWithMove();
             }
         }
@@ -63,7 +63,7 @@ public class Cerberus : PuzzleEntity
     protected void BasicMove(Vector2Int offset)
     {
         var coord = position + offset;
-        var newCell = _puzzle.GetCell(coord);
+        var newCell = puzzle.GetCell(coord);
         var blocked = CollidesWith(newCell.floorTile) || CollidesWithAny(newCell.GetStaticEntities());
         if (!blocked)
         {
@@ -77,7 +77,7 @@ public class Cerberus : PuzzleEntity
             {
                 // Push entity one space
                 var pushCoord = pushableEntity.position + offset;
-                var pushEntityNewCell = _puzzle.GetCell(pushCoord);
+                var pushEntityNewCell = puzzle.GetCell(pushCoord);
                 var pushBlocked = pushableEntity.CollidesWith(pushEntityNewCell.floorTile) ||
                                   pushableEntity.CollidesWithAny(pushEntityNewCell.puzzleEntities);
                 if (!pushBlocked)
