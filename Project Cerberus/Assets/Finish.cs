@@ -9,7 +9,7 @@ public class Finish : PuzzleEntity
         if (other is Cerberus)
         {
             var cerberus = (Cerberus) other;
-            cerberus.finishedPuzzle = true;
+            cerberus.onTopOfGoal = true;
         }
     }
 }
