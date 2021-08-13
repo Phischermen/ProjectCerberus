@@ -7,22 +7,20 @@ using UnityEngine.Serialization;
 
 public class PuzzleGameplayInput : MonoBehaviour
 {
-    public bool leftPressed;
-    public bool rightPressed;
-    public bool upPressed;
-    public bool downPressed;
-
-    public bool leftReleased;
-    public bool rightReleased;
-    public bool upReleased;
-    public bool downReleased;
-
-    public bool specialHeld;
-    public bool specialReleased;
-    public bool skipMove;
-    public bool mergeOrSplit;
-
-    public bool undoPressed;
+    [HideInInspector] public bool leftPressed,
+        rightPressed,
+        upPressed,
+        downPressed,
+        leftReleased,
+        rightReleased,
+        upReleased,
+        downReleased,
+        specialPressed,
+        specialHeld,
+        specialReleased,
+        skipMove,
+        mergeOrSplit,
+        undoPressed;
 
     private void Update()
     {
@@ -41,6 +39,7 @@ public class PuzzleGameplayInput : MonoBehaviour
             upReleased = gamepad.dpad.up.wasReleasedThisFrame || gamepad.leftStick.up.wasReleasedThisFrame;
             downReleased = gamepad.dpad.down.wasReleasedThisFrame || gamepad.leftStick.down.wasReleasedThisFrame;
 
+            specialPressed = gamepad.crossButton.wasPressedThisFrame;
             specialHeld = gamepad.crossButton.isPressed;
             specialReleased = gamepad.crossButton.wasReleasedThisFrame;
 
@@ -66,6 +65,7 @@ public class PuzzleGameplayInput : MonoBehaviour
             downReleased = downReleased || keyboard.sKey.wasReleasedThisFrame ||
                            keyboard.downArrowKey.wasReleasedThisFrame;
 
+            specialPressed = specialPressed || keyboard.leftShiftKey.wasPressedThisFrame;
             specialHeld = specialHeld || keyboard.leftShiftKey.isPressed;
             specialReleased = specialReleased || keyboard.leftShiftKey.wasReleasedThisFrame;
 
@@ -79,6 +79,7 @@ public class PuzzleGameplayInput : MonoBehaviour
     public void ClearInput()
     {
         leftPressed = rightPressed = upPressed = downPressed = leftReleased = rightReleased =
-            upReleased = downReleased = specialHeld = specialReleased = skipMove = mergeOrSplit = undoPressed = false;
+            upReleased = downReleased = specialPressed =
+                specialHeld = specialReleased = skipMove = mergeOrSplit = undoPressed = false;
     }
 }
