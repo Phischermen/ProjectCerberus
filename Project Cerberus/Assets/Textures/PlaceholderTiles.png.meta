@@ -17,6 +17,183 @@ TextureImporter:
   - first:
       213: -3508473504157200823
     second: PlaceholderTiles_4
+  - first:
+      213: 8243690843916478646
+    second: PlaceholderTiles_5
+  - first:
+      213: -9042140745799677614
+    second: PlaceholderTiles_6
+  - first:
+      213: -7908182629829570795
+    second: PlaceholderTiles_7
+  - first:
+      213: 5874545947691673942
+    second: PlaceholderTiles_8
+  - first:
+      213: -8755759305468139169
+    second: PlaceholderTiles_9
+  - first:
+      213: -3245311481791400583
+    second: PlaceholderTiles_10
+  - first:
+      213: 2103687283107033510
+    second: PlaceholderTiles_11
+  - first:
+      213: 8513778063842844524
+    second: PlaceholderTiles_12
+  - first:
+      213: -5731588981260201750
+    second: PlaceholderTiles_13
+  - first:
+      213: -326551599190738926
+    second: PlaceholderTiles_14
+  - first:
+      213: 4469449862321478368
+    second: PlaceholderTiles_15
+  - first:
+      213: 4529475870041164949
+    second: PlaceholderTiles_16
+  - first:
+      213: 933294455227661484
+    second: PlaceholderTiles_17
+  - first:
+      213: -2213256026424597920
+    second: PlaceholderTiles_18
+  - first:
+      213: -8441148335273200243
+    second: PlaceholderTiles_19
+  - first:
+      213: -4021397319188335528
+    second: PlaceholderTiles_20
+  - first:
+      213: -3301516250781416632
+    second: PlaceholderTiles_21
+  - first:
+      213: -5183410418308648937
+    second: PlaceholderTiles_22
+  - first:
+      213: -4927134501967624409
+    second: PlaceholderTiles_23
+  - first:
+      213: -6896125575219790391
+    second: PlaceholderTiles_24
+  - first:
+      213: -6472096782119243790
+    second: PlaceholderTiles_25
+  - first:
+      213: -4058773450030727936
+    second: PlaceholderTiles_26
+  - first:
+      213: -1768482875118672931
+    second: PlaceholderTiles_27
+  - first:
+      213: -4250258013409081305
+    second: PlaceholderTiles_28
+  - first:
+      213: 8964622502136927625
+    second: PlaceholderTiles_29
+  - first:
+      213: -5842048979476733314
+    second: PlaceholderTiles_30
+  - first:
+      213: 8674555471982223000
+    second: PlaceholderTiles_31
+  - first:
+      213: -1312380953933962940
+    second: PlaceholderTiles_32
+  - first:
+      213: -2209497195641252631
+    second: PlaceholderTiles_33
+  - first:
+      213: 8059772277633314806
+    second: PlaceholderTiles_34
+  - first:
+      213: -1390903953286430042
+    second: PlaceholderTiles_35
+  - first:
+      213: 1423816639040475824
+    second: PlaceholderTiles_36
+  - first:
+      213: -8493942654817753636
+    second: PlaceholderTiles_37
+  - first:
+      213: 2469617444183450829
+    second: PlaceholderTiles_38
+  - first:
+      213: -2290369772257019430
+    second: PlaceholderTiles_39
+  - first:
+      213: -6907365359140391120
+    second: PlaceholderTiles_40
+  - first:
+      213: -56443581273912891
+    second: PlaceholderTiles_41
+  - first:
+      213: 1327560081111237782
+    second: PlaceholderTiles_42
+  - first:
+      213: 34484248742796291
+    second: PlaceholderTiles_43
+  - first:
+      213: -2936072977007124471
+    second: PlaceholderTiles_44
+  - first:
+      213: 7510051364374169294
+    second: PlaceholderTiles_45
+  - first:
+      213: 4774995997661160214
+    second: PlaceholderTiles_46
+  - first:
+      213: 8587657678713043449
+    second: PlaceholderTiles_47
+  - first:
+      213: 8367186423232998296
+    second: PlaceholderTiles_48
+  - first:
+      213: -4004177888202068523
+    second: PlaceholderTiles_49
+  - first:
+      213: -5583702552402618387
+    second: PlaceholderTiles_50
+  - first:
+      213: 1416670008756764745
+    second: PlaceholderTiles_51
+  - first:
+      213: -2081254510633325860
+    second: PlaceholderTiles_52
+  - first:
+      213: 1483403870251697562
+    second: PlaceholderTiles_53
+  - first:
+      213: 7294122673726471461
+    second: PlaceholderTiles_54
+  - first:
+      213: 2861342370680030739
+    second: PlaceholderTiles_55
+  - first:
+      213: 1959318475005035735
+    second: PlaceholderTiles_56
+  - first:
+      213: 7519044959592781709
+    second: PlaceholderTiles_57
+  - first:
+      213: -396951860172281549
+    second: PlaceholderTiles_58
+  - first:
+      213: 7875211463105501505
+    second: PlaceholderTiles_59
+  - first:
+      213: 3412032136446850332
+    second: PlaceholderTiles_60
+  - first:
+      213: 1122102295909716930
+    second: PlaceholderTiles_61
+  - first:
+      213: -6204977568079112757
+    second: PlaceholderTiles_62
+  - first:
+      213: 5879179367266792736
+    second: PlaceholderTiles_63
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -214,6 +391,69 @@ TextureImporter:
       bones: []
       spriteID: 94e07d8cfe56f4fc0800000000000000
       internalID: -3508473504157200823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlaceholderTiles_5
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 512
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b828c54529776270800000000000000
+      internalID: 8243690843916478646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlaceholderTiles_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 259468526ecd38280800000000000000
+      internalID: -9042140745799677614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlaceholderTiles_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51f081a2ccd704290800000000000000
+      internalID: -7908182629829570795
       vertices: []
       indices: 
       edges: []
