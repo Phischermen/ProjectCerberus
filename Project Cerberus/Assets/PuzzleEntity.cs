@@ -10,15 +10,15 @@ public abstract class PuzzleEntity : MonoBehaviour
     protected GameManager manager;
     [HideInInspector] public Vector2Int position;
 
-    public bool collisionsEnabled { get; protected set; } = true;
-    public bool isStatic { get; protected set; }
-    public bool isPlayer { get; protected set; }
-    public bool isBlock { get; protected set; }
-    public bool stopsPlayer { get; protected set; }
-    public bool stopsBlock { get; protected set; }
-    public bool pushableByFireball { get; protected set; }
-    public bool pushable { get; protected set; }
-    public bool landable { get; protected set; }
+    [ShowInTileInspector] public bool collisionsEnabled { get; protected set; } = true;
+    [ShowInTileInspector] public bool isStatic { get; protected set; }
+    [ShowInTileInspector] public bool isPlayer { get; protected set; }
+    [ShowInTileInspector] public bool isBlock { get; protected set; }
+    [ShowInTileInspector] public bool stopsPlayer { get; protected set; }
+    [ShowInTileInspector] public bool stopsBlock { get; protected set; }
+    [ShowInTileInspector] public bool pushableByFireball { get; protected set; }
+    [ShowInTileInspector] public bool pushable { get; protected set; }
+    [ShowInTileInspector] public bool landable { get; protected set; }
 
     protected virtual void Awake()
     {

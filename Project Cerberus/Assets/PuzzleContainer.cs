@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.ConstrainedExecution;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 
 public class PuzzleContainer : MonoBehaviour
@@ -47,12 +49,91 @@ public class PuzzleContainer : MonoBehaviour
         }
     }
 
+#if DEBUG
+
+    private bool _inspectorShown;
+    private int _frameInspectorShown;
+    private bool _inspectorExpanded;
+    private float inspectorWidth = 200;
+
+    private void OnGUI()
+    {
+        if (Keyboard.current.f1Key.wasPressedThisFrame && _frameInspectorShown != Time.frameCount)
+        {
+            _inspectorShown = !_inspectorShown;
+            _frameInspectorShown = Time.frameCount;
+        }
+
+        if (_inspectorShown)
+        {
+            // Get cell that player is targeting
+            var mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+            var mouseCoord = new Vector2Int((int) mousePosition.x, (int) mousePosition.y);
+            var inBounds = InBounds(mouseCoord);
+            // Display information about that cell
+            var inspectorContentFormat = "Floor Tile:\n{0}\n{1} Entity(s)\n";
+            var inspectorContentText = "Mouse over a tile to read data.";
+            if (inBounds)
+            {
+                var cell = GetCell(mouseCoord);
+                if (cell != null)
+                {
+                    inspectorContentText =
+                        string.Format(inspectorContentFormat, cell.floorTile?.name, cell.puzzleEntities.Count);
+                    // Read fields and properties exposed to tile inspector
+                    if (_inspectorExpanded)
+                    {
+                        foreach (var entity in cell.puzzleEntities)
+                        {
+                            inspectorContentText += $"{entity.name}:\n";
+                            foreach (var memberInfo in entity.GetType().GetMembers())
+                            {
+                                ShowInTileInspector attribute;
+                                switch (memberInfo)
+                                {
+                                    case PropertyInfo propertyInfo:
+                                        attribute = propertyInfo.GetCustomAttribute<ShowInTileInspector>();
+                                        if (attribute != null)
+                                        {
+                                            inspectorContentText +=
+                                                $"{propertyInfo.Name}: {propertyInfo.GetValue(entity)}\n";
+                                        }
+
+                                        break;
+                                    case FieldInfo fieldInfo:
+                                        attribute = fieldInfo.GetCustomAttribute<ShowInTileInspector>();
+                                        if (attribute != null)
+                                        {
+                                            inspectorContentText +=
+                                                $"{fieldInfo.Name}: {fieldInfo.GetValue(entity)}\n";
+                                        }
+
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Construct GUI content
+            GUIContent content = new GUIContent(inspectorContentText);
+            GUIStyle style = GUI.skin.box;
+            style.wordWrap = true;
+            var height = style.CalcHeight(content, inspectorWidth);
+            GUI.Box(new Rect(0, 0, inspectorWidth, height), content, style);
+            _inspectorExpanded =
+                GUI.Toggle(new Rect(0, height, inspectorWidth, 20), _inspectorExpanded, "Expand/Shrink");
+        }
+    }
+
+#endif
+
     public static int maxLevelWidth = 32;
     public static int maxLevelHeight = 32;
     public LevelCell[,] levelMap { get; protected set; }
     public Tilemap tilemap { get; protected set; }
 
-    // Start is called before the first frame update
     void Awake()
     {
         // Get components
@@ -105,7 +186,6 @@ public class PuzzleContainer : MonoBehaviour
         }
     }
 
-
     // Level Map management
     public void AddEntityToCell(PuzzleEntity entity, Vector2Int cell)
     {
@@ -132,5 +212,10 @@ public class PuzzleContainer : MonoBehaviour
     public LevelCell GetCell(Vector2Int coord)
     {
         return levelMap[coord.x, coord.y];
+    }
+
+    public bool InBounds(Vector2Int coord)
+    {
+        return coord.x >= 0 && coord.x < maxLevelWidth && coord.y >= 0 && coord.y < maxLevelHeight;
     }
 }

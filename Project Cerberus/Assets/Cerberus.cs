@@ -14,9 +14,9 @@ public class Cerberus : PuzzleEntity
     }
 
     [HideInInspector] public bool doneWithMove;
-    [HideInInspector] public bool onTopOfGoal;
+    [HideInInspector, ShowInTileInspector] public bool onTopOfGoal;
 
-    protected bool isCerberusMajor = false;
+    [ShowInTileInspector] protected bool isCerberusMajor = false;
     protected PuzzleGameplayInput input;
 
     private Sprite _cerberusSprite;
