@@ -7,14 +7,33 @@ public class Kahuna : Cerberus
     [SerializeField] private GameObject _fireArrow;
     Vector2Int aim = Vector2Int.zero;
     private static int _fireballRange = 32;
+    private bool specialActive;
 
+    protected override void Awake()
+    {
+        base.Awake();
+        _fireArrow.SetActive(false);
+    }
     public override void ProcessMoveInput()
     {
         base.ProcessMoveInput();
         _fireArrow.SetActive(false);
-        if (input.specialHeld)
+        var wantsToFire = false;
+        if (input.specialPressed)
         {
-            _fireArrow.SetActive(true);
+            aim = Vector2Int.zero;
+            specialActive = true;
+        }
+
+        if (input.specialReleased)
+        {
+            specialActive = false;
+            wantsToFire = true;
+        }
+
+        if (specialActive)
+        {
+            _fireArrow.SetActive(aim != Vector2Int.zero);
             if (input.upPressed)
             {
                 _fireArrow.transform.eulerAngles = new Vector3(0, 0, 90);
@@ -39,7 +58,7 @@ public class Kahuna : Cerberus
                 aim = Vector2Int.left;
             }
         }
-        else if (input.specialReleased)
+        else if (wantsToFire)
         {
             if (aim != Vector2Int.zero)
             {
@@ -81,21 +100,15 @@ public class Kahuna : Cerberus
         {
             if (searchCell.floorTile.stopsFireball)
             {
-                break;
+                goto AfterWhile;
             }
 
             foreach (var entity in searchCell.puzzleEntities)
             {
-                if (entity.stopsFireball)
+                if (entity.pushableByFireball)
                 {
-                    if (entity.pushable)
-                    {
-                        entityToPush = entity;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    entityToPush = entity;
+                    goto AfterWhile;
                 }
             }
 
@@ -104,6 +117,7 @@ public class Kahuna : Cerberus
             range -= 1;
         }
 
+        AfterWhile:
         if (entityToPush != null)
         {
             // Push entity in front of Laguna one space

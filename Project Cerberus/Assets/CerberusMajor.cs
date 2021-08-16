@@ -118,6 +118,13 @@ public class CerberusMajor : Cerberus
         var jumpedOverCell = puzzle.GetCell(jumpedOverSpace);
         var newJumpSpace = jumpedOverSpace + offset;
         var newJumpCell = puzzle.GetCell(newJumpSpace);
+        // Check if user is "backing out"
+        if (newJumpSpace == position)
+        {
+            _jumpSpaces.Clear();
+            RenderJumpPath();
+            return;
+        }
         // Check for entity to jump over
         var canJump = (jumpedOverCell.puzzleEntities.Count > 0 || jumpedOverCell.floorTile.jumpable) &&
                       newJumpCell.floorTile != null;
@@ -126,7 +133,9 @@ public class CerberusMajor : Cerberus
         {
             // Check for collision and if landable
             var landableEntity = newJumpCell.GetLandableEntity();
-            if (landableEntity != null || newJumpCell.floorTile.landable)
+            var canLand = (landableEntity != null) ||
+                          (newJumpCell.puzzleEntities.Count == 0 && newJumpCell.floorTile.landable);
+            if (canLand)
             {
                 var newJumpInfo = new JumpInfo(newJumpSpace, rotation);
                 // Check if space is already in collection

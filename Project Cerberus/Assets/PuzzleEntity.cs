@@ -20,7 +20,7 @@ public abstract class PuzzleEntity : MonoBehaviour
     public bool pushable { get; protected set; }
     public bool landable { get; protected set; }
 
-    protected void Awake()
+    protected virtual void Awake()
     {
         var vec3Position = FindObjectOfType<Grid>().WorldToCell(transform.position);
         position = new Vector2Int(vec3Position.x, vec3Position.y);
@@ -91,8 +91,33 @@ public abstract class PuzzleEntity : MonoBehaviour
             (isBlock && floorTile.stopsBlock));
     }
 
-    public void SetCollisionsEnabled(bool b)
+    public void SetCollisionsEnabled(bool enable)
     {
-        collisionsEnabled = b;
+        if (enable == collisionsEnabled)return;
+        collisionsEnabled = enable;
+        // Invoke callbacks
+        var currentCell = puzzle.GetCell(position);
+        if (enable)
+        {
+            foreach (var newCellPuzzleEntity in currentCell.puzzleEntities)
+            {
+                if (collisionsEnabled && newCellPuzzleEntity.collisionsEnabled)
+                {
+                    OnEnterCollisionWithEntity(newCellPuzzleEntity);
+                    newCellPuzzleEntity.OnEnterCollisionWithEntity(this);
+                }
+            }
+        }
+        else
+        {
+            foreach (var newCellPuzzleEntity in currentCell.puzzleEntities)
+            {
+                if (collisionsEnabled && newCellPuzzleEntity.collisionsEnabled)
+                {
+                    OnExitCollisionWithEntity(newCellPuzzleEntity);
+                    newCellPuzzleEntity.OnExitCollisionWithEntity(this);
+                }
+            }
+        }
     }
 }

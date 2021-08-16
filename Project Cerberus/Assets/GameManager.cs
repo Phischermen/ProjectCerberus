@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     {
         Instantiate(_uiPrefab);
     }
+
     void Start()
     {
         // Get objects
@@ -42,9 +43,13 @@ public class GameManager : MonoBehaviour
         if (_laguna) moveOrder.Add(_laguna);
 
         // Set initial gameplay variables
-        if (_cerberusMajor && _cerberusMajorSpawnPoint) joinAndSplitEnabled = true;
+        if (_cerberusMajor)
+        {
+            joinAndSplitEnabled = true;
+            _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(true);
+        }
+
         _cerberusYetToReachGoal = FindObjectsOfType<Finish>().Length;
-        if (_cerberusMajor) _cerberusMajor.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -52,22 +57,24 @@ public class GameManager : MonoBehaviour
     {
         var currentCerberus = moveOrder[currentMove];
         // Process movement of currently controlled cerberus
+        var currentCerberusWasOnTopOfGoal = currentCerberus.onTopOfGoal;
         currentCerberus.ProcessMoveInput();
         if (currentCerberus.doneWithMove)
         {
             // Check if they finished the puzzle
-            if (currentCerberus.finishedPuzzle)
+            if (currentCerberus.onTopOfGoal && !currentCerberusWasOnTopOfGoal)
             {
-                // Cerberus has finished puzzle. Disable control of Cerberus
-                currentCerberus.gameObject.SetActive(false);
-                moveOrder.Remove(currentCerberus);
-                joinAndSplitEnabled = false;
+                // Decrement goal counter
                 _cerberusYetToReachGoal -= 1;
                 if (_cerberusYetToReachGoal == 0)
                 {
                     Debug.Log("You win!");
-                    gameObject.SetActive(false);
                 }
+            }
+            else
+            {
+                // Increment goal counter 
+                _cerberusYetToReachGoal += 1;
             }
 
 
@@ -120,11 +127,10 @@ public class GameManager : MonoBehaviour
     // Merge and split Management
     public void FormCerberusMajor()
     {
-        _cerberusMajor.gameObject.SetActive(true);
-        _cerberusMajor.Move(_cerberusMajorSpawnPoint.position);
-        _jack.gameObject.SetActive(false);
-        _kahuna.gameObject.SetActive(false);
-        _laguna.gameObject.SetActive(false);
+        _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(false);
+        _jack.SetDisableCollsionAndShowPentagramMarker(true);
+        _kahuna.SetDisableCollsionAndShowPentagramMarker(true);
+        _laguna.SetDisableCollsionAndShowPentagramMarker(true);
 
         moveOrder.Clear();
         moveOrder.Add(_cerberusMajor);
@@ -132,19 +138,14 @@ public class GameManager : MonoBehaviour
 
     public void SplitCerberusMajor()
     {
-        _cerberusMajor.gameObject.SetActive(false);
-        moveOrder.Clear();
-        ReenableCerberusIfYetToFinishPuzzle(_jack);
-        ReenableCerberusIfYetToFinishPuzzle(_kahuna);
-        ReenableCerberusIfYetToFinishPuzzle(_laguna);
-    }
+        _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(true);
+        _jack.SetDisableCollsionAndShowPentagramMarker(false);
+        _kahuna.SetDisableCollsionAndShowPentagramMarker(false);
+        _laguna.SetDisableCollsionAndShowPentagramMarker(false);
 
-    private void ReenableCerberusIfYetToFinishPuzzle(Cerberus cerberus)
-    {
-        if (!cerberus.finishedPuzzle)
-        {
-            cerberus.gameObject.SetActive(true);
-            moveOrder.Add(cerberus);
-        }
+        moveOrder.Clear();
+        moveOrder.Add(_jack);
+        moveOrder.Add(_kahuna);
+        moveOrder.Add(_laguna);
     }
 }

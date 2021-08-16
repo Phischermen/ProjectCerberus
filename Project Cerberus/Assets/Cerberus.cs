@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class Cerberus : PuzzleEntity
 {
-    // Start is called before the first frame update
     public Cerberus()
     {
         isPlayer = true;
@@ -14,16 +13,20 @@ public class Cerberus : PuzzleEntity
         pushable = true;
     }
 
-    public bool doneWithMove;
-    public bool finishedPuzzle;
-    
+    [HideInInspector] public bool doneWithMove;
+    [HideInInspector] public bool onTopOfGoal;
+
     protected bool isCerberusMajor = false;
     protected PuzzleGameplayInput input;
-    
-    private new void Awake()
+
+    private Sprite _cerberusSprite;
+    public Sprite pentagramMarker;
+
+    protected override void Awake()
     {
         base.Awake();
         input = FindObjectOfType<PuzzleGameplayInput>();
+        _cerberusSprite = GetComponent<SpriteRenderer>().sprite;
     }
 
     public virtual void ProcessMoveInput()
@@ -88,5 +91,13 @@ public class Cerberus : PuzzleEntity
                 }
             }
         }
+    }
+
+    public void SetDisableCollsionAndShowPentagramMarker(bool disableAndShowPentagram)
+    {
+        SetCollisionsEnabled(!disableAndShowPentagram);
+        pushable = !disableAndShowPentagram;
+        landable = disableAndShowPentagram;
+        GetComponent<SpriteRenderer>().sprite = disableAndShowPentagram ? pentagramMarker : _cerberusSprite;
     }
 }
