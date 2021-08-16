@@ -50,8 +50,12 @@ public class Laguna : Cerberus
                 BasicMove(Vector2Int.left);
             }
         }
-    }
 
+        if (input.cycleCharacter)
+        {
+            manager.wantsToCycleCharacter = true;
+        }
+    }
 
 
     private void PullMove(Vector2Int offset)

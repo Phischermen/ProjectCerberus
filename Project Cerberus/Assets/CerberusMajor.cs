@@ -109,6 +109,13 @@ public class CerberusMajor : Cerberus
                 BasicMove(Vector2Int.left);
             }
         }
+        
+        if (input.cycleCharacter)
+        {
+            _jumpSpaces.Clear();
+            RenderJumpPath();
+            manager.wantsToCycleCharacter = true;
+        }
     }
 
     private void AddJumpSpace(Vector2Int offset, float rotation)

@@ -43,7 +43,7 @@ public abstract class PuzzleEntity : MonoBehaviour
     {
         var newCell = puzzle.GetCell(cell);
         var currentCell = puzzle.GetCell(position);
-        puzzle.RemoveEntityFromCell(this);
+        puzzle.RemoveEntityFromCell(this, position);
         foreach (var currentCellPuzzleEntity in currentCell.puzzleEntities)
         {
             if (collisionsEnabled && currentCellPuzzleEntity.collisionsEnabled)
@@ -64,7 +64,7 @@ public abstract class PuzzleEntity : MonoBehaviour
             }
         }
 
-        puzzle.AddEntityToCell(this);
+        puzzle.AddEntityToCell(this, position);
     }
 
     public bool CollidesWithAny(List<PuzzleEntity> entities)

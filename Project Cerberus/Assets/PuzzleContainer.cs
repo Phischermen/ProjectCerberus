@@ -53,7 +53,7 @@ public class PuzzleContainer : MonoBehaviour
     public Tilemap tilemap { get; protected set; }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // Get components
         tilemap = GetComponentInChildren<Tilemap>();
@@ -81,7 +81,9 @@ public class PuzzleContainer : MonoBehaviour
         // Add entities to map
         foreach (var entity in FindObjectsOfType<PuzzleEntity>())
         {
-            AddEntityToCell(entity);
+            var vec3Position = tilemap.layoutGrid.WorldToCell(entity.transform.position);
+            var position = new Vector2Int(vec3Position.x, vec3Position.y);
+            AddEntityToCell(entity, position);
         }
 
         for (var i = bounds.x; i < bounds.xMax; i++)
@@ -105,9 +107,8 @@ public class PuzzleContainer : MonoBehaviour
 
 
     // Level Map management
-    public void AddEntityToCell(PuzzleEntity entity)
+    public void AddEntityToCell(PuzzleEntity entity, Vector2Int cell)
     {
-        var cell = entity.position;
         if (cell.x > 32 || cell.y > 32)
         {
             NZ.NotifyZach("Entity placed outside bounds: " + entity.name);
@@ -117,9 +118,8 @@ public class PuzzleContainer : MonoBehaviour
         levelMap[cell.x, cell.y].puzzleEntities.Add(entity);
     }
 
-    public void RemoveEntityFromCell(PuzzleEntity entity)
+    public void RemoveEntityFromCell(PuzzleEntity entity, Vector2Int cell)
     {
-        var cell = entity.position;
         if (cell.x > 32 || cell.y > 32)
         {
             NZ.NotifyZach("Entity placed outside bounds: " + entity.name);

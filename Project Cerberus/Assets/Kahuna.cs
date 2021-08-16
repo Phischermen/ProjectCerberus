@@ -87,6 +87,13 @@ public class Kahuna : Cerberus
                 BasicMove(Vector2Int.left);
             }
         }
+
+        if (input.cycleCharacter)
+        {
+            specialActive = false;
+            _fireArrow.SetActive(false);
+            manager.wantsToCycleCharacter = true;
+        }
     }
 
     private void FireBall(Vector2Int offset)

@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public bool joinAndSplitEnabled { get; protected set; }
     [HideInInspector] public bool wantsToJoin;
     [HideInInspector] public bool wantsToSplit;
+    [HideInInspector] public bool wantsToCycleCharacter;
 
     private int _cerberusYetToReachGoal;
 
@@ -105,11 +106,19 @@ public class GameManager : MonoBehaviour
             var nextCerberus = moveOrder[currentMove];
             nextCerberus.StartMove();
         }
+        // Handle request to cycle character
+        else if (wantsToCycleCharacter)
+        {
+            wantsToCycleCharacter = false;
+            ChangeCerberusSpot(currentCerberus, moveOrder.Count - 1);
+        }
     }
 
     // Move order management
     void ChangeCerberusSpot(Cerberus cerberus, int newSpot)
     {
+        moveOrder.Remove(cerberus);
+        moveOrder.Insert(newSpot, cerberus);
     }
 
     // Turn management

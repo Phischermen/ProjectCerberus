@@ -51,6 +51,11 @@ public class Jack : Cerberus
                 BasicMove(Vector2Int.left);
             }
         }
+
+        if (input.cycleCharacter)
+        {
+            manager.wantsToCycleCharacter = true;
+        }
     }
 
     private void SuperPushMove(Vector2Int offset)
