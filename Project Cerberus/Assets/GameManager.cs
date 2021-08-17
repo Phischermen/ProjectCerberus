@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private string nextSceneName;
+    public string nextScene;
     [SerializeField] private GameObject _uiPrefab;
     public List<Cerberus> moveOrder { get; protected set; }
     public int turn { get; protected set; }
@@ -74,7 +74,7 @@ public class GameManager : MonoBehaviour
                 if (_cerberusYetToReachGoal == 0)
                 {
                     Debug.Log("You win!");
-                    SceneManager.LoadScene(nextSceneName);
+                    SceneManager.LoadScene(nextScene);
                 }
             }
             else if (!currentCerberus.onTopOfGoal && currentCerberusWasOnTopOfGoal)
