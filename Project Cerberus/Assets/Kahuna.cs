@@ -4,57 +4,58 @@ using UnityEngine;
 
 public class Kahuna : Cerberus
 {
-    [SerializeField] private GameObject _fireArrow;
+    [SerializeField] private GameObject fireArrow;
     Vector2Int aim = Vector2Int.zero;
     private static int _fireballRange = 32;
-    private bool specialActive;
+    private bool _specialActive;
 
     protected override void Awake()
     {
         base.Awake();
-        _fireArrow.SetActive(false);
+        fireArrow.SetActive(false);
     }
+
     public override void ProcessMoveInput()
     {
         base.ProcessMoveInput();
-        _fireArrow.SetActive(false);
+        fireArrow.SetActive(false);
         var wantsToFire = false;
         if (input.specialPressed)
         {
             aim = Vector2Int.zero;
-            specialActive = true;
+            _specialActive = true;
         }
 
         if (input.specialReleased)
         {
-            specialActive = false;
+            _specialActive = false;
             wantsToFire = true;
         }
 
-        if (specialActive)
+        if (_specialActive)
         {
-            _fireArrow.SetActive(aim != Vector2Int.zero);
+            fireArrow.SetActive(aim != Vector2Int.zero);
             if (input.upPressed)
             {
-                _fireArrow.transform.eulerAngles = new Vector3(0, 0, 90);
+                fireArrow.transform.eulerAngles = new Vector3(0, 0, 90);
                 aim = Vector2Int.up;
             }
 
             else if (input.downPressed)
             {
-                _fireArrow.transform.eulerAngles = new Vector3(0, 0, 270);
+                fireArrow.transform.eulerAngles = new Vector3(0, 0, 270);
                 aim = Vector2Int.down;
             }
 
             else if (input.rightPressed)
             {
-                _fireArrow.transform.eulerAngles = new Vector3(0, 0, 0);
+                fireArrow.transform.eulerAngles = new Vector3(0, 0, 0);
                 aim = Vector2Int.right;
             }
 
             else if (input.leftPressed)
             {
-                _fireArrow.transform.eulerAngles = new Vector3(0, 0, 180);
+                fireArrow.transform.eulerAngles = new Vector3(0, 0, 180);
                 aim = Vector2Int.left;
             }
         }
@@ -90,8 +91,8 @@ public class Kahuna : Cerberus
 
         if (input.cycleCharacter)
         {
-            specialActive = false;
-            _fireArrow.SetActive(false);
+            _specialActive = false;
+            fireArrow.SetActive(false);
             manager.wantsToCycleCharacter = true;
         }
     }
@@ -101,7 +102,7 @@ public class Kahuna : Cerberus
         // Search for pushable block
         var searchCoord = position + offset;
         var searchCell = puzzle.GetCell(searchCoord);
-        PuzzleEntity entityToPush = null;
+        PuzzleEntity entityToPushOrInteractWith = null;
         var range = _fireballRange;
         while (range > 0)
         {
@@ -112,9 +113,9 @@ public class Kahuna : Cerberus
 
             foreach (var entity in searchCell.puzzleEntities)
             {
-                if (entity.pushableByFireball)
+                if (entity.pushableByFireball || entity.interactsWithFireball)
                 {
-                    entityToPush = entity;
+                    entityToPushOrInteractWith = entity;
                     goto AfterWhile;
                 }
             }
@@ -125,17 +126,25 @@ public class Kahuna : Cerberus
         }
 
         AfterWhile:
-        if (entityToPush != null)
+        if (entityToPushOrInteractWith != null)
         {
-            // Push entity in front of Laguna one space
-            var pushCoord = entityToPush.position + offset;
-            var pushEntityNewCell = puzzle.GetCell(pushCoord);
-            var pushBlocked = entityToPush.CollidesWith(pushEntityNewCell.floorTile) ||
-                              entityToPush.CollidesWithAny(pushEntityNewCell.puzzleEntities);
-            if (!pushBlocked)
+            if (entityToPushOrInteractWith.interactsWithFireball)
             {
-                entityToPush.Move(pushCoord);
+                entityToPushOrInteractWith.OnShotByKahuna();
                 DeclareDoneWithMove();
+            }
+            else
+            {
+                // Push entity in front of Kahuna one space
+                var pushCoord = entityToPushOrInteractWith.position + offset;
+                var pushEntityNewCell = puzzle.GetCell(pushCoord);
+                var pushBlocked = entityToPushOrInteractWith.CollidesWith(pushEntityNewCell.floorTile) ||
+                                  entityToPushOrInteractWith.CollidesWithAny(pushEntityNewCell.puzzleEntities);
+                if (!pushBlocked)
+                {
+                    entityToPushOrInteractWith.Move(pushCoord);
+                    DeclareDoneWithMove();
+                }
             }
         }
     }

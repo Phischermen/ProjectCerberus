@@ -6,10 +6,17 @@ public class Finish : PuzzleEntity
 {
     public override void OnEnterCollisionWithEntity(PuzzleEntity other)
     {
-        if (other is Cerberus)
+        if (other is Cerberus cerberus)
         {
-            var cerberus = (Cerberus) other;
             cerberus.onTopOfGoal = true;
+        }
+    }
+
+    public override void OnExitCollisionWithEntity(PuzzleEntity other)
+    {
+        if (other is Cerberus cerberus)
+        {
+            cerberus.onTopOfGoal = false;
         }
     }
 }

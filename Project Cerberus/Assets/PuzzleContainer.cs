@@ -139,7 +139,6 @@ public class PuzzleContainer : MonoBehaviour
         // Get components
         tilemap = GetComponentInChildren<Tilemap>();
 
-
         // Initialize collections
         levelMap = new LevelCell[maxLevelWidth, maxLevelHeight];
         for (int i = 0; i < maxLevelWidth; i++)
@@ -149,7 +148,6 @@ public class PuzzleContainer : MonoBehaviour
                 levelMap[i, j] = new LevelCell();
             }
         }
-
 
         // Setup tilemap for parsing
         tilemap.CompressBounds();

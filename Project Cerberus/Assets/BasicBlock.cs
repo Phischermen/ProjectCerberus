@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class BasicBlock : PuzzleEntity
 {
-    BasicBlock()
+    protected BasicBlock()
     {
         isBlock = true;
         stopsBlock = true;
         stopsPlayer = true;
         pushableByFireball = true;
         pushable = true;
-        landable = false;
     }
     // Start is called before the first frame update
     void Start()

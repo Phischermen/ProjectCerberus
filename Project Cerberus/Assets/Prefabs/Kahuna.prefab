@@ -183,4 +183,4 @@ MonoBehaviour:
   onTopOfGoal: 0
   pentagramMarker: {fileID: 8243690843916478646, guid: f517efbb0e7cff84798d8ddd4641d42b,
     type: 3}
-  _fireArrow: {fileID: 6824530358841447831}
+  fireArrow: {fileID: 6824530358841447831}
