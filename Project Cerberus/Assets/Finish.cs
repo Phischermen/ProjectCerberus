@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class Finish : PuzzleEntity
 {
+    public Finish()
+    {
+        landable = true;
+    }
+
     public override void OnEnterCollisionWithEntity(PuzzleEntity other)
     {
         if (other is Cerberus cerberus)
