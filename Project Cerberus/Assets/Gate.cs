@@ -10,10 +10,17 @@ public class Gate : PuzzleEntity
     [SerializeField] private Sprite openSprite;
     [SerializeField] private Sprite closeSprite;
     
-    public Gate()
+    protected override void Awake()
     {
-        // Initialized in closed state
-        SetFieldsToClosedPreset();
+        base.Awake();
+        if (open)
+        {
+            OpenGate();
+        }
+        else
+        {
+            RequestCloseGate();
+        }
     }
 
     private void Update()
