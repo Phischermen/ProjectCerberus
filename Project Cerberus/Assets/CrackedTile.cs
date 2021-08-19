@@ -6,28 +6,59 @@ using UnityEngine.Tilemaps;
 [CreateAssetMenu(menuName = "FloorTile/Cracked")]
 public class CrackedTile : FloorTile
 {
-    private int stage = 0;
-    [SerializeField] private int initialState = 0;
+    [HideInInspector, ShowInTileInspector] public int stage = 0;
+    [HideInInspector, ShowInTileInspector] public int initialState = 0;
     [SerializeField] private Sprite[] crackStageSprite = new Sprite[4];
 
     public CrackedTile()
     {
+        needsToBeCloned = true;
+    }
+
+    public void Awake()
+    {
+        stage = Mathf.Clamp(initialState, 0, crackStageSprite.Length - 1);
         if (initialState < 3)
         {
-            landable = true;
-            jumpable = false;
+            SetFieldsToPreFinalStatePreset();
         }
         else
         {
-            landable = false;
-            jumpable = true;
+            SetFieldsToFinalStatePreset();
         }
     }
 
     public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
     {
         base.GetTileData(position, tilemap, ref tileData);
-        var idx = Mathf.Clamp(initialState + stage, 0, crackStageSprite.Length - 1);
+        var idx = Mathf.Clamp(stage, 0, crackStageSprite.Length - 1);
         tileData.sprite = crackStageSprite[idx];
+    }
+
+    public override void OnExitCollisionWithEntity(PuzzleEntity other)
+    {
+        stage += 1;
+        if (stage < 3)
+        {
+            SetFieldsToPreFinalStatePreset();
+        }
+        else
+        {
+            SetFieldsToFinalStatePreset();
+        }
+    }
+
+    private void SetFieldsToPreFinalStatePreset()
+    {
+        landable = true;
+        jumpable = false;
+        stopsPlayer = false;
+    }
+
+    private void SetFieldsToFinalStatePreset()
+    {
+        landable = false;
+        jumpable = true;
+        stopsPlayer = true;
     }
 }

@@ -69,6 +69,12 @@ public abstract class PuzzleEntity : MonoBehaviour
             }
         }
 
+        if (collisionsEnabled)
+        {
+            currentCell.floorTile.OnExitCollisionWithEntity(this);
+            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+        }
+
         position = cell;
         transform.position = puzzle.tilemap.layoutGrid.GetCellCenterWorld(new Vector3Int(cell.x, cell.y, 0));
         foreach (var newCellPuzzleEntity in newCell.puzzleEntities)
@@ -78,6 +84,12 @@ public abstract class PuzzleEntity : MonoBehaviour
                 OnEnterCollisionWithEntity(newCellPuzzleEntity);
                 newCellPuzzleEntity.OnEnterCollisionWithEntity(this);
             }
+        }
+
+        if (collisionsEnabled)
+        {
+            newCell.floorTile.OnEnterCollisionWithEntity(this);
+            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
         }
 
         puzzle.AddEntityToCell(this, position);
