@@ -1,59 +1,117 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class PuzzleUI : MonoBehaviour
 {
+    // Appearance of UI elements is managed through this class.
+
+    [Serializable]
+    public class DogStatus
+    {
+        // Fields initialized through inspector
+        public RectTransform rectTransform;
+        public Text text;
+
+        // TODO Samuel: Fill in these methods.
+        public void SetUIToMovedPreset()
+        {
+            text.color = Color.gray;
+        }
+
+        public void SetUIToCurrentlyControlledPreset()
+        {
+        }
+
+        public void SetUIToYetToMovePreset()
+        {
+        }
+        public void HideUI()
+        {
+        }
+
+        public void ShowUI()
+        {
+        }
+    }
+
     public Text turnCounter;
-    public Text currentDog;
+
+    public Text firstDog;
     public Text secondDog;
     public Text thirdDog;
-    
+
+
+    [SerializeField] private DogStatus[] dogStatusArray;
+    private Dictionary<Type, DogStatus> _dogStatusMap;
+    private Vector3[] _positionCache;
+
     private GameManager _manager;
-    private int index;
 
     void Awake()
     {
         _manager = FindObjectOfType<GameManager>();
+        // Check length of dogStatusArray
+        if (dogStatusArray.Length != 3)
+        {
+            NZ.NotifyZach("dogStatusArray is not the right size");
+        }
+
+        // Initialize dictionary
+        _dogStatusMap = new Dictionary<Type, DogStatus>();
+        _dogStatusMap.Add(typeof(Jack), dogStatusArray[0]);
+        _dogStatusMap.Add(typeof(Kahuna), dogStatusArray[1]);
+        _dogStatusMap.Add(typeof(Laguna), dogStatusArray[2]);
+        _dogStatusMap.Add(typeof(CerberusMajor), dogStatusArray[0]);
+
+        // Cache initial positions of UI elements
+        _positionCache = new Vector3[3];
+        for (var i = 0; i < 3; i++)
+        {
+            var dogStatus = dogStatusArray[i];
+            _positionCache[i] = dogStatus.rectTransform.position;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Write some code here to update Menu UI - Samuel
-
+        // TODO Kevin: Move this out of Update loop into new UpdateUI method
+        // Update turn counter
         turnCounter.text = $"Turn:\n{_manager.turn}";
-        
 
-
-
-        // Iterate over each move, returning the current and next dog.
-        foreach (Cerberus current in _manager.moveOrder)
+        // Hide all dog status initially
+        foreach (var dogStatus in dogStatusArray)
         {
-            // Current dog: Jack
-            Debug.Log("Current dog: " + current.name);
+            dogStatus.HideUI();
+        }
 
-            if (_manager.moveOrder[_manager.currentMove].name == "Jack")
+        // Iterate over moveOrder to update dogStatus
+        for (int i = 0; i < _manager.moveOrder.Count; i++)
+        {
+            var cerberus = _manager.moveOrder[i];
+            // Get dogStatus from map
+            var dogStatus = _dogStatusMap[cerberus.GetType()];
+            dogStatus.ShowUI();
+            // Set preset
+            if (i < _manager.currentMove)
             {
-                currentDog.text = _manager.moveOrder[0].name;
-                secondDog.text = _manager.moveOrder[1].name;
-                thirdDog.text = _manager.moveOrder[2].name;
+                dogStatus.SetUIToMovedPreset();
+            }
+            else if (i == _manager.currentMove)
+            {
+                dogStatus.SetUIToCurrentlyControlledPreset();
+            }
+            else
+            {
+                dogStatus.SetUIToYetToMovePreset();
             }
 
-            else if (_manager.moveOrder[_manager.currentMove].name == "Kahuna")
-            {
-                currentDog.text = _manager.moveOrder[1].name;
-                secondDog.text = _manager.moveOrder[2].name;
-                thirdDog.text = _manager.moveOrder[0].name;
-            }
-
-            else if (_manager.moveOrder[_manager.currentMove].name == "Laguna")
-            {
-                currentDog.text = _manager.moveOrder[2].name;
-                secondDog.text = _manager.moveOrder[0].name;
-                thirdDog.text = _manager.moveOrder[1].name;
-            }
+            // Set transform
+            dogStatus.rectTransform.position = _positionCache[i];
         }
     }
 }
