@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    public string nextScene;
     [SerializeField] private GameObject _uiPrefab;
     public List<Cerberus> moveOrder { get; protected set; }
     public int turn { get; protected set; }
@@ -17,11 +19,13 @@ public class GameManager : MonoBehaviour
     private CerberusMajorSpawnPoint _cerberusMajorSpawnPoint;
 
     public bool joinAndSplitEnabled { get; protected set; }
+
     [HideInInspector] public bool wantsToJoin;
     [HideInInspector] public bool wantsToSplit;
     [HideInInspector] public bool wantsToCycleCharacter;
 
     private int _cerberusYetToReachGoal;
+    [HideInInspector] public bool collectedStar;
 
     void Awake()
     {
@@ -70,9 +74,10 @@ public class GameManager : MonoBehaviour
                 if (_cerberusYetToReachGoal == 0)
                 {
                     Debug.Log("You win!");
+                    SceneManager.LoadScene(nextScene);
                 }
             }
-            else
+            else if (!currentCerberus.onTopOfGoal && currentCerberusWasOnTopOfGoal)
             {
                 // Increment goal counter 
                 _cerberusYetToReachGoal += 1;
@@ -111,6 +116,9 @@ public class GameManager : MonoBehaviour
         {
             wantsToCycleCharacter = false;
             ChangeCerberusSpot(currentCerberus, moveOrder.Count - 1);
+            // Initialize the new cerberus's move
+            var newCerberus = moveOrder[currentMove];
+            newCerberus.StartMove();
         }
     }
 

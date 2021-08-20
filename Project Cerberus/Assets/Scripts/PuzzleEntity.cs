@@ -9,7 +9,6 @@ public abstract class PuzzleEntity : MonoBehaviour
     protected PuzzleContainer puzzle;
     protected GameManager manager;
     [HideInInspector] public Vector2Int position;
-
     [ShowInTileInspector] public bool collisionsEnabled { get; protected set; } = true;
     [ShowInTileInspector] public bool isStatic { get; protected set; }
     [ShowInTileInspector] public bool isPlayer { get; protected set; }
@@ -17,6 +16,7 @@ public abstract class PuzzleEntity : MonoBehaviour
     [ShowInTileInspector] public bool stopsPlayer { get; protected set; }
     [ShowInTileInspector] public bool stopsBlock { get; protected set; }
     [ShowInTileInspector] public bool pushableByFireball { get; protected set; }
+    [ShowInTileInspector] public bool interactsWithFireball { get; protected set; }
     [ShowInTileInspector] public bool pushable { get; protected set; }
     [ShowInTileInspector] public bool landable { get; protected set; }
 
@@ -29,14 +29,30 @@ public abstract class PuzzleEntity : MonoBehaviour
         manager = FindObjectOfType<GameManager>();
     }
 
+    private void Start()
+    {
+        // Invoke enter collision callback with puzzle entities in initial cell
+        var currentCell = puzzle.GetCell(position);
+        foreach (var newCellPuzzleEntity in currentCell.puzzleEntities)
+        {
+            if (collisionsEnabled && newCellPuzzleEntity.collisionsEnabled && newCellPuzzleEntity != this)
+            {
+                OnEnterCollisionWithEntity(newCellPuzzleEntity);
+                newCellPuzzleEntity.OnEnterCollisionWithEntity(this);
+            }
+        }
+    }
+
     public virtual void OnEnterCollisionWithEntity(PuzzleEntity other)
     {
-        return;
     }
 
     public virtual void OnExitCollisionWithEntity(PuzzleEntity other)
     {
-        return;
+    }
+
+    public virtual void OnShotByKahuna()
+    {
     }
 
     public void Move(Vector2Int cell)
@@ -53,6 +69,12 @@ public abstract class PuzzleEntity : MonoBehaviour
             }
         }
 
+        if (collisionsEnabled)
+        {
+            currentCell.floorTile.OnExitCollisionWithEntity(this);
+            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+        }
+
         position = cell;
         transform.position = puzzle.tilemap.layoutGrid.GetCellCenterWorld(new Vector3Int(cell.x, cell.y, 0));
         foreach (var newCellPuzzleEntity in newCell.puzzleEntities)
@@ -62,6 +84,12 @@ public abstract class PuzzleEntity : MonoBehaviour
                 OnEnterCollisionWithEntity(newCellPuzzleEntity);
                 newCellPuzzleEntity.OnEnterCollisionWithEntity(this);
             }
+        }
+
+        if (collisionsEnabled)
+        {
+            newCell.floorTile.OnEnterCollisionWithEntity(this);
+            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
         }
 
         puzzle.AddEntityToCell(this, position);
@@ -93,29 +121,29 @@ public abstract class PuzzleEntity : MonoBehaviour
 
     public void SetCollisionsEnabled(bool enable)
     {
-        if (enable == collisionsEnabled)return;
+        if (enable == collisionsEnabled) return;
         collisionsEnabled = enable;
         // Invoke callbacks
         var currentCell = puzzle.GetCell(position);
         if (enable)
         {
-            foreach (var newCellPuzzleEntity in currentCell.puzzleEntities)
+            foreach (var entity in currentCell.puzzleEntities)
             {
-                if (collisionsEnabled && newCellPuzzleEntity.collisionsEnabled)
+                if (entity.collisionsEnabled && entity != this)
                 {
-                    OnEnterCollisionWithEntity(newCellPuzzleEntity);
-                    newCellPuzzleEntity.OnEnterCollisionWithEntity(this);
+                    OnEnterCollisionWithEntity(entity);
+                    entity.OnEnterCollisionWithEntity(this);
                 }
             }
         }
         else
         {
-            foreach (var newCellPuzzleEntity in currentCell.puzzleEntities)
+            foreach (var entity in currentCell.puzzleEntities)
             {
-                if (collisionsEnabled && newCellPuzzleEntity.collisionsEnabled)
+                if (entity.collisionsEnabled && entity != this)
                 {
-                    OnExitCollisionWithEntity(newCellPuzzleEntity);
-                    newCellPuzzleEntity.OnExitCollisionWithEntity(this);
+                    OnExitCollisionWithEntity(entity);
+                    entity.OnExitCollisionWithEntity(this);
                 }
             }
         }

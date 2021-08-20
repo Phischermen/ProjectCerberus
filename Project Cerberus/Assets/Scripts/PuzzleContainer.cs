@@ -71,16 +71,51 @@ public class PuzzleContainer : MonoBehaviour
             var mouseCoord = new Vector2Int((int) mousePosition.x, (int) mousePosition.y);
             var inBounds = InBounds(mouseCoord);
             // Display information about that cell
-            var inspectorContentFormat = "Floor Tile:\n{0}\n{1} Entity(s)\n";
             var inspectorContentText = "Mouse over a tile to read data.";
             if (inBounds)
             {
                 var cell = GetCell(mouseCoord);
                 if (cell != null)
                 {
-                    inspectorContentText =
-                        string.Format(inspectorContentFormat, cell.floorTile?.name, cell.puzzleEntities.Count);
                     // Read fields and properties exposed to tile inspector
+                    inspectorContentText = "";
+                    // Read floor tile
+                    if (cell.floorTile != null)
+                    {
+                        inspectorContentText += $"Floor Tile: {cell.floorTile.name}\n";
+                        if (_inspectorExpanded)
+                        {
+                            var floorTile = cell.floorTile;
+                            foreach (var memberInfo in floorTile.GetType().GetMembers())
+                            {
+                                ShowInTileInspector attribute;
+                                switch (memberInfo)
+                                {
+                                    case PropertyInfo propertyInfo:
+                                        attribute = propertyInfo.GetCustomAttribute<ShowInTileInspector>();
+                                        if (attribute != null)
+                                        {
+                                            inspectorContentText +=
+                                                $"{propertyInfo.Name}: {propertyInfo.GetValue(floorTile)}\n";
+                                        }
+
+                                        break;
+                                    case FieldInfo fieldInfo:
+                                        attribute = fieldInfo.GetCustomAttribute<ShowInTileInspector>();
+                                        if (attribute != null)
+                                        {
+                                            inspectorContentText +=
+                                                $"{fieldInfo.Name}: {fieldInfo.GetValue(floorTile)}\n";
+                                        }
+
+                                        break;
+                                }
+                            }
+                        }
+                    }
+
+                    // Read entity
+                    inspectorContentText += $"{cell.puzzleEntities.Count} Entity(s)\n";
                     if (_inspectorExpanded)
                     {
                         foreach (var entity in cell.puzzleEntities)
@@ -116,6 +151,7 @@ public class PuzzleContainer : MonoBehaviour
                 }
             }
 
+
             // Construct GUI content
             GUIContent content = new GUIContent(inspectorContentText);
             GUIStyle style = GUI.skin.box;
@@ -139,7 +175,6 @@ public class PuzzleContainer : MonoBehaviour
         // Get components
         tilemap = GetComponentInChildren<Tilemap>();
 
-
         // Initialize collections
         levelMap = new LevelCell[maxLevelWidth, maxLevelHeight];
         for (int i = 0; i < maxLevelWidth; i++)
@@ -149,7 +184,6 @@ public class PuzzleContainer : MonoBehaviour
                 levelMap[i, j] = new LevelCell();
             }
         }
-
 
         // Setup tilemap for parsing
         tilemap.CompressBounds();
@@ -178,10 +212,23 @@ public class PuzzleContainer : MonoBehaviour
                 {
                     NZ.NotifyZach($"Invalid tile found at ({i}, {j}). Please replace with valid Tile.");
                 }
-
-                // Set levelCell's floor tile
-                var levelCell = levelMap[i, j];
-                levelCell.floorTile = floorTile;
+                else if (floorTile != null)
+                {
+                    var levelCell = levelMap[i, j];
+                    if (!floorTile.needsToBeCloned)
+                    {
+                        // Set floor tile
+                        levelCell.floorTile = floorTile;
+                    }
+                    else
+                    {
+                        // Set levelCell's floor tile to a clone so floor tile may have unique data
+                        // Note: Cloned tiles will have '(Clone)' appended to their name.
+                        var floorTileClone = Instantiate(floorTile);
+                        levelCell.floorTile = floorTileClone;
+                        tilemap.SetTile(new Vector3Int(i, j, 0), floorTileClone);
+                    }
+                }
             }
         }
     }

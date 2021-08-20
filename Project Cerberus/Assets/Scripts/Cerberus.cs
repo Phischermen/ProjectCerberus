@@ -11,6 +11,7 @@ public class Cerberus : PuzzleEntity
         stopsPlayer = true;
         stopsBlock = true;
         pushable = true;
+        pushableByFireball = true;
     }
 
     [HideInInspector] public bool doneWithMove;

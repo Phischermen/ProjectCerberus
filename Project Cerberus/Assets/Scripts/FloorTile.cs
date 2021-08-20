@@ -4,14 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-[CreateAssetMenu]
+[CreateAssetMenu(menuName = "FloorTile/Basic")]
 public class FloorTile : Tile
 {
-    public bool stopsPlayer;
-    public bool stopsBlock;
-    public bool stopsFireball;
-    public bool jumpable;
-    public bool landable;
+    [HideInInspector] public bool needsToBeCloned;
+    [ShowInTileInspector] public bool stopsPlayer;
+    [ShowInTileInspector] public bool stopsBlock;
+    [ShowInTileInspector] public bool stopsFireball;
+    [ShowInTileInspector] public bool jumpable;
+    [ShowInTileInspector] public bool landable;
 
     public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
     {
@@ -20,7 +21,8 @@ public class FloorTile : Tile
         tileData.transform = transform;
         tileData.colliderType = colliderType;
         tileData.gameObject = gameObject;
-        if (position.x < 1 || position.y < 1 || position.x > PuzzleContainer.maxLevelWidth || position.y > PuzzleContainer.maxLevelHeight)
+        if (position.x < 1 || position.y < 1 || position.x > PuzzleContainer.maxLevelWidth ||
+            position.y > PuzzleContainer.maxLevelHeight)
         {
             tileData.color = Color.red;
         }
@@ -28,5 +30,13 @@ public class FloorTile : Tile
         {
             tileData.color = color;
         }
+    }
+
+    public virtual void OnEnterCollisionWithEntity(PuzzleEntity other)
+    {
+    }
+
+    public virtual void OnExitCollisionWithEntity(PuzzleEntity other)
+    {
     }
 }

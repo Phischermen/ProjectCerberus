@@ -98,5 +98,5 @@ MonoBehaviour:
   position: {x: 0, y: 0}
   doneWithMove: 0
   onTopOfGoal: 0
-  pentagramMarker: {fileID: 8243690843916478646, guid: f517efbb0e7cff84798d8ddd4641d42b,
+  pentagramMarker: {fileID: -1768482875118672931, guid: f517efbb0e7cff84798d8ddd4641d42b,
     type: 3}

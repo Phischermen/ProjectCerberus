@@ -81,7 +81,10 @@ public class CerberusMajor : Cerberus
             if (_jumpSpaces.Count > 0)
             {
                 // Travel across jump spaces
-                Move(_jumpSpaces[_jumpSpaces.Count - 1].position);
+                foreach (var jumpInfo in _jumpSpaces)
+                {
+                    Move(jumpInfo.position);
+                }
                 _jumpSpaces.Clear();
                 RenderJumpPath();
                 DeclareDoneWithMove();
@@ -109,7 +112,7 @@ public class CerberusMajor : Cerberus
                 BasicMove(Vector2Int.left);
             }
         }
-        
+
         if (input.cycleCharacter)
         {
             _jumpSpaces.Clear();
@@ -132,6 +135,7 @@ public class CerberusMajor : Cerberus
             RenderJumpPath();
             return;
         }
+
         // Check for entity to jump over
         var canJump = (jumpedOverCell.puzzleEntities.Count > 0 || jumpedOverCell.floorTile.jumpable) &&
                       newJumpCell.floorTile != null;
