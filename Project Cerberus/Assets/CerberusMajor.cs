@@ -91,6 +91,7 @@ public class CerberusMajor : Cerberus
                 {
                     Move(jumpInfo.position);
                 }
+
                 _jumpSpaces.Clear();
                 RenderJumpPath();
                 DeclareDoneWithMove();
@@ -116,6 +117,19 @@ public class CerberusMajor : Cerberus
             else if (input.leftPressed)
             {
                 BasicMove(Vector2Int.left);
+            }
+        }
+
+        if (input.undoPressed)
+        {
+            if (_jumpSpaces.Count > 0)
+            {
+                _jumpSpaces.Clear();
+                RenderJumpPath();
+            }
+            else
+            {
+                manager.wantsToUndo = true;
             }
         }
 

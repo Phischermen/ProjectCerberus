@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public bool wantsToJoin;
     [HideInInspector] public bool wantsToSplit;
     [HideInInspector] public bool wantsToCycleCharacter;
+    [HideInInspector] public bool wantsToUndo;
 
     private int _cerberusYetToReachGoal;
     [HideInInspector] public bool collectedStar;
@@ -97,6 +98,7 @@ public class GameManager : MonoBehaviour
                 SplitCerberusMajor();
                 IncrementTurn();
             }
+            // Increment turn normally
             else
             {
                 currentMove += 1;
@@ -110,6 +112,13 @@ public class GameManager : MonoBehaviour
             // Start next cerberus's move
             var nextCerberus = moveOrder[currentMove];
             nextCerberus.StartMove();
+        }
+        // Handle request to undo
+        else if (wantsToUndo)
+        {
+            // TODO implement undo logic
+            wantsToUndo = false;
+            Debug.Log("Ündo");
         }
         // Handle request to cycle character
         else if (wantsToCycleCharacter)

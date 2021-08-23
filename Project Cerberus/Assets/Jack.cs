@@ -58,6 +58,11 @@ public class Jack : Cerberus
         {
             manager.wantsToCycleCharacter = true;
         }
+
+        if (input.undoPressed)
+        {
+            manager.wantsToUndo = true;
+        }
     }
 
     private void SuperPushMove(Vector2Int offset)

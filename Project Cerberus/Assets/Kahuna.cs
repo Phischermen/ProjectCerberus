@@ -95,6 +95,18 @@ public class Kahuna : Cerberus
             fireArrow.SetActive(false);
             manager.wantsToCycleCharacter = true;
         }
+
+        if (input.undoPressed)
+        {
+            if (aim != Vector2Int.zero)
+            {
+                aim = Vector2Int.zero;
+            }
+            else
+            {
+                manager.wantsToUndo = true;
+            }
+        }
     }
 
     private void FireBall(Vector2Int offset)
