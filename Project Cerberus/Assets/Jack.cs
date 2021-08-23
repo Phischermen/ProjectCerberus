@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Jack : Cerberus
 {
+    private static int _superPushRange = 32;
+
     public override void ProcessMoveInput()
     {
         base.ProcessMoveInput();
@@ -63,58 +65,69 @@ public class Jack : Cerberus
         var coord = position + offset;
         var newCell = puzzle.GetCell(coord);
         var blocked = CollidesWith(newCell.floorTile) || CollidesWithAny(newCell.GetStaticEntities());
-        if (!blocked)
-        {
-            var entitiesToPush = GetEntitiesToPush(offset);
-            if (entitiesToPush.Count == 0)
-            {
-                Move(coord);
-                DeclareDoneWithMove();
-            }
-            else if (entitiesToPush.Count == 1)
-            {
-                // Push entity until it hits a wall
-                var pushableEntity = entitiesToPush[0];
-                var searchPosition = pushableEntity.position + offset;
-                while (true)
-                {
-                    var searchCell = puzzle.GetCell(searchPosition);
-                    var pushBlocked = pushableEntity.CollidesWith(searchCell.floorTile) ||
-                                      pushableEntity.CollidesWithAny(searchCell.puzzleEntities);
-                    if (!pushBlocked)
-                    {
-                        searchPosition += offset;
-                    }
-                    else
-                    {
-                        searchPosition -= offset;
-                        break;
-                    }
-                }
 
-                pushableEntity.Move(searchPosition);
-                DeclareDoneWithMove();
-            }
-            else
+        var entitiesToPush = GetEntitiesToPush(offset);
+        if (!blocked && entitiesToPush.Count == 0)
+        {
+            Move(coord);
+            DeclareDoneWithMove();
+        }
+        else if (entitiesToPush.Count == 1)
+        {
+            // Push entity until it hits a wall
+            var pushableEntity = entitiesToPush[0];
+            var searchPosition = pushableEntity.position + offset;
+            var range = _superPushRange;
+            var distancePushed = 0;
+            pushableEntity.isSuperPushed = true;
+            while (range > 0)
             {
-                // Check if last entity can move
-                var lastPushableEntity = entitiesToPush[entitiesToPush.Count - 1];
-                var pushCoord = lastPushableEntity.position + offset;
-                var pushEntityNewCell = puzzle.GetCell(pushCoord);
-                var pushBlocked = lastPushableEntity.CollidesWith(pushEntityNewCell.floorTile) ||
-                                  lastPushableEntity.CollidesWithAny(pushEntityNewCell.GetStaticEntities());
+                var searchCell = puzzle.GetCell(searchPosition);
+                var pushBlocked = pushableEntity.CollidesWith(searchCell.floorTile) ||
+                                  pushableEntity.CollidesWithAny(searchCell.puzzleEntities);
                 if (!pushBlocked)
                 {
-                    // Push each entity in front of Jack once. Iterate backwards to avoid triggering "OnEnter" unnecessarily
-                    for (var i = entitiesToPush.Count - 1; i >= 0; i--)
-                    {
-                        var entity = entitiesToPush[i];
-                        entity.Move(entity.position + offset);
-                    }
-
-                    Move(coord);
-                    DeclareDoneWithMove();
+                    searchPosition += offset;
                 }
+                else
+                {
+                    searchPosition -= offset;
+                    break;
+                }
+
+                distancePushed += 1;
+                range -= 1;
+            }
+
+            pushableEntity.isSuperPushed = false;
+
+            for (int i = 0; i < distancePushed; i++)
+            {
+                // Move across searched tiles.
+                pushableEntity.Move(pushableEntity.position + offset);
+            }
+
+            DeclareDoneWithMove();
+        }
+        else if (!blocked)
+        {
+            // Check if last entity can move
+            var lastPushableEntity = entitiesToPush[entitiesToPush.Count - 1];
+            var pushCoord = lastPushableEntity.position + offset;
+            var pushEntityNewCell = puzzle.GetCell(pushCoord);
+            var pushBlocked = lastPushableEntity.CollidesWith(pushEntityNewCell.floorTile) ||
+                              lastPushableEntity.CollidesWithAny(pushEntityNewCell.GetStaticEntities());
+            if (!pushBlocked)
+            {
+                // Push each entity in front of Jack once. Iterate backwards to avoid triggering "OnEnter" unnecessarily
+                for (var i = entitiesToPush.Count - 1; i >= 0; i--)
+                {
+                    var entity = entitiesToPush[i];
+                    entity.Move(entity.position + offset);
+                }
+
+                Move(coord);
+                DeclareDoneWithMove();
             }
         }
     }

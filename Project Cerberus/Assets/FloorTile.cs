@@ -11,6 +11,7 @@ public class FloorTile : Tile
     [ShowInTileInspector] public bool stopsPlayer;
     [ShowInTileInspector] public bool stopsBlock;
     [ShowInTileInspector] public bool stopsFireball;
+    [ShowInTileInspector] public bool allowsAllSuperPushedEntitiesPassage;
     [ShowInTileInspector] public bool jumpable;
     [ShowInTileInspector] public bool landable;
 

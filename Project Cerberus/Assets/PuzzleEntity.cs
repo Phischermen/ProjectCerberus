@@ -19,6 +19,7 @@ public abstract class PuzzleEntity : MonoBehaviour
     [ShowInTileInspector] public bool interactsWithFireball { get; protected set; }
     [ShowInTileInspector] public bool pushable { get; protected set; }
     [ShowInTileInspector] public bool landable { get; protected set; }
+    public bool isSuperPushed { get; set; }
 
     protected virtual void Awake()
     {
@@ -114,9 +115,18 @@ public abstract class PuzzleEntity : MonoBehaviour
 
     public bool CollidesWith(FloorTile floorTile)
     {
-        return collisionsEnabled && (
-            (isPlayer && floorTile.stopsPlayer) ||
-            (isBlock && floorTile.stopsBlock));
+        if (!collisionsEnabled)
+        {
+            return false;
+        }
+        // Jack's super push allows entities to 'sail' over certain tiles like pits and spikes.
+        if (isSuperPushed && floorTile.allowsAllSuperPushedEntitiesPassage)
+        {
+            return false;
+        }
+
+        return (isPlayer && floorTile.stopsPlayer) ||
+               (isBlock && floorTile.stopsBlock);
     }
 
     public void SetCollisionsEnabled(bool enable)

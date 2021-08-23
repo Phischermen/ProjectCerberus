@@ -34,11 +34,14 @@ MonoBehaviour:
   m_InstancedGameObject: {fileID: 0}
   m_Flags: 1
   m_ColliderType: 1
-  stopsPlayer: 0
+  needsToBeCloned: 1
+  stopsPlayer: 1
   stopsBlock: 0
   stopsFireball: 0
+  allowsAllSuperPushedEntitiesPassage: 1
   jumpable: 1
   landable: 0
+  stage: 3
   initialState: 3
   crackStageSprite:
   - {fileID: 8243690843916478646, guid: f517efbb0e7cff84798d8ddd4641d42b, type: 3}
