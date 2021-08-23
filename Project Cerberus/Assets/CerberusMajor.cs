@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+
 public class CerberusMajor : Cerberus
 {
     [SerializeField] private GameObject jumpArrowSource;
@@ -22,6 +23,11 @@ public class CerberusMajor : Cerberus
             }
 
             return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public JumpInfo(Vector2Int position, float rotation)

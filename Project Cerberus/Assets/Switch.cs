@@ -20,7 +20,7 @@ public class Switch : PuzzleEntity
         landable = true;
     }
 
-    private void Awake()
+    protected override void Awake()
     {
         base.Awake();
         _lineRenderer = GetComponent<LineRenderer>();
