@@ -8,8 +8,7 @@ public class GameManager : MonoBehaviour
     public string nextScene;
     [SerializeField] private GameObject _uiPrefab;
     public List<Cerberus> moveOrder { get; protected set; }
-    private Stack<List<UndoData>> _undoStack;
-    private List<IUndoable> _undoables;
+
     public int turn { get; protected set; }
     public int currentMove { get; protected set; }
 
@@ -29,6 +28,7 @@ public class GameManager : MonoBehaviour
 
     private int _cerberusYetToReachGoal;
     [HideInInspector] public bool collectedStar;
+    private PuzzleContainer _puzzleContainer;
 
     void Awake()
     {
@@ -38,6 +38,8 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         // Get objects
+        _puzzleContainer = FindObjectOfType<PuzzleContainer>();
+
         _jack = FindObjectOfType<Jack>();
         _kahuna = FindObjectOfType<Kahuna>();
         _laguna = FindObjectOfType<Laguna>();
@@ -120,6 +122,7 @@ public class GameManager : MonoBehaviour
         {
             // TODO implement undo logic
             wantsToUndo = false;
+            _puzzleContainer.UndoLastMove();
             Debug.Log("Ündo");
         }
         // Handle request to cycle character

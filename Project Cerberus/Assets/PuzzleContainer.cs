@@ -170,6 +170,9 @@ public class PuzzleContainer : MonoBehaviour
     public LevelCell[,] levelMap { get; protected set; }
     public Tilemap tilemap { get; protected set; }
 
+    private Stack<List<UndoData>> _undoStack;
+    private List<IUndoable> _undoables;
+
     void Awake()
     {
         // Get components
@@ -185,6 +188,9 @@ public class PuzzleContainer : MonoBehaviour
             }
         }
 
+        _undoables = new List<IUndoable>();
+        _undoStack = new Stack<List<UndoData>>();
+
         // Setup tilemap for parsing
         tilemap.CompressBounds();
         var bounds = tilemap.cellBounds;
@@ -199,6 +205,7 @@ public class PuzzleContainer : MonoBehaviour
             var vec3Position = tilemap.layoutGrid.WorldToCell(entity.transform.position);
             var position = new Vector2Int(vec3Position.x, vec3Position.y);
             AddEntityToCell(entity, position);
+            _undoables.Add(entity);
         }
 
         for (var i = bounds.x; i < bounds.xMax; i++)
@@ -214,6 +221,8 @@ public class PuzzleContainer : MonoBehaviour
                 }
                 else if (floorTile != null)
                 {
+                    _undoables.Add(floorTile);
+
                     var levelCell = levelMap[i, j];
                     if (!floorTile.needsToBeCloned)
                     {
@@ -264,5 +273,29 @@ public class PuzzleContainer : MonoBehaviour
     public bool InBounds(Vector2Int coord)
     {
         return coord.x >= 0 && coord.x < maxLevelWidth && coord.y >= 0 && coord.y < maxLevelHeight;
+    }
+
+    // Undo system
+    public void PushToUndoStack()
+    {
+        var undoList = new List<UndoData>();
+        foreach (var undoable in _undoables)
+        {
+            var data = undoable.GetUndoData();
+            if (data == null)
+            {
+                undoList.Add(data);
+            }
+        }
+        _undoStack.Push(undoList);
+    }
+
+    public void UndoLastMove()
+    {
+        var undoList = _undoStack.Pop();
+        foreach (var undoData in undoList)
+        {
+            undoData.Load();
+        }
     }
 }

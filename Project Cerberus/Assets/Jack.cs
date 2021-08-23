@@ -74,6 +74,7 @@ public class Jack : Cerberus
         var entitiesToPush = GetEntitiesToPush(offset);
         if (!blocked && entitiesToPush.Count == 0)
         {
+            puzzle.PushToUndoStack();
             Move(coord);
             DeclareDoneWithMove();
         }
@@ -106,9 +107,10 @@ public class Jack : Cerberus
 
             pushableEntity.isSuperPushed = false;
 
+            // Move across searched tiles.
+            puzzle.PushToUndoStack();
             for (int i = 0; i < distancePushed; i++)
             {
-                // Move across searched tiles.
                 pushableEntity.Move(pushableEntity.position + offset);
             }
 
@@ -125,6 +127,7 @@ public class Jack : Cerberus
             if (!pushBlocked)
             {
                 // Push each entity in front of Jack once. Iterate backwards to avoid triggering "OnEnter" unnecessarily
+                puzzle.PushToUndoStack();
                 for (var i = entitiesToPush.Count - 1; i >= 0; i--)
                 {
                     var entity = entitiesToPush[i];

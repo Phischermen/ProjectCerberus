@@ -64,6 +64,7 @@ public class Cerberus : PuzzleEntity
     }
 
     // Common movement methods
+
     protected void BasicMove(Vector2Int offset)
     {
         var coord = position + offset;
@@ -74,6 +75,7 @@ public class Cerberus : PuzzleEntity
             var pushableEntity = newCell.GetPushableEntity();
             if (!pushableEntity)
             {
+                puzzle.PushToUndoStack();
                 Move(coord);
                 DeclareDoneWithMove();
             }
@@ -86,6 +88,7 @@ public class Cerberus : PuzzleEntity
                                   pushableEntity.CollidesWithAny(pushEntityNewCell.puzzleEntities);
                 if (!pushBlocked)
                 {
+                    puzzle.PushToUndoStack();
                     pushableEntity.Move(pushCoord);
                     Move(coord);
                     DeclareDoneWithMove();

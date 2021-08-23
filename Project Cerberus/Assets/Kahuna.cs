@@ -140,8 +140,11 @@ public class Kahuna : Cerberus
         AfterWhile:
         if (entityToPushOrInteractWith != null)
         {
+            puzzle.PushToUndoStack();
+            // Push or interact with entity
             if (entityToPushOrInteractWith.interactsWithFireball)
             {
+                // Interact with entity
                 entityToPushOrInteractWith.OnShotByKahuna();
                 DeclareDoneWithMove();
             }

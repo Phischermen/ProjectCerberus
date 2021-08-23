@@ -9,10 +9,12 @@ public class Gate : PuzzleEntity
     [ShowInTileInspector] public bool open;
     [SerializeField] private Sprite openSprite;
     [SerializeField] private Sprite closeSprite;
-    
+    private SpriteRenderer _spriteRenderer;
+
     protected override void Awake()
     {
         base.Awake();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
         if (open)
         {
             OpenGate();
@@ -38,7 +40,7 @@ public class Gate : PuzzleEntity
     public void OpenGate()
     {
         wantsToClose = false;
-        GetComponent<SpriteRenderer>().sprite = openSprite;
+        _spriteRenderer.sprite = openSprite;
         SetFieldsToOpenPreset();
     }
 
@@ -50,7 +52,7 @@ public class Gate : PuzzleEntity
     private void CloseGate()
     {
         wantsToClose = false;
-        GetComponent<SpriteRenderer>().sprite = closeSprite;
+        _spriteRenderer.sprite = closeSprite;
         SetFieldsToClosedPreset();
     }
 

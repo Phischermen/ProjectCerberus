@@ -71,6 +71,7 @@ public class Laguna : Cerberus
             var entityToPull = pullCell.GetPushableEntity();
             if (!pushableEntity)
             {
+                puzzle.PushToUndoStack();
                 entityToPull?.Move(position);
                 Move(coord);
                 DeclareDoneWithMove();
@@ -84,6 +85,7 @@ public class Laguna : Cerberus
                                   pushableEntity.CollidesWithAny(pushEntityNewCell.puzzleEntities);
                 if (!pushBlocked)
                 {
+                    puzzle.PushToUndoStack();
                     pushableEntity.Move(pushCoord);
                     entityToPull?.Move(position);
                     Move(coord);
