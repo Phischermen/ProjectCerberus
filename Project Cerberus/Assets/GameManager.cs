@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
     public string nextScene;
     [SerializeField] private GameObject _uiPrefab;
     public List<Cerberus> moveOrder { get; protected set; }
+    private Stack<List<UndoData>> _undoStack;
+    private List<IUndoable> _undoables;
     public int turn { get; protected set; }
     public int currentMove { get; protected set; }
 

@@ -4,6 +4,23 @@ using UnityEngine;
 
 public class BasicBlock : PuzzleEntity
 {
+    public class BasicBlockUndoData : UndoData
+    {
+        public BasicBlock block;
+        public Vector2Int position;
+
+        public BasicBlockUndoData(BasicBlock block, Vector2Int position)
+        {
+            this.block = block;
+            this.position = position;
+        }
+
+        public override void Load()
+        {
+            block.position = position;
+        }
+    }
+
     protected BasicBlock()
     {
         isBlock = true;
@@ -12,15 +29,10 @@ public class BasicBlock : PuzzleEntity
         pushableByFireball = true;
         pushable = true;
     }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
+    public override UndoData GetUndoData()
     {
-        
+        var undoData = new BasicBlockUndoData(this, position);
+        return undoData;
     }
 }

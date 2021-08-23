@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public abstract class PuzzleEntity : MonoBehaviour
+public abstract class PuzzleEntity : MonoBehaviour, IUndoable
 {
     protected PuzzleContainer puzzle;
     protected GameManager manager;
@@ -158,4 +158,6 @@ public abstract class PuzzleEntity : MonoBehaviour
             }
         }
     }
+
+    public abstract UndoData GetUndoData();
 }

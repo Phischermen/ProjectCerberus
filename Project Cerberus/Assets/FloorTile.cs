@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 [CreateAssetMenu(menuName = "FloorTile/Basic")]
-public class FloorTile : Tile
+public class FloorTile : Tile, IUndoable
 {
     [HideInInspector] public bool needsToBeCloned;
     [ShowInTileInspector] public bool stopsPlayer;
@@ -39,5 +39,10 @@ public class FloorTile : Tile
 
     public virtual void OnExitCollisionWithEntity(PuzzleEntity other)
     {
+    }
+
+    public virtual UndoData GetUndoData()
+    {
+        return null;
     }
 }
