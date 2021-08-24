@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-[CreateAssetMenu(menuName = "FloorTile/Basic")]
+[CreateAssetMenu(menuName = "FloorTile/Basic"), GetUndoDataReturnsNull]
 public class FloorTile : Tile, IUndoable
 {
     [HideInInspector] public bool needsToBeCloned;
@@ -40,7 +40,7 @@ public class FloorTile : Tile, IUndoable
     public virtual void OnExitCollisionWithEntity(PuzzleEntity other)
     {
     }
-
+    
     public virtual UndoData GetUndoData()
     {
         return null;

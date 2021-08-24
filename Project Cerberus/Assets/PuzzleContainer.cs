@@ -205,7 +205,10 @@ public class PuzzleContainer : MonoBehaviour
             var vec3Position = tilemap.layoutGrid.WorldToCell(entity.transform.position);
             var position = new Vector2Int(vec3Position.x, vec3Position.y);
             AddEntityToCell(entity, position);
-            _undoables.Add(entity);
+            if (entity.GetType().GetCustomAttribute<GetUndoDataReturnsNull>() == null)
+            {
+                _undoables.Add(entity);
+            }
         }
 
         for (var i = bounds.x; i < bounds.xMax; i++)
@@ -221,7 +224,10 @@ public class PuzzleContainer : MonoBehaviour
                 }
                 else if (floorTile != null)
                 {
-                    _undoables.Add(floorTile);
+                    if (floorTile.GetType().GetCustomAttribute<GetUndoDataReturnsNull>() == null)
+                    {
+                        _undoables.Add(floorTile);
+                    }
 
                     var levelCell = levelMap[i, j];
                     if (!floorTile.needsToBeCloned)
@@ -282,11 +288,9 @@ public class PuzzleContainer : MonoBehaviour
         foreach (var undoable in _undoables)
         {
             var data = undoable.GetUndoData();
-            if (data == null)
-            {
-                undoList.Add(data);
-            }
+            undoList.Add(data);
         }
+
         _undoStack.Push(undoList);
     }
 
