@@ -17,7 +17,7 @@ public class BasicBlock : PuzzleEntity
 
         public override void Load()
         {
-            block.position = position;
+            block.MoveForUndo(position);
         }
     }
 

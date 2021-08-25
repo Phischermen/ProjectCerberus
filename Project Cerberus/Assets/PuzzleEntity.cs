@@ -96,6 +96,15 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         puzzle.AddEntityToCell(this, position);
     }
 
+    // This version of move does not trigger 'OnEnter' or 'OnExit' callbacks
+    public void MoveForUndo(Vector2Int cell)
+    {
+        puzzle.RemoveEntityFromCell(this, position);
+        position = cell;
+        transform.position = puzzle.tilemap.layoutGrid.GetCellCenterWorld(new Vector3Int(cell.x, cell.y, 0));
+        puzzle.AddEntityToCell(this, position);
+    }
+
     public bool CollidesWithAny(List<PuzzleEntity> entities)
     {
         foreach (var entity in entities)
