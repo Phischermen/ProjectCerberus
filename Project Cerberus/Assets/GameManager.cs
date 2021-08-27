@@ -43,9 +43,23 @@ public class GameManager : MonoBehaviour
 
         // Initialize moveOrder
         moveOrder = new List<Cerberus>();
-        if (_jack) moveOrder.Add(_jack);
-        if (_kahuna) moveOrder.Add(_kahuna);
-        if (_laguna) moveOrder.Add(_laguna);
+        if (_jack)
+        {
+            moveOrder.Add(_jack);
+            _cerberusYetToReachGoal += 1;
+        }
+
+        if (_kahuna)
+        {
+            moveOrder.Add(_kahuna);
+            _cerberusYetToReachGoal += 1;
+        }
+
+        if (_laguna)
+        {
+            moveOrder.Add(_laguna);
+            _cerberusYetToReachGoal += 1;
+        }
 
         // Set initial gameplay variables
         if (_cerberusMajor)
@@ -53,8 +67,6 @@ public class GameManager : MonoBehaviour
             joinAndSplitEnabled = true;
             _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(true);
         }
-
-        _cerberusYetToReachGoal = FindObjectsOfType<Finish>().Length;
     }
 
     // Update is called once per frame
@@ -70,7 +82,7 @@ public class GameManager : MonoBehaviour
             if (currentCerberus.onTopOfGoal && !currentCerberusWasOnTopOfGoal)
             {
                 // Decrement goal counter
-                _cerberusYetToReachGoal -= 1;
+                _cerberusYetToReachGoal -= (currentCerberus.isCerberusMajor) ? 3 : 1;
                 if (_cerberusYetToReachGoal == 0)
                 {
                     Debug.Log("You win!");
@@ -80,7 +92,7 @@ public class GameManager : MonoBehaviour
             else if (!currentCerberus.onTopOfGoal && currentCerberusWasOnTopOfGoal)
             {
                 // Increment goal counter 
-                _cerberusYetToReachGoal += 1;
+                _cerberusYetToReachGoal += (currentCerberus.isCerberusMajor) ? 3 : 1;
             }
 
 
