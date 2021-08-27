@@ -14,11 +14,33 @@ public class PuzzleContainer : MonoBehaviour
         public FloorTile floorTile;
         public List<PuzzleEntity> puzzleEntities = new List<PuzzleEntity>();
 
-        public PuzzleEntity GetPushableEntity()
+        public PuzzleEntity GetEntityPushableByStandardMove()
         {
             foreach (var entity in puzzleEntities)
             {
-                if (entity.pushable)
+                if (entity.pushableByStandardMove)
+                    return entity;
+            }
+
+            return null;
+        }
+
+        public PuzzleEntity GetPushableEntityForMultiPush()
+        {
+            foreach (var entity in puzzleEntities)
+            {
+                if (entity.pushableByJacksMultiPush)
+                    return entity;
+            }
+
+            return null;
+        }
+        
+        public PuzzleEntity GetPushableEntityForSuperPush()
+        {
+            foreach (var entity in puzzleEntities)
+            {
+                if (entity.pushableByJacksSuperPush)
                     return entity;
             }
 
@@ -42,6 +64,18 @@ public class PuzzleContainer : MonoBehaviour
             foreach (var entity in puzzleEntities)
             {
                 if (entity.isStatic)
+                    list.Add(entity);
+            }
+
+            return list;
+        }
+
+        public List<PuzzleEntity> GetEntitesThatCannotBePushedByStandardMove()
+        {
+            var list = new List<PuzzleEntity>();
+            foreach (var entity in puzzleEntities)
+            {
+                if (!entity.pushableByStandardMove)
                     list.Add(entity);
             }
 

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Cerberus : PuzzleEntity
 {
@@ -10,14 +11,16 @@ public class Cerberus : PuzzleEntity
         isPlayer = true;
         stopsPlayer = true;
         stopsBlock = true;
-        pushable = true;
+        pushableByStandardMove = true;
+        pushableByJacksSuperPush = true;
+        pushableByJacksMultiPush = true;
         pushableByFireball = true;
     }
 
     [HideInInspector] public bool doneWithMove;
     [HideInInspector, ShowInTileInspector] public bool onTopOfGoal;
 
-    [ShowInTileInspector] protected bool isCerberusMajor = false;
+    [ShowInTileInspector] public bool isCerberusMajor = false;
     protected PuzzleGameplayInput input;
 
     private Sprite _cerberusSprite;
@@ -68,12 +71,14 @@ public class Cerberus : PuzzleEntity
     {
         var coord = position + offset;
         var newCell = puzzle.GetCell(coord);
-        var blocked = CollidesWith(newCell.floorTile) || CollidesWithAny(newCell.GetStaticEntities());
+        var blocked = CollidesWith(newCell.floorTile) ||
+                      CollidesWithAny(newCell.GetEntitesThatCannotBePushedByStandardMove());
         if (!blocked)
         {
-            var pushableEntity = newCell.GetPushableEntity();
+            var pushableEntity = newCell.GetEntityPushableByStandardMove();
             if (!pushableEntity)
             {
+                // Move one space
                 Move(coord);
                 DeclareDoneWithMove();
             }
@@ -97,7 +102,7 @@ public class Cerberus : PuzzleEntity
     public void SetDisableCollsionAndShowPentagramMarker(bool disableAndShowPentagram)
     {
         SetCollisionsEnabled(!disableAndShowPentagram);
-        pushable = !disableAndShowPentagram;
+        pushableByStandardMove = !disableAndShowPentagram;
         landable = disableAndShowPentagram;
         GetComponent<SpriteRenderer>().sprite = disableAndShowPentagram ? pentagramMarker : _cerberusSprite;
     }

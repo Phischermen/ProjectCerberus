@@ -64,8 +64,8 @@ public class Jack : Cerberus
     {
         var coord = position + offset;
         var newCell = puzzle.GetCell(coord);
-        var blocked = CollidesWith(newCell.floorTile) || CollidesWithAny(newCell.GetStaticEntities());
-
+        var blocked = CollidesWith(newCell.floorTile) ||
+                      CollidesWithAny(newCell.GetEntitesThatCannotBePushedByStandardMove());
         var entitiesToPush = GetEntitiesToPush(offset);
         if (!blocked && entitiesToPush.Count == 0)
         {
@@ -138,7 +138,10 @@ public class Jack : Cerberus
         var searchPosition = position;
         while (true)
         {
-            var nextPushableEntity = puzzle.GetCell(searchPosition + offset).GetPushableEntity();
+            var searchedCell = puzzle.GetCell(searchPosition + offset);
+            var nextPushableEntity = (entities.Count > 0)
+                ? searchedCell.GetPushableEntityForMultiPush()
+                : searchedCell.GetPushableEntityForSuperPush();
             if (nextPushableEntity == null)
             {
                 // Last entity found.

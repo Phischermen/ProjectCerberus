@@ -64,11 +64,12 @@ public class Laguna : Cerberus
         var pullCoord = position - offset;
         var newCell = puzzle.GetCell(coord);
         var pullCell = puzzle.GetCell(pullCoord);
-        var blocked = CollidesWith(newCell.floorTile) || CollidesWithAny(newCell.GetStaticEntities());
+        var blocked = CollidesWith(newCell.floorTile) ||
+                      CollidesWithAny(newCell.GetEntitesThatCannotBePushedByStandardMove());
         if (!blocked)
         {
-            var pushableEntity = newCell.GetPushableEntity();
-            var entityToPull = pullCell.GetPushableEntity();
+            var pushableEntity = newCell.GetEntityPushableByStandardMove();
+            var entityToPull = pullCell.GetEntityPushableByStandardMove();
             if (!pushableEntity)
             {
                 entityToPull?.Move(position);

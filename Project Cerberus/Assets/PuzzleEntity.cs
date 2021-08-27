@@ -17,7 +17,9 @@ public abstract class PuzzleEntity : MonoBehaviour
     [ShowInTileInspector] public bool stopsBlock { get; protected set; }
     [ShowInTileInspector] public bool pushableByFireball { get; protected set; }
     [ShowInTileInspector] public bool interactsWithFireball { get; protected set; }
-    [ShowInTileInspector] public bool pushable { get; protected set; }
+    [ShowInTileInspector] public bool pushableByStandardMove { get; protected set; }
+    [ShowInTileInspector] public bool pushableByJacksMultiPush { get; protected set; }
+    [ShowInTileInspector] public bool pushableByJacksSuperPush { get; protected set; }
     [ShowInTileInspector] public bool landable { get; protected set; }
     public bool isSuperPushed { get; set; }
 
