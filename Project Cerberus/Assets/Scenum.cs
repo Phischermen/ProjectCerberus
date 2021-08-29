@@ -11,5 +11,6 @@ public static class Scenum
 		OptimizeRoute,
 		SwitchTutorial,
 		SuperPushTutorial,
+		JackAndLaguna,
 	}
 }
