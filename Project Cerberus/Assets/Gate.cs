@@ -5,6 +5,25 @@ using UnityEngine;
 
 public class Gate : PuzzleEntity
 {
+
+    public class GateUndoData : UndoData
+    {
+        public Gate gate;
+        public bool open;
+
+        public GateUndoData(Gate gate, bool open)
+        {
+            this.gate = gate;
+            this.open = open;
+        }
+
+        public override void Load()
+        {
+            open = !open;
+        }
+
+
+    }
     private bool wantsToClose;
     [ShowInTileInspector] public bool open;
     [SerializeField] private Sprite openSprite;

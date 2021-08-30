@@ -5,6 +5,27 @@ using UnityEngine.Events;
 
 public class Switch : PuzzleEntity
 {
+
+    public class SwitchUndoData : UndoData
+    {
+
+        public Switch lever;
+        public bool flipped;
+
+        public SwitchUndoData(Switch lever, bool flipped)
+        {
+            this.lever = lever;
+            this.flipped = flipped;
+        }
+
+        public override void Load()
+        {
+            flipped = !flipped;
+        }
+
+
+    }
+
     public UnityEvent onPressed;
     public UnityEvent onReleased;
 
