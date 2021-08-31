@@ -12,10 +12,12 @@ public class Cerberus : PuzzleEntity
         isPlayer = true;
         stopsPlayer = true;
         stopsBlock = true;
+        pullable = true;
         pushableByStandardMove = true;
         pushableByJacksSuperPush = true;
         pushableByJacksMultiPush = true;
         pushableByFireball = true;
+        jumpable = true;
     }
 
     [HideInInspector] public bool doneWithMove;
@@ -108,6 +110,9 @@ public class Cerberus : PuzzleEntity
     {
         SetCollisionsEnabled(!disableAndShowPentagram);
         pushableByStandardMove = !disableAndShowPentagram;
+        pushableByFireball = !disableAndShowPentagram;
+        pushableByJacksMultiPush = !disableAndShowPentagram;
+        pushableByJacksSuperPush = !disableAndShowPentagram;
         landable = disableAndShowPentagram;
         GetComponent<SpriteRenderer>().sprite = disableAndShowPentagram ? pentagramMarker : _cerberusSprite;
     }
