@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class Cerberus : PuzzleEntity
 {
@@ -35,6 +36,10 @@ public class Cerberus : PuzzleEntity
 
     public virtual void ProcessMoveInput()
     {
+        if (input.resetPressed)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
         if (input.skipMove)
         {
             DeclareDoneWithMove();
