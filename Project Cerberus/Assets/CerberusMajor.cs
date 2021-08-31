@@ -142,8 +142,8 @@ public class CerberusMajor : Cerberus
             return;
         }
 
-        // Check for entity to jump over
-        var canJump = (jumpedOverCell.puzzleEntities.Count > 0 || jumpedOverCell.floorTile.jumpable) &&
+        // Check for entity to jump over and valid place to land
+        var canJump = (jumpedOverCell.GetJumpableEntity() || jumpedOverCell.floorTile.jumpable) &&
                       newJumpCell.floorTile != null;
 
         if (canJump)

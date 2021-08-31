@@ -69,26 +69,32 @@ public class Laguna : Cerberus
         if (!blocked)
         {
             var pushableEntity = newCell.GetEntityPushableByStandardMove();
-            var entityToPull = pullCell.GetEntityPushableByStandardMove();
-            if (!pushableEntity)
+            var entityToPull = pullCell.GetPullableEntity();
+            // Pull move fails with no entity to pull
+            if (entityToPull)
             {
-                entityToPull?.Move(position);
-                Move(coord);
-                DeclareDoneWithMove();
-            }
-            else
-            {
-                // Push entity in front of Laguna one space
-                var pushCoord = pushableEntity.position + offset;
-                var pushEntityNewCell = puzzle.GetCell(pushCoord);
-                var pushBlocked = pushableEntity.CollidesWith(pushEntityNewCell.floorTile) ||
-                                  pushableEntity.CollidesWithAny(pushEntityNewCell.puzzleEntities);
-                if (!pushBlocked)
+                if (!pushableEntity)
                 {
-                    pushableEntity.Move(pushCoord);
-                    entityToPull?.Move(position);
+                    var p = position;
                     Move(coord);
+                    entityToPull.Move(p);
                     DeclareDoneWithMove();
+                }
+                else
+                {
+                    // Push entity in front of Laguna one space and pull block behind
+                    var pushCoord = pushableEntity.position + offset;
+                    var pushEntityNewCell = puzzle.GetCell(pushCoord);
+                    var pushBlocked = pushableEntity.CollidesWith(pushEntityNewCell.floorTile) ||
+                                      pushableEntity.CollidesWithAny(pushEntityNewCell.puzzleEntities);
+                    if (!pushBlocked)
+                    {
+                        var p = position;
+                        pushableEntity.Move(pushCoord);
+                        Move(coord);
+                        entityToPull.Move(p);
+                        DeclareDoneWithMove();
+                    }
                 }
             }
         }

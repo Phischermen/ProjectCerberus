@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
     public string nextScene;
+    public int maxTurns;
     [SerializeField] private GameObject _uiPrefab;
     public List<Cerberus> moveOrder { get; protected set; }
     public int turn { get; protected set; }
@@ -100,14 +102,42 @@ public class GameManager : MonoBehaviour
             if (wantsToJoin && joinAndSplitEnabled)
             {
                 wantsToJoin = false;
-                FormCerberusMajor();
-                IncrementTurn();
+                // Check for collision at CerberusMajor
+                _cerberusMajor.SetCollisionsEnabled(true);
+                _jack.SetCollisionsEnabled(false);
+                _kahuna.SetCollisionsEnabled(false);
+                _laguna.SetCollisionsEnabled(false);
+                if (!_cerberusMajor.CollidesWith(_cerberusMajor.currentCell))
+                {
+                    FormCerberusMajor();
+                    IncrementTurn();
+                }
+                else
+                {
+                    _cerberusMajor.SetCollisionsEnabled(false);
+                }
             }
             else if (wantsToSplit && joinAndSplitEnabled)
             {
                 wantsToSplit = false;
-                SplitCerberusMajor();
-                IncrementTurn();
+                // Check for collision with every dog
+                _cerberusMajor.SetCollisionsEnabled(false);
+                _jack.SetCollisionsEnabled(true);
+                _kahuna.SetCollisionsEnabled(true);
+                _laguna.SetCollisionsEnabled(true);
+                if (!_jack.CollidesWith(_jack.currentCell) &&
+                    !_laguna.CollidesWith(_laguna.currentCell) &&
+                    !_kahuna.CollidesWith(_kahuna.currentCell))
+                {
+                    SplitCerberusMajor();
+                    IncrementTurn();
+                }
+                else
+                {
+                    _jack.SetCollisionsEnabled(false);
+                    _kahuna.SetCollisionsEnabled(false);
+                    _laguna.SetCollisionsEnabled(false);
+                }
             }
             else
             {
@@ -145,8 +175,15 @@ public class GameManager : MonoBehaviour
     void IncrementTurn()
     {
         turn += 1;
-        currentMove = 0;
-        Debug.Log(turn);
+        if (turn > maxTurns)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        else
+        {
+            currentMove = 0;
+            Debug.Log(turn);
+        }
     }
 
     void GoBackToTurn(int newTurn)

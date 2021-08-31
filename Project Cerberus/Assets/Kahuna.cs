@@ -26,7 +26,7 @@ public class Kahuna : Cerberus
             _specialActive = true;
         }
 
-        if (input.specialReleased)
+        if (input.specialReleased && _specialActive)
         {
             _specialActive = false;
             wantsToFire = true;
