@@ -60,6 +60,7 @@ public class Gate : PuzzleEntity
         stopsBlock = false;
         stopsPlayer = false;
         landable = true;
+        jumpable = false;
     }
 
     private void SetFieldsToClosedPreset()
@@ -68,5 +69,6 @@ public class Gate : PuzzleEntity
         stopsBlock = true;
         stopsPlayer = true;
         landable = false;
+        jumpable = true;
     }
 }

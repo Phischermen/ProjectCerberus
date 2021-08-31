@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cactus : BasicBlock
+public class HotBlock : BasicBlock
 {
-    protected Cactus()
+    protected HotBlock()
     {
+        pullable = false;
         pushableByStandardMove = false;
         pushableByJacksSuperPush = false;
     }

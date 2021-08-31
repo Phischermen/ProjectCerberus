@@ -14,6 +14,17 @@ public class PuzzleContainer : MonoBehaviour
         public FloorTile floorTile;
         public List<PuzzleEntity> puzzleEntities = new List<PuzzleEntity>();
 
+        public PuzzleEntity GetPullableEntity()
+        {
+            foreach (var entity in puzzleEntities)
+            {
+                if (entity.pullable)
+                    return entity;
+            }
+
+            return null;
+        }
+
         public PuzzleEntity GetEntityPushableByStandardMove()
         {
             foreach (var entity in puzzleEntities)
@@ -35,7 +46,7 @@ public class PuzzleContainer : MonoBehaviour
 
             return null;
         }
-        
+
         public PuzzleEntity GetPushableEntityForSuperPush()
         {
             foreach (var entity in puzzleEntities)
@@ -52,6 +63,17 @@ public class PuzzleContainer : MonoBehaviour
             foreach (var entity in puzzleEntities)
             {
                 if (entity.landable)
+                    return entity;
+            }
+
+            return null;
+        }
+
+        public PuzzleEntity GetJumpableEntity()
+        {
+            foreach (var entity in puzzleEntities)
+            {
+                if (entity.jumpable)
                     return entity;
             }
 

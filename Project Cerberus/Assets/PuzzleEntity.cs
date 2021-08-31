@@ -9,18 +9,21 @@ public abstract class PuzzleEntity : MonoBehaviour
     protected PuzzleContainer puzzle;
     protected GameManager manager;
     [HideInInspector] public Vector2Int position;
+    public PuzzleContainer.LevelCell currentCell => puzzle.GetCell(position);
     [ShowInTileInspector] public bool collisionsEnabled { get; protected set; } = true;
     [ShowInTileInspector] public bool isStatic { get; protected set; }
     [ShowInTileInspector] public bool isPlayer { get; protected set; }
     [ShowInTileInspector] public bool isBlock { get; protected set; }
     [ShowInTileInspector] public bool stopsPlayer { get; protected set; }
     [ShowInTileInspector] public bool stopsBlock { get; protected set; }
+    [ShowInTileInspector] public bool pullable { get; protected set; }
     [ShowInTileInspector] public bool pushableByFireball { get; protected set; }
     [ShowInTileInspector] public bool interactsWithFireball { get; protected set; }
     [ShowInTileInspector] public bool pushableByStandardMove { get; protected set; }
     [ShowInTileInspector] public bool pushableByJacksMultiPush { get; protected set; }
     [ShowInTileInspector] public bool pushableByJacksSuperPush { get; protected set; }
     [ShowInTileInspector] public bool landable { get; protected set; }
+    [ShowInTileInspector] public bool jumpable { get; protected set; }
     public bool isSuperPushed { get; set; }
 
     protected virtual void Awake()
@@ -35,7 +38,6 @@ public abstract class PuzzleEntity : MonoBehaviour
     private void Start()
     {
         // Invoke enter collision callback with puzzle entities in initial cell
-        var currentCell = puzzle.GetCell(position);
         foreach (var newCellPuzzleEntity in currentCell.puzzleEntities)
         {
             if (collisionsEnabled && newCellPuzzleEntity.collisionsEnabled && newCellPuzzleEntity != this)
@@ -61,7 +63,6 @@ public abstract class PuzzleEntity : MonoBehaviour
     public void Move(Vector2Int cell)
     {
         var newCell = puzzle.GetCell(cell);
-        var currentCell = puzzle.GetCell(position);
         puzzle.RemoveEntityFromCell(this, position);
         foreach (var currentCellPuzzleEntity in currentCell.puzzleEntities)
         {
@@ -102,6 +103,8 @@ public abstract class PuzzleEntity : MonoBehaviour
     {
         foreach (var entity in entities)
         {
+            // Entities cannot collide with themselves
+            if (entity == this) continue;
             if (CollidesWith(entity)) return true;
         }
 
@@ -121,6 +124,7 @@ public abstract class PuzzleEntity : MonoBehaviour
         {
             return false;
         }
+
         // Jack's super push allows entities to 'sail' over certain tiles like pits and spikes.
         if (isSuperPushed && floorTile.allowsAllSuperPushedEntitiesPassage)
         {
@@ -131,12 +135,16 @@ public abstract class PuzzleEntity : MonoBehaviour
                (isBlock && floorTile.stopsBlock);
     }
 
+    public bool CollidesWith(PuzzleContainer.LevelCell levelCell)
+    {
+        return CollidesWith(levelCell.floorTile) || CollidesWithAny(levelCell.puzzleEntities);
+    }
+
     public void SetCollisionsEnabled(bool enable)
     {
         if (enable == collisionsEnabled) return;
         collisionsEnabled = enable;
         // Invoke callbacks
-        var currentCell = puzzle.GetCell(position);
         if (enable)
         {
             foreach (var entity in currentCell.puzzleEntities)
@@ -147,6 +155,9 @@ public abstract class PuzzleEntity : MonoBehaviour
                     entity.OnEnterCollisionWithEntity(this);
                 }
             }
+
+            currentCell.floorTile.OnEnterCollisionWithEntity(this);
+            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
         }
         else
         {
@@ -158,6 +169,9 @@ public abstract class PuzzleEntity : MonoBehaviour
                     entity.OnExitCollisionWithEntity(this);
                 }
             }
+
+            currentCell.floorTile.OnExitCollisionWithEntity(this);
+            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
         }
     }
 }

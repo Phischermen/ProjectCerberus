@@ -17,6 +17,9 @@ public class WoodBlock : BasicBlock
         GetComponent<SpriteRenderer>().sprite = destroyedSprite;
         SetCollisionsEnabled(false);
         landable = true;
+        jumpable = false;
+        interactsWithFireball = false;
+        pushableByFireball = false;
         pushableByStandardMove = false;
         pushableByJacksMultiPush = false;
         pushableByJacksSuperPush = false;
