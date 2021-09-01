@@ -7,7 +7,8 @@ using UnityEngine.Serialization;
 public class GameManager : MonoBehaviour
 {
     public string nextScene;
-    public int maxTurns;
+    [HideInInspector] public bool infinteTurns = true;
+    [HideInInspector] public int maxTurns;
     [SerializeField] private GameObject _uiPrefab;
     public List<Cerberus> moveOrder { get; protected set; }
     public int turn { get; protected set; }
@@ -110,7 +111,11 @@ public class GameManager : MonoBehaviour
                 if (!_cerberusMajor.CollidesWith(_cerberusMajor.currentCell))
                 {
                     FormCerberusMajor();
-                    IncrementTurn();
+                    // Don't increment turn if player merges or splits as their first action
+                    if (currentMove != 0)
+                    {
+                        IncrementTurn();
+                    }
                 }
                 else
                 {
@@ -130,7 +135,11 @@ public class GameManager : MonoBehaviour
                     !_kahuna.CollidesWith(_kahuna.currentCell))
                 {
                     SplitCerberusMajor();
-                    IncrementTurn();
+                    // Don't increment turn if player merges or splits as their first action
+                    if (currentMove != 0)
+                    {
+                        IncrementTurn();
+                    }
                 }
                 else
                 {
@@ -175,15 +184,13 @@ public class GameManager : MonoBehaviour
     void IncrementTurn()
     {
         turn += 1;
-        if (turn > maxTurns)
+        if (!infinteTurns && turn > maxTurns)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
-        else
-        {
-            currentMove = 0;
-            Debug.Log(turn);
-        }
+
+        currentMove = 0;
+        Debug.Log(turn);
     }
 
     void GoBackToTurn(int newTurn)

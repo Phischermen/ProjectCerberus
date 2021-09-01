@@ -13,5 +13,6 @@ public static class Scenum
 		SuperPushTutorial,
 		JackAndLaguna,
 		TrapSpikePuzzle,
+		JackTutorial,
 	}
 }

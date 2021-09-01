@@ -32,6 +32,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TrapSpikePuzzle.unity
     guid: 686af41a23b5e044682ff1458cb3400a
+  - enabled: 1
+    path: Assets/Scenes/JackTutorial.unity
+    guid: bf01a71fc2dc10745b43c43eb044f7cd
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 90dfd16557c9de34499995dab2adeb9a,
       type: 2}
