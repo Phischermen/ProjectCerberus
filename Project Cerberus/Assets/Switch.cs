@@ -23,7 +23,6 @@ public class Switch : PuzzleEntity
             flipped = !flipped;
         }
 
-
     }
 
     public UnityEvent onPressed;
@@ -69,5 +68,25 @@ public class Switch : PuzzleEntity
         _lineRenderer.startColor = Color.red;
         _lineRenderer.endColor = Color.red;
         onReleased.Invoke();
+    }
+
+    public void SwitchOnVisually(bool on)
+    {
+
+        if (on == true)
+        {
+            _spriteRenderer.sprite = depressedSprite;
+            _lineRenderer.startColor = Color.green;
+            _lineRenderer.endColor = Color.green;
+            onPressed.Invoke();
+        }
+
+        if (on == false)
+        {
+            _spriteRenderer.sprite = raisedSprite;
+            _lineRenderer.startColor = Color.red;
+            _lineRenderer.endColor = Color.red;
+            onReleased.Invoke();
+        }
     }
 }

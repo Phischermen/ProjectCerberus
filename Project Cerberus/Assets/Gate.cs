@@ -19,7 +19,7 @@ public class Gate : PuzzleEntity
 
         public override void Load()
         {
-            open = !open;
+            gate.open = open;
         }
 
 
