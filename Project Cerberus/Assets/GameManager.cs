@@ -200,6 +200,11 @@ public class GameManager : MonoBehaviour
     // Merge and split Management
     public void FormCerberusMajor()
     {
+        // Stop animations
+        _jack.FinishCurrentAnimation();
+        _kahuna.FinishCurrentAnimation();
+        _laguna.FinishCurrentAnimation();
+        
         _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(false);
         _jack.SetDisableCollsionAndShowPentagramMarker(true);
         _kahuna.SetDisableCollsionAndShowPentagramMarker(true);
@@ -211,6 +216,9 @@ public class GameManager : MonoBehaviour
 
     public void SplitCerberusMajor()
     {
+        // Stop animation
+        _cerberusMajor.FinishCurrentAnimation();
+        
         _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(true);
         _jack.SetDisableCollsionAndShowPentagramMarker(false);
         _kahuna.SetDisableCollsionAndShowPentagramMarker(false);

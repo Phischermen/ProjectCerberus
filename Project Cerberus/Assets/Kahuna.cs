@@ -143,6 +143,8 @@ public class Kahuna : Cerberus
                 if (!pushBlocked)
                 {
                     entityToPushOrInteractWith.Move(pushCoord);
+                    entityToPushOrInteractWith.PlayAnimation(
+                        entityToPushOrInteractWith.SlideToDestination(pushCoord, AnimationConstants.basicMoveAndPushSpeed));
                     DeclareDoneWithMove();
                 }
             }

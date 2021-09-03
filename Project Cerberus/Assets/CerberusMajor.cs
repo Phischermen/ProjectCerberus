@@ -10,7 +10,7 @@ public class CerberusMajor : Cerberus
     private GameObject[] _jumpArrows;
 
 
-    private struct JumpInfo
+    public struct JumpInfo
     {
         public Vector2Int position;
         public float rotation;
@@ -39,6 +39,7 @@ public class CerberusMajor : Cerberus
 
     private List<JumpInfo> _jumpSpaces;
     private static int _maxJumpArrows = 32;
+    
 
     CerberusMajor()
     {
@@ -91,6 +92,10 @@ public class CerberusMajor : Cerberus
                 {
                     Move(jumpInfo.position);
                 }
+
+                JumpInfo[] jumpInfoCopy = new JumpInfo[_jumpSpaces.Count];
+                _jumpSpaces.CopyTo(jumpInfoCopy);
+                PlayAnimation(JumpAlongPath(jumpInfoCopy, AnimationConstants.jumpSpeed));
                 _jumpSpaces.Clear();
                 RenderJumpPath();
                 DeclareDoneWithMove();

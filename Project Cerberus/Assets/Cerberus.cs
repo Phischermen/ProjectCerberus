@@ -42,6 +42,7 @@ public class Cerberus : PuzzleEntity
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
+
         if (input.skipMove)
         {
             DeclareDoneWithMove();
@@ -87,6 +88,7 @@ public class Cerberus : PuzzleEntity
             {
                 // Move one space
                 Move(coord);
+                PlayAnimation(SlideToDestination(coord, AnimationConstants.basicMoveAndPushSpeed));
                 DeclareDoneWithMove();
             }
             else
@@ -100,6 +102,9 @@ public class Cerberus : PuzzleEntity
                 {
                     pushableEntity.Move(pushCoord);
                     Move(coord);
+                    pushableEntity.PlayAnimation(
+                        pushableEntity.SlideToDestination(pushCoord, AnimationConstants.basicMoveAndPushSpeed));
+                    PlayAnimation(SlideToDestination(coord, AnimationConstants.basicMoveAndPushSpeed));
                     DeclareDoneWithMove();
                 }
             }

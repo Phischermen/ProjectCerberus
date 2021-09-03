@@ -70,6 +70,7 @@ public class Jack : Cerberus
         if (!blocked && entitiesToPush.Count == 0)
         {
             Move(coord);
+            PlayAnimation(SlideToDestination(coord, AnimationConstants.basicMoveAndPushSpeed));
             DeclareDoneWithMove();
         }
         else if (entitiesToPush.Count == 1)
@@ -107,6 +108,8 @@ public class Jack : Cerberus
                 pushableEntity.Move(pushableEntity.position + offset);
             }
 
+            pushableEntity.PlayAnimation(
+                pushableEntity.SlideToDestination(searchPosition, AnimationConstants.superPushAnimationSpeed));
             DeclareDoneWithMove();
         }
         else if (!blocked)
@@ -123,10 +126,14 @@ public class Jack : Cerberus
                 for (var i = entitiesToPush.Count - 1; i >= 0; i--)
                 {
                     var entity = entitiesToPush[i];
-                    entity.Move(entity.position + offset);
+                    var entityPushCoord = entity.position + offset;
+                    entity.Move(entityPushCoord);
+                    entity.PlayAnimation(entity.SlideToDestination(entityPushCoord,
+                        AnimationConstants.basicMoveAndPushSpeed));
                 }
 
                 Move(coord);
+                PlayAnimation(SlideToDestination(coord, AnimationConstants.basicMoveAndPushSpeed));
                 DeclareDoneWithMove();
             }
         }
