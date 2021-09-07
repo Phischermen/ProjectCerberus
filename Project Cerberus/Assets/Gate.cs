@@ -9,7 +9,12 @@ public class Gate : PuzzleEntity
     [ShowInTileInspector] public bool open;
     [SerializeField] private Sprite openSprite;
     [SerializeField] private Sprite closeSprite;
-    
+
+    public Gate()
+    {
+        entityRules = "Can be opened and closed via switches and levers. Jumpable when closed and landable when open.";
+    }
+
     protected override void Awake()
     {
         base.Awake();

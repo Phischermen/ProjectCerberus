@@ -3,6 +3,11 @@
 
 public class Laguna : Cerberus
 {
+    public Laguna()
+    {
+        entityRules = "Laguna can pull objects.";
+    }
+
     public override void ProcessMoveInput()
     {
         base.ProcessMoveInput();

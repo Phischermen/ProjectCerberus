@@ -6,6 +6,7 @@ public class BasicBlock : PuzzleEntity
 {
     protected BasicBlock()
     {
+        entityRules = "A basic pushable/pullable block. Not landable.";
         isBlock = true;
         stopsBlock = true;
         stopsPlayer = true;

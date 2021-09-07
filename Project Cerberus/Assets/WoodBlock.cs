@@ -9,6 +9,8 @@ public class WoodBlock : BasicBlock
 
     protected WoodBlock()
     {
+        entityRules = "Wood blocks burn up when they are shot by Kahuna.";
+        pushableByFireball = false;
         interactsWithFireball = true;
     }
 

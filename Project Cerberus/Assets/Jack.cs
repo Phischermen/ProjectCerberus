@@ -8,6 +8,12 @@ public class Jack : Cerberus
 
     public AudioSource _superPushSFX;
 
+    public Jack()
+    {
+        entityRules =
+            "Jack can push a single object really far, but can't push a row of objects farther than one tile.";
+    }
+
     public override void ProcessMoveInput()
     {
         base.ProcessMoveInput();

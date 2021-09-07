@@ -9,6 +9,9 @@ namespace Editor
         public override void OnInspectorGUI()
         {
             var entity = (PuzzleEntity) target;
+            GUIStyle style = GUI.skin.label;
+            style.wordWrap = true;
+            EditorGUILayout.LabelField(entity.entityRules, style);
             DrawDefaultInspector();
 
             // SFX related fields

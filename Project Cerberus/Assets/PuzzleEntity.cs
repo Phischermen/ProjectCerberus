@@ -26,6 +26,7 @@ public abstract class PuzzleEntity : MonoBehaviour
     [ShowInTileInspector] public bool pushableByJacksSuperPush { get; protected set; }
     [ShowInTileInspector] public bool landable { get; protected set; }
     [ShowInTileInspector] public bool jumpable { get; protected set; }
+    public string entityRules { get; protected set; } = "No rules have been written for this object.";
     public bool isSuperPushed { get; set; }
 
     protected Coroutine animationRoutine;
@@ -47,7 +48,7 @@ public abstract class PuzzleEntity : MonoBehaviour
         puzzle = FindObjectOfType<PuzzleContainer>();
         manager = FindObjectOfType<GameManager>();
     }
-
+    
     private void Start()
     {
         // Invoke enter collision callback with puzzle entities in initial cell

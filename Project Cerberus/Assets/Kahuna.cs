@@ -12,6 +12,10 @@ public class Kahuna : Cerberus
     private static int _fireballRange = 32;
     private bool _specialActive;
 
+    Kahuna()
+    {
+        entityRules = "Kahuna can fire fireballs, that push or interact with objects.";
+    }
     protected override void Awake()
     {
         base.Awake();
