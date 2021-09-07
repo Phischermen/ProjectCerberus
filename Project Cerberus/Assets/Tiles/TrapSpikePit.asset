@@ -40,5 +40,5 @@ MonoBehaviour:
   stopsBlock: 0
   stopsFireball: 0
   allowsAllSuperPushedEntitiesPassage: 1
-  jumpable: 1
+  jumpable: 0
   landable: 1
