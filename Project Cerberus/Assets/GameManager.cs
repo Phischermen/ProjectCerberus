@@ -120,6 +120,9 @@ public class GameManager : MonoBehaviour
                 else
                 {
                     _cerberusMajor.SetCollisionsEnabled(false);
+                    _jack.SetCollisionsEnabled(true);
+                    _kahuna.SetCollisionsEnabled(true);
+                    _laguna.SetCollisionsEnabled(true);
                 }
             }
             else if (wantsToSplit && joinAndSplitEnabled)
@@ -143,6 +146,7 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
+                    _cerberusMajor.SetCollisionsEnabled(true);
                     _jack.SetCollisionsEnabled(false);
                     _kahuna.SetCollisionsEnabled(false);
                     _laguna.SetCollisionsEnabled(false);
