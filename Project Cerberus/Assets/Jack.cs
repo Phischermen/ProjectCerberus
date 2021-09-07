@@ -6,6 +6,8 @@ public class Jack : Cerberus
 {
     private static int _superPushRange = 32;
 
+    public AudioSource _superPushSFX;
+
     public override void ProcessMoveInput()
     {
         base.ProcessMoveInput();
@@ -70,7 +72,8 @@ public class Jack : Cerberus
         if (!blocked && entitiesToPush.Count == 0)
         {
             Move(coord);
-            PlayAnimation(SlideToDestination(coord, AnimationConstants.basicMoveAndPushSpeed));
+            PlaySfxPitchShift(walkSFX, 0.9f, 1.1f);
+            PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
             DeclareDoneWithMove();
         }
         else if (entitiesToPush.Count == 1)
@@ -108,8 +111,10 @@ public class Jack : Cerberus
                 pushableEntity.Move(pushableEntity.position + offset);
             }
 
+            PlaySfx(_superPushSFX);
             pushableEntity.PlayAnimation(
-                pushableEntity.SlideToDestination(searchPosition, AnimationConstants.superPushAnimationSpeed));
+                pushableEntity.SlideToDestination(searchPosition, AnimationUtility.superPushAnimationSpeed));
+            pushableEntity.PlaySfx(pushableEntity.superPushedSfx);
             DeclareDoneWithMove();
         }
         else if (!blocked)
@@ -129,11 +134,13 @@ public class Jack : Cerberus
                     var entityPushCoord = entity.position + offset;
                     entity.Move(entityPushCoord);
                     entity.PlayAnimation(entity.SlideToDestination(entityPushCoord,
-                        AnimationConstants.basicMoveAndPushSpeed));
+                        AnimationUtility.basicMoveAndPushSpeed));
+                    entity.PlaySfx(entity.superPushedSfx);
                 }
 
                 Move(coord);
-                PlayAnimation(SlideToDestination(coord, AnimationConstants.basicMoveAndPushSpeed));
+                PlaySfxPitchShift(superPushedSfx, 0.9f, 1.1f);
+                PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                 DeclareDoneWithMove();
             }
         }

@@ -78,9 +78,11 @@ public class Laguna : Cerberus
                     var p = position;
                     Move(coord);
                     entityToPull.Move(p);
-                    PlayAnimation(SlideToDestination(coord, AnimationConstants.basicMoveAndPushSpeed));
+                    PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                     entityToPull.PlayAnimation(entityToPull.SlideToDestination(p,
-                        AnimationConstants.basicMoveAndPushSpeed));
+                        AnimationUtility.basicMoveAndPushSpeed));
+                    PlaySfx(walkSFX);
+                    PlaySfx(entityToPull.pushedSfx);
                     DeclareDoneWithMove();
                 }
                 else
@@ -96,11 +98,14 @@ public class Laguna : Cerberus
                         pushableEntity.Move(pushCoord);
                         Move(coord);
                         entityToPull.Move(p);
-                        PlayAnimation(SlideToDestination(coord, AnimationConstants.basicMoveAndPushSpeed));
+                        PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                         pushableEntity.PlayAnimation(
-                            pushableEntity.SlideToDestination(pushCoord, AnimationConstants.basicMoveAndPushSpeed));
+                            pushableEntity.SlideToDestination(pushCoord, AnimationUtility.basicMoveAndPushSpeed));
                         entityToPull.PlayAnimation(
-                            entityToPull.SlideToDestination(p, AnimationConstants.basicMoveAndPushSpeed));
+                            entityToPull.SlideToDestination(p, AnimationUtility.basicMoveAndPushSpeed));
+                        PlaySfx(walkSFX);
+                        PlaySfx(pushableEntity.pushedSfx);
+                        PlaySfx(entityToPull.pushedSfx);
                         DeclareDoneWithMove();
                     }
                 }

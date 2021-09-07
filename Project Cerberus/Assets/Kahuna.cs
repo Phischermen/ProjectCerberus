@@ -1,10 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Kahuna : Cerberus
 {
     [SerializeField] private GameObject fireArrow;
+    [SerializeField] private AudioSource fireballSFX;
+
     Vector2Int aim = Vector2Int.zero;
     private static int _fireballRange = 32;
     private bool _specialActive;
@@ -128,6 +131,7 @@ public class Kahuna : Cerberus
         AfterWhile:
         if (entityToPushOrInteractWith != null)
         {
+            PlaySfxPitchShift(fireballSFX, 0.9f, 1.1f);
             if (entityToPushOrInteractWith.interactsWithFireball)
             {
                 entityToPushOrInteractWith.OnShotByKahuna();
@@ -143,8 +147,10 @@ public class Kahuna : Cerberus
                 if (!pushBlocked)
                 {
                     entityToPushOrInteractWith.Move(pushCoord);
+                    entityToPushOrInteractWith.PlaySfx(entityToPushOrInteractWith.pushedByFireballSfx);
                     entityToPushOrInteractWith.PlayAnimation(
-                        entityToPushOrInteractWith.SlideToDestination(pushCoord, AnimationConstants.basicMoveAndPushSpeed));
+                        entityToPushOrInteractWith.SlideToDestination(pushCoord,
+                            AnimationUtility.basicMoveAndPushSpeed));
                     DeclareDoneWithMove();
                 }
             }

@@ -317,6 +317,11 @@ public class PuzzleContainer : MonoBehaviour
         return levelMap[coord.x, coord.y];
     }
 
+    public Vector3 GetCellCenterWorld(Vector2Int coord)
+    {
+        return tilemap.layoutGrid.GetCellCenterWorld(new Vector3Int(coord.x, coord.y, 0));
+    }
+
     public bool InBounds(Vector2Int coord)
     {
         return coord.x >= 0 && coord.x < maxLevelWidth && coord.y >= 0 && coord.y < maxLevelHeight;

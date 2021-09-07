@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public abstract class PuzzleEntity : MonoBehaviour
 {
@@ -31,8 +33,11 @@ public abstract class PuzzleEntity : MonoBehaviour
     protected bool animationMustStop;
     protected IEnumerator queuedAnimation;
 
-    private static int _bezierCurveLengthEstimationSegments = 5;
-    private static float _lengthEstimationDelta = 1f / _bezierCurveLengthEstimationSegments;
+    [HideInInspector] public AudioSource pushedSfx;
+
+    [HideInInspector] public AudioSource superPushedSfx;
+
+    [HideInInspector] public AudioSource pushedByFireballSfx;
 
     protected virtual void Awake()
     {
@@ -193,6 +198,37 @@ public abstract class PuzzleEntity : MonoBehaviour
         }
     }
 
+    // Sound effects
+    /* KF 9/7/21 I am considering using Wwise for our project because even implementing basic pitch shifting is kind of
+     a pain. I do not like how minimum and maximum pitch is hard coded, because I know I am not going to be consistent 
+     throughout the entire project unless I cache those values somehow. If Wwise doesn't work out, I think I may try
+     using attributes to indicate that a sound effect is meant to be pitch shifted. */
+
+    public void PlaySfx(AudioSource source)
+    {
+        if (source)
+        {
+            source.Play();
+        }
+    }
+
+    public void StopSfx(AudioSource source)
+    {
+        if (source)
+        {
+            source.Stop();
+        }
+    }
+
+    public void PlaySfxPitchShift(AudioSource source, float min, float max)
+    {
+        if (source)
+        {
+            source.pitch = Random.Range(min, max);
+            source.Play();
+        }
+    }
+
     // Animations
     public void PlayAnimation(IEnumerator animationToPlay)
     {
@@ -221,8 +257,7 @@ public abstract class PuzzleEntity : MonoBehaviour
     {
         animationIsRunning = true;
         var startingPosition = transform.position;
-        var destinationPosition =
-            puzzle.tilemap.layoutGrid.GetCellCenterWorld(new Vector3Int(destination.x, destination.y, 0));
+        var destinationPosition = puzzle.GetCellCenterWorld(destination);
         var distanceToTravel = Vector3.Distance(startingPosition, destinationPosition);
         var distanceTraveled = 0f;
         while (distanceTraveled < distanceToTravel && animationMustStop == false)
@@ -236,76 +271,10 @@ public abstract class PuzzleEntity : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
 
+        StopSfx(superPushedSfx);
         // Goto final destination
         transform.position = destinationPosition;
         animationIsRunning = false;
         animationMustStop = false;
-    }
-
-    public IEnumerator JumpAlongPath(CerberusMajor.JumpInfo[] points, float speed)
-    {
-        animationIsRunning = true;
-        foreach (var point in points)
-        {
-            // Use a bezier curve to model the jump path
-            var A = transform.position; // Start point
-            var B = A + Vector3.up; // Control point
-            var D = puzzle.tilemap.layoutGrid.GetCellCenterWorld(new Vector3Int(point.position.x, point.position.y,
-                0)); // End Point
-            var C = D + Vector3.up; // Control point
-
-            // Calculate approximate distance to travel
-            var distanceToTravel = 0f;
-            var distanceTraveled = 0f;
-            var beginningOfSegment = A;
-            var interpolation = _lengthEstimationDelta;
-            for (int i = 0; i < _bezierCurveLengthEstimationSegments; i++)
-            {
-                var endOfSegment = DeCasteljausAlgorithm(A, B, C, D, interpolation);
-                distanceToTravel += Vector3.Distance(beginningOfSegment, endOfSegment);
-                beginningOfSegment = endOfSegment;
-                interpolation += _lengthEstimationDelta;
-            }
-
-            while (distanceTraveled < distanceToTravel && animationMustStop == false)
-            {
-                // Increment distance travelled
-                var delta = speed * Time.deltaTime;
-                distanceTraveled += delta;
-                // Set position
-                interpolation = distanceTraveled / distanceToTravel;
-                transform.position = DeCasteljausAlgorithm(A, B, C, D, interpolation);
-                yield return new WaitForFixedUpdate();
-            }
-
-            transform.position = D;
-        }
-
-        animationMustStop = false;
-        animationIsRunning = false;
-    }
-
-    //The De Casteljau's Algorithm
-    Vector3 DeCasteljausAlgorithm(Vector3 A, Vector3 B, Vector3 C, Vector3 D, float t)
-    {
-        //Linear interpolation = lerp = (1 - t) * A + t * B
-        //Could use Vector3.Lerp(A, B, t)
-
-        //To make it faster
-        float oneMinusT = 1f - t;
-
-        //Layer 1
-        Vector3 Q = oneMinusT * A + t * B;
-        Vector3 R = oneMinusT * B + t * C;
-        Vector3 S = oneMinusT * C + t * D;
-
-        //Layer 2
-        Vector3 P = oneMinusT * Q + t * R;
-        Vector3 T = oneMinusT * R + t * S;
-
-        //Final interpolated position
-        Vector3 U = oneMinusT * P + t * T;
-
-        return U;
     }
 }

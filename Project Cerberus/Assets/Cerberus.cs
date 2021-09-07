@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public class Cerberus : PuzzleEntity
 {
@@ -28,6 +30,7 @@ public class Cerberus : PuzzleEntity
 
     private Sprite _cerberusSprite;
     public Sprite pentagramMarker;
+    [FormerlySerializedAs("_walkSFX")] public AudioSource walkSFX;
 
     protected override void Awake()
     {
@@ -88,7 +91,8 @@ public class Cerberus : PuzzleEntity
             {
                 // Move one space
                 Move(coord);
-                PlayAnimation(SlideToDestination(coord, AnimationConstants.basicMoveAndPushSpeed));
+                PlaySfx(walkSFX);
+                PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                 DeclareDoneWithMove();
             }
             else
@@ -102,9 +106,11 @@ public class Cerberus : PuzzleEntity
                 {
                     pushableEntity.Move(pushCoord);
                     Move(coord);
+                    PlaySfx(walkSFX);
                     pushableEntity.PlayAnimation(
-                        pushableEntity.SlideToDestination(pushCoord, AnimationConstants.basicMoveAndPushSpeed));
-                    PlayAnimation(SlideToDestination(coord, AnimationConstants.basicMoveAndPushSpeed));
+                        pushableEntity.SlideToDestination(pushCoord, AnimationUtility.basicMoveAndPushSpeed));
+                    PlaySfx(pushableEntity.pushedSfx);
+                    PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                     DeclareDoneWithMove();
                 }
             }
@@ -121,4 +127,5 @@ public class Cerberus : PuzzleEntity
         landable = disableAndShowPentagram;
         GetComponent<SpriteRenderer>().sprite = disableAndShowPentagram ? pentagramMarker : _cerberusSprite;
     }
+
 }
