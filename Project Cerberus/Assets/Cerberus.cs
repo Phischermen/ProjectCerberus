@@ -51,7 +51,7 @@ public class Cerberus : PuzzleEntity
             DeclareDoneWithMove();
         }
 
-        if (input.mergeOrSplit)
+        if (input.mergeOrSplit && manager.joinAndSplitEnabled)
         {
             if (isCerberusMajor)
             {

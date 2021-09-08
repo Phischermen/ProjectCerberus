@@ -8,7 +8,7 @@ public class CerberusMajor : Cerberus
 {
     [SerializeField] private GameObject jumpArrowSource;
     private GameObject[] _jumpArrows;
-
+    private bool goalIsOnJumpPath;
 
     public struct JumpInfo
     {
@@ -148,6 +148,8 @@ public class CerberusMajor : Cerberus
         {
             _jumpSpaces.Clear();
             RenderJumpPath();
+            // Cerberus cannot possibly have goal in jump path.
+            goalIsOnJumpPath = false;
             return;
         }
 
@@ -158,8 +160,8 @@ public class CerberusMajor : Cerberus
         if (canJump)
         {
             // Check for collision and if landable
-            var landableEntity = newJumpCell.GetLandableEntity();
-            var canLand = (landableEntity != null) ||
+            var landableEntity = newJumpCell.GetLandableEntities();
+            var canLand = (landableEntity.Count > 0) ||
                           (newJumpCell.puzzleEntities.Count == 0 && newJumpCell.floorTile.landable);
             if (canLand)
             {
@@ -171,12 +173,22 @@ public class CerberusMajor : Cerberus
                     var idxOfSpaceToRemove = _jumpSpaces.IndexOf(newJumpInfo) + 1;
                     _jumpSpaces.RemoveRange(idxOfSpaceToRemove, _jumpSpaces.Count - idxOfSpaceToRemove);
                     RenderJumpPath();
+                    // Cerberus cannot possibly have goal in jump path.
+                    goalIsOnJumpPath = false;
                 }
-                else
+                else if(!goalIsOnJumpPath)
                 {
-                    // Add space to path
+                    // Add space to path if goal is not in path
                     _jumpSpaces.Add(newJumpInfo);
                     RenderJumpPath();
+                    // Check if cell being landed on has goal
+                    foreach (var entity in landableEntity)
+                    {
+                        if (entity is Finish)
+                        {
+                            goalIsOnJumpPath = true;
+                        }
+                    }
                 }
             }
         }

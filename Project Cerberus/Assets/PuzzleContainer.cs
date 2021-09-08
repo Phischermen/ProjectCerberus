@@ -58,15 +58,16 @@ public class PuzzleContainer : MonoBehaviour
             return null;
         }
 
-        public PuzzleEntity GetLandableEntity()
+        public List<PuzzleEntity> GetLandableEntities()
         {
+            var list = new List<PuzzleEntity>();
             foreach (var entity in puzzleEntities)
             {
                 if (entity.landable)
-                    return entity;
+                    list.Add(entity);
             }
 
-            return null;
+            return list;
         }
 
         public PuzzleEntity GetJumpableEntity()
