@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="12" SoundbankVersion="140">
+	<RootPaths>
+		<ProjectRoot>C:\Users\Kevin\Documents\GitHub\ProjectCerberus\Project Cerberus\Project Cerberus_WwiseProject\</ProjectRoot>
+		<SourceFilesRoot>C:\Users\Kevin\Documents\GitHub\ProjectCerberus\Project Cerberus\Project Cerberus_WwiseProject\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>C:\Users\Kevin\Documents\GitHub\ProjectCerberus\Project Cerberus\Project Cerberus_WwiseProject\GeneratedSoundBanks\Windows\</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>C:\Users\Kevin\Documents\GitHub\ProjectCerberus\Project Cerberus\Project Cerberus_WwiseProject\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<DialogueEvents/>
+	<StreamedFiles/>
+	<MediaFilesNotInAnyBank/>
+	<SoundBanks>
+		<SoundBank Id="1355168291" Language="SFX" Hash="3690994985">
+			<ObjectPath>Init</ObjectPath>
+			<ShortName>Init</ShortName>
+			<Path>Init.bnk</Path>
+		</SoundBank>
+		<SoundBank Id="3161908922" Language="SFX" Hash="273548027">
+			<ObjectPath>\SoundBanks\Default Work Unit\Main</ObjectPath>
+			<ShortName>Main</ShortName>
+			<Path>Main.bnk</Path>
+			<IncludedEvents>
+				<Event Id="1150597751" Name="CerberusWalk" ObjectPath="\Events\Default Work Unit\CerberusWalk" DurationType="OneShot" DurationMin="0.388109" DurationMax="1.305438">
+					<IncludedMemoryFiles>
+						<File Id="316420407" Language="SFX">
+							<ShortName>walk_2.wav</ShortName>
+							<Path>SFX\walk_2_6E9E97BB.wem</Path>
+						</File>
+						<File Id="424799409" Language="SFX">
+							<ShortName>walk_3.wav</ShortName>
+							<Path>SFX\walk_3_00DC4ACB.wem</Path>
+						</File>
+						<File Id="496919720" Language="SFX">
+							<ShortName>walk_1.wav</ShortName>
+							<Path>SFX\walk_1_B53388AF.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+			</IncludedEvents>
+		</SoundBank>
+	</SoundBanks>
+</SoundBanksInfo>

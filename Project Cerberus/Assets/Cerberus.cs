@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using AK.Wwise;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -31,7 +32,8 @@ public class Cerberus : PuzzleEntity
     private Sprite _cerberusSprite;
     public Sprite pentagramMarker;
     [FormerlySerializedAs("_walkSFX")] public AudioSource walkSFX;
-
+    [SerializeField] private AK.Wwise.Event walkEvent;
+    private uint walkID;
     protected override void Awake()
     {
         base.Awake();
@@ -91,7 +93,8 @@ public class Cerberus : PuzzleEntity
             {
                 // Move one space
                 Move(coord);
-                PlaySfx(walkSFX);
+                walkEvent.Stop(gameObject);
+                walkEvent.Post(gameObject);
                 PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                 DeclareDoneWithMove();
             }

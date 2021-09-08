@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{DC087623-773A-4853-8CB8-1C5287374132}" SchemaVersion="103">
+	<Events>
+		<WorkUnit Name="Default Work Unit" ID="{DC087623-773A-4853-8CB8-1C5287374132}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="CerberusWalk" ID="{7168D5A9-0D12-476F-AB53-023EBAA2CF05}">
+					<ChildrenList>
+						<Action Name="" ID="{CED35FA4-BA35-45FF-A97F-A51275C60F3A}" ShortID="207560717">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CerberusWalk" ID="{D3AEF509-75DF-40EB-A97A-6C43169CD5E6}" WorkUnitID="{D9975553-3A11-4E3F-82EF-BDB2C0762A6B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

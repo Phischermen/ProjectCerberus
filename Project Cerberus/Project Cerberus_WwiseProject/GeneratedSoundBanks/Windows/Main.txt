@@ -1,0 +1,8 @@
+Event	ID	Name			Wwise Object Path	Notes
+	1150597751	CerberusWalk			\Default Work Unit\CerberusWalk	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	316420407	walk_2	C:\Users\Kevin\Documents\GitHub\ProjectCerberus\Project Cerberus\Project Cerberus_WwiseProject\.cache\Windows\SFX\walk_2_6E9E97BB.wem		\Actor-Mixer Hierarchy\Default Work Unit\CerberusWalk\walk_2		81480
+	424799409	walk_3	C:\Users\Kevin\Documents\GitHub\ProjectCerberus\Project Cerberus\Project Cerberus_WwiseProject\.cache\Windows\SFX\walk_3_00DC4ACB.wem		\Actor-Mixer Hierarchy\Default Work Unit\CerberusWalk\walk_3		122188
+	496919720	walk_1	C:\Users\Kevin\Documents\GitHub\ProjectCerberus\Project Cerberus\Project Cerberus_WwiseProject\.cache\Windows\SFX\walk_1_B53388AF.wem		\Actor-Mixer Hierarchy\Default Work Unit\CerberusWalk\walk_1		162960
+

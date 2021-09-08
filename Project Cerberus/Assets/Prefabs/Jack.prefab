@@ -354,11 +354,12 @@ MonoBehaviour:
   position: {x: 0, y: 0}
   pushedSfx: {fileID: 7794549068068122440}
   superPushedSfx: {fileID: 0}
-  interactWithFireballSfx: {fileID: 0}
+  pushedByFireballSfx: {fileID: 0}
   doneWithMove: 0
   onTopOfGoal: 0
   isCerberusMajor: 0
   pentagramMarker: {fileID: -1768482875118672931, guid: f517efbb0e7cff84798d8ddd4641d42b,
     type: 3}
-  _walkSFX: {fileID: 6121590175667176764}
+  walkSFX: {fileID: 6121590175667176764}
+  walkEvent: {fileID: 11400000, guid: 8787cc1d0cea8ba47810692aa602bfc4, type: 2}
   _superPushSFX: {fileID: 7794549068068122440}
