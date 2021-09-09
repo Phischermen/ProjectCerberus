@@ -20,7 +20,7 @@ public class Switch : PuzzleEntity
 
         public override void Load()
         {
-            flipped = !flipped;
+            lever.SwitchOnVisually(flipped);
         }
 
     }
@@ -41,6 +41,12 @@ public class Switch : PuzzleEntity
         landable = true;
     }
 
+    public override UndoData GetUndoData()
+    {
+        var undoData = new SwitchUndoData(this, isPressed);
+        return undoData;
+    }
+
     protected override void Awake()
     {
         base.Awake();
@@ -55,9 +61,7 @@ public class Switch : PuzzleEntity
     {
         if (isPressed) return;
         isPressed = true;
-        _spriteRenderer.sprite = depressedSprite;
-        _lineRenderer.startColor = Color.green;
-        _lineRenderer.endColor = Color.green;
+        SwitchOnVisually(true);
         onPressed.Invoke();
     }
 
@@ -65,10 +69,9 @@ public class Switch : PuzzleEntity
     {
         if (!isPressed) return;
         isPressed = false;
-        _spriteRenderer.sprite = raisedSprite;
-        _lineRenderer.startColor = Color.red;
-        _lineRenderer.endColor = Color.red;
+        SwitchOnVisually(false);
         onReleased.Invoke();
+
     }
 
     public void SwitchOnVisually(bool on)
@@ -79,7 +82,6 @@ public class Switch : PuzzleEntity
             _spriteRenderer.sprite = depressedSprite;
             _lineRenderer.startColor = Color.green;
             _lineRenderer.endColor = Color.green;
-            onPressed.Invoke();
         }
 
         if (on == false)
@@ -87,7 +89,8 @@ public class Switch : PuzzleEntity
             _spriteRenderer.sprite = raisedSprite;
             _lineRenderer.startColor = Color.red;
             _lineRenderer.endColor = Color.red;
-            onReleased.Invoke();
         }
     }
+
+
 }
