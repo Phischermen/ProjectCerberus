@@ -9,6 +9,25 @@ using Random = UnityEngine.Random;
 
 public class Cerberus : PuzzleEntity
 {
+    class CerberusUndoData : UndoData
+    {
+        public Cerberus cerberus;
+        public Vector2Int position;
+        public bool collisionDisabled;
+        
+        public override void Load()
+        {
+            cerberus.MoveForUndo(position);
+            cerberus.SetDisableCollsionAndShowPentagramMarker(collisionDisabled);
+        }
+
+        public CerberusUndoData(Cerberus cerberus, Vector2Int position, bool collisionDisabled)
+        {
+            this.cerberus = cerberus;
+            this.position = position;
+            this.collisionDisabled = collisionDisabled;
+        }
+    }
     public Cerberus()
     {
         isPlayer = true;
@@ -37,6 +56,12 @@ public class Cerberus : PuzzleEntity
         base.Awake();
         input = FindObjectOfType<PuzzleGameplayInput>();
         _cerberusSprite = GetComponent<SpriteRenderer>().sprite;
+    }
+
+    public override UndoData GetUndoData()
+    {
+        var undoData = new CerberusUndoData(this, position, !collisionsEnabled);
+        return undoData;
     }
 
     public virtual void ProcessMoveInput()

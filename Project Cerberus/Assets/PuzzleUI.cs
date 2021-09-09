@@ -18,7 +18,7 @@ public class PuzzleUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        turnCounter.text = $"Turn:\n{_manager.turn}";
+        turnCounter.text = $"Turn:\n{_manager.maxTurns - _manager.turn}";
         currentDog.text = _manager.moveOrder[_manager.currentMove].name;
     }
 }
