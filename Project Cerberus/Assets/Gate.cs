@@ -11,6 +11,7 @@ public class Gate : PuzzleEntity
         public Gate gate;
         public bool open;
 
+
         public GateUndoData(Gate gate, bool open)
         {
             this.gate = gate;
@@ -22,7 +23,6 @@ public class Gate : PuzzleEntity
             gate.open = open;
         }
 
-
     }
     private bool wantsToClose;
     [ShowInTileInspector] public bool open;
@@ -33,6 +33,12 @@ public class Gate : PuzzleEntity
     public Gate()
     {
         entityRules = "Can be opened and closed via switches and levers. Jumpable when closed and landable when open.";
+    }
+
+    public override UndoData GetUndoData()
+    {
+        var undoData = new GateUndoData(this, open);
+        return undoData;
     }
 
     protected override void Awake()
