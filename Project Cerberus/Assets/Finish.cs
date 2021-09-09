@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[GetUndoDataReturnsNull]
 public class Finish : PuzzleEntity
 {
     public Finish()
@@ -24,5 +25,10 @@ public class Finish : PuzzleEntity
         {
             cerberus.onTopOfGoal = false;
         }
+    }
+
+    public override UndoData GetUndoData()
+    {
+        return null;
     }
 }
