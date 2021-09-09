@@ -16,7 +16,7 @@ public class PuzzleUI : MonoBehaviour
         public RectTransform rectTransform;
         public Text text;
 
-        // TODO Samuel: Fill in these methods.
+        // UI Methods
         public void SetUIToMovedPreset()
         {
             text.color = Color.gray;
