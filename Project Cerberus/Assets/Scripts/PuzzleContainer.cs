@@ -123,19 +123,20 @@ public class PuzzleContainer : MonoBehaviour
 
         if (_inspectorShown)
         {
+            var inspectorContentText = $"UndoStack size: {_undoStack.Count}\n";
             // Get cell that player is targeting
             var mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             var mouseCoord = new Vector2Int((int) mousePosition.x, (int) mousePosition.y);
             var inBounds = InBounds(mouseCoord);
             // Display information about that cell
-            var inspectorContentText = "Mouse over a tile to read data.";
+            inspectorContentText += "Mouse over a tile to read data.";
             if (inBounds)
             {
                 var cell = GetCell(mouseCoord);
                 if (cell != null)
                 {
+                    inspectorContentText = $"UndoStack size: {_undoStack.Count}\n";
                     // Read fields and properties exposed to tile inspector
-                    inspectorContentText = "";
                     // Read floor tile
                     if (cell.floorTile != null)
                     {

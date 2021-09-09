@@ -60,6 +60,11 @@ public class Laguna : Cerberus
         {
             manager.wantsToCycleCharacter = true;
         }
+
+        if (input.undoPressed)
+        {
+            manager.wantsToUndo = true;
+        }
     }
 
 
