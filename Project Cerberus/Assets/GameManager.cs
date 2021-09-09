@@ -20,8 +20,6 @@ public class GameManager : MonoBehaviour
     private Kahuna _kahuna;
     private CerberusMajor _cerberusMajor;
 
-    private CerberusMajorSpawnPoint _cerberusMajorSpawnPoint;
-
     public bool joinAndSplitEnabled { get; protected set; }
 
     [HideInInspector] public bool wantsToJoin;
@@ -47,7 +45,6 @@ public class GameManager : MonoBehaviour
         _kahuna = FindObjectOfType<Kahuna>();
         _laguna = FindObjectOfType<Laguna>();
         _cerberusMajor = FindObjectOfType<CerberusMajor>();
-        _cerberusMajorSpawnPoint = FindObjectOfType<CerberusMajorSpawnPoint>();
 
         // Initialize moveOrder
         moveOrder = new List<Cerberus>();
