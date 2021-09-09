@@ -106,6 +106,9 @@ public class Cerberus : PuzzleEntity
                 {
                     pushableEntity.Move(pushCoord);
                     Move(coord);
+                    
+                    pushableEntity.onStandardPushed.Invoke();
+                    
                     PlaySfx(walkSFX);
                     pushableEntity.PlayAnimation(
                         pushableEntity.SlideToDestination(pushCoord, AnimationUtility.basicMoveAndPushSpeed));

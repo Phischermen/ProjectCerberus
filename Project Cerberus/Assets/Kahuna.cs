@@ -16,6 +16,7 @@ public class Kahuna : Cerberus
     {
         entityRules = "Kahuna can fire fireballs, that push or interact with objects.";
     }
+
     protected override void Awake()
     {
         base.Awake();
@@ -158,6 +159,8 @@ public class Kahuna : Cerberus
                     DeclareDoneWithMove();
                 }
             }
+
+            entityToPushOrInteractWith.onHitByFireball.Invoke();
         }
     }
 }

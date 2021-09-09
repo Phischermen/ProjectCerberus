@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
@@ -34,11 +35,19 @@ public abstract class PuzzleEntity : MonoBehaviour
     protected bool animationMustStop;
     protected IEnumerator queuedAnimation;
 
+    [HideInInspector] public bool showOptionalSfx;
     [HideInInspector] public AudioSource pushedSfx;
 
     [HideInInspector] public AudioSource superPushedSfx;
 
     [HideInInspector] public AudioSource pushedByFireballSfx;
+
+    [HideInInspector] public bool showOptionalEvents;
+    [HideInInspector] public UnityEvent onStandardPushed; 
+    [HideInInspector] public UnityEvent onSuperPushed; 
+    [HideInInspector] public UnityEvent onMultiPushed; 
+    [HideInInspector] public UnityEvent onHitByFireball;
+    [HideInInspector] public UnityEvent onPulled;
 
     protected virtual void Awake()
     {

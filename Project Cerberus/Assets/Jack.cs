@@ -117,6 +117,8 @@ public class Jack : Cerberus
                 pushableEntity.Move(pushableEntity.position + offset);
             }
 
+            pushableEntity.onSuperPushed.Invoke();
+
             PlaySfx(_superPushSFX);
             pushableEntity.PlayAnimation(
                 pushableEntity.SlideToDestination(searchPosition, AnimationUtility.superPushAnimationSpeed));
@@ -142,6 +144,7 @@ public class Jack : Cerberus
                     entity.PlayAnimation(entity.SlideToDestination(entityPushCoord,
                         AnimationUtility.basicMoveAndPushSpeed));
                     entity.PlaySfx(entity.superPushedSfx);
+                    entity.onMultiPushed.Invoke();
                 }
 
                 Move(coord);
