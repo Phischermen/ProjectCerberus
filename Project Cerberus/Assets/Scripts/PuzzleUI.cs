@@ -82,7 +82,7 @@ public class PuzzleUI : MonoBehaviour
         // TODO Kevin: Move this out of Update loop into new UpdateUI method
         // Update turn counter
         turnCounter.text = $"Turn:\n{_manager.turn}";
-
+        
         // Hide all dog status initially
         foreach (var dogStatus in dogStatusArray)
         {
@@ -93,6 +93,10 @@ public class PuzzleUI : MonoBehaviour
         for (int i = 0; i < _manager.moveOrder.Count; i++)
         {
             var cerberus = _manager.moveOrder[i];
+            if (i == 0)
+            {
+                dogStatusArray[0].text.text = cerberus.isCerberusMajor ? "Cerberus" : "Jack";
+            }
             // Get dogStatus from map
             var dogStatus = _dogStatusMap[cerberus.GetType()];
             dogStatus.ShowUI();
