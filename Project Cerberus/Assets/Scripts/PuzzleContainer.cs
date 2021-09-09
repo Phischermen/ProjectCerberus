@@ -247,6 +247,8 @@ public class PuzzleContainer : MonoBehaviour
 
         _undoables = new List<IUndoable>();
         _undoStack = new Stack<List<UndoData>>();
+        
+        _undoables.Add(FindObjectOfType<GameManager>());
 
         // Setup tilemap for parsing
         tilemap.CompressBounds();
@@ -358,10 +360,13 @@ public class PuzzleContainer : MonoBehaviour
 
     public void UndoLastMove()
     {
-        var undoList = _undoStack.Pop();
-        foreach (var undoData in undoList)
+        if (_undoStack.Count > 0)
         {
-            undoData.Load();
+            var undoList = _undoStack.Pop();
+            foreach (var undoData in undoList)
+            {
+                undoData.Load();
+            }
         }
     }
 }

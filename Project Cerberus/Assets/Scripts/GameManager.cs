@@ -4,8 +4,41 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour, IUndoable
 {
+    class GameManagerUndoData : UndoData
+    {
+        private GameManager _gameManager;
+        private List<Cerberus> _moveOrder;
+        private int _currentMove;
+        private int _turn;
+
+        private int _cerberusYetToReachGoal;
+        private bool _collectedStar;
+
+        public GameManagerUndoData(GameManager gameManager, List<Cerberus> moveOrder, int currentMove, int turn,
+            int cerberusYetToReachGoal, bool collectedStar)
+        {
+            _gameManager = gameManager;
+            _moveOrder = moveOrder;
+            _currentMove = currentMove;
+            _turn = turn;
+            _cerberusYetToReachGoal = cerberusYetToReachGoal;
+            _collectedStar = collectedStar;
+        }
+
+        public override void Load()
+        {
+            _gameManager.moveOrder = new List<Cerberus>(_moveOrder);
+            _gameManager.currentMove = _currentMove;
+            // Start the move of the newly controlled Cerberus
+            _gameManager.moveOrder[_currentMove].StartMove();
+            _gameManager.turn = _turn;
+            _gameManager._cerberusYetToReachGoal = _cerberusYetToReachGoal;
+            _gameManager.collectedStar = _collectedStar;
+        }
+    }
+
     public string nextScene;
     [HideInInspector] public bool infinteTurns = true;
     [HideInInspector] public int maxTurns;
@@ -74,7 +107,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         var currentCerberus = moveOrder[currentMove];
@@ -172,7 +204,6 @@ public class GameManager : MonoBehaviour
         // Handle request to undo
         else if (wantsToUndo)
         {
-            // TODO implement undo logic
             wantsToUndo = false;
             _puzzleContainer.UndoLastMove();
             Debug.Log("Ündo");
@@ -186,6 +217,16 @@ public class GameManager : MonoBehaviour
             var newCerberus = moveOrder[currentMove];
             newCerberus.StartMove();
         }
+    }
+
+    // Undo
+
+    public UndoData GetUndoData()
+    {
+        var moveOrderCopy = new List<Cerberus>(moveOrder);
+        var undoData = new GameManagerUndoData(this, moveOrderCopy, currentMove, turn, _cerberusYetToReachGoal,
+            collectedStar);
+        return undoData;
     }
 
     // Move order management
@@ -219,7 +260,7 @@ public class GameManager : MonoBehaviour
         _jack.FinishCurrentAnimation();
         _kahuna.FinishCurrentAnimation();
         _laguna.FinishCurrentAnimation();
-        
+
         _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(false);
         _jack.SetDisableCollsionAndShowPentagramMarker(true);
         _kahuna.SetDisableCollsionAndShowPentagramMarker(true);
@@ -233,7 +274,7 @@ public class GameManager : MonoBehaviour
     {
         // Stop animation
         _cerberusMajor.FinishCurrentAnimation();
-        
+
         _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(true);
         _jack.SetDisableCollsionAndShowPentagramMarker(false);
         _kahuna.SetDisableCollsionAndShowPentagramMarker(false);
