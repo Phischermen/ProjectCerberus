@@ -20,7 +20,14 @@ public class Gate : PuzzleEntity
 
         public override void Load()
         {
-            gate.open = open;
+            if (open)
+            {
+                gate.SetFieldsToOpenPreset();
+            }
+            else
+            {
+                gate.SetFieldsToClosedPreset();
+            }
         }
 
     }
