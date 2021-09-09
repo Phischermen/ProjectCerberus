@@ -9,6 +9,8 @@ public class WoodBlock : BasicBlock
 
     protected WoodBlock()
     {
+        entityRules = "Wood blocks burn up when they are shot by Kahuna.";
+        pushableByFireball = false;
         interactsWithFireball = true;
     }
 
@@ -17,6 +19,11 @@ public class WoodBlock : BasicBlock
         GetComponent<SpriteRenderer>().sprite = destroyedSprite;
         SetCollisionsEnabled(false);
         landable = true;
-        pushable = false;
+        jumpable = false;
+        interactsWithFireball = false;
+        pushableByFireball = false;
+        pushableByStandardMove = false;
+        pushableByJacksMultiPush = false;
+        pushableByJacksSuperPush = false;
     }
 }

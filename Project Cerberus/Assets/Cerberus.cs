@@ -2,6 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public class Cerberus : PuzzleEntity
 {
@@ -10,18 +14,23 @@ public class Cerberus : PuzzleEntity
         isPlayer = true;
         stopsPlayer = true;
         stopsBlock = true;
-        pushable = true;
+        pullable = true;
+        pushableByStandardMove = true;
+        pushableByJacksSuperPush = true;
+        pushableByJacksMultiPush = true;
         pushableByFireball = true;
+        jumpable = true;
     }
 
     [HideInInspector] public bool doneWithMove;
     [HideInInspector, ShowInTileInspector] public bool onTopOfGoal;
 
-    [ShowInTileInspector] protected bool isCerberusMajor = false;
+    [ShowInTileInspector] public bool isCerberusMajor = false;
     protected PuzzleGameplayInput input;
 
     private Sprite _cerberusSprite;
     public Sprite pentagramMarker;
+    [FormerlySerializedAs("_walkSFX")] public AudioSource walkSFX;
 
     protected override void Awake()
     {
@@ -32,12 +41,17 @@ public class Cerberus : PuzzleEntity
 
     public virtual void ProcessMoveInput()
     {
+        if (input.resetPressed)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
         if (input.skipMove)
         {
             DeclareDoneWithMove();
         }
 
-        if (input.mergeOrSplit)
+        if (input.mergeOrSplit && manager.joinAndSplitEnabled)
         {
             if (isCerberusMajor)
             {
@@ -69,14 +83,18 @@ public class Cerberus : PuzzleEntity
     {
         var coord = position + offset;
         var newCell = puzzle.GetCell(coord);
-        var blocked = CollidesWith(newCell.floorTile) || CollidesWithAny(newCell.GetStaticEntities());
+        var blocked = CollidesWith(newCell.floorTile) ||
+                      CollidesWithAny(newCell.GetEntitesThatCannotBePushedByStandardMove());
         if (!blocked)
         {
-            var pushableEntity = newCell.GetPushableEntity();
+            var pushableEntity = newCell.GetEntityPushableByStandardMove();
             if (!pushableEntity)
             {
                 puzzle.PushToUndoStack();
+                // Move one space
                 Move(coord);
+                PlaySfx(walkSFX);
+                PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                 DeclareDoneWithMove();
             }
             else
@@ -91,6 +109,11 @@ public class Cerberus : PuzzleEntity
                     puzzle.PushToUndoStack();
                     pushableEntity.Move(pushCoord);
                     Move(coord);
+                    PlaySfx(walkSFX);
+                    pushableEntity.PlayAnimation(
+                        pushableEntity.SlideToDestination(pushCoord, AnimationUtility.basicMoveAndPushSpeed));
+                    PlaySfx(pushableEntity.pushedSfx);
+                    PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                     DeclareDoneWithMove();
                 }
             }
@@ -100,8 +123,12 @@ public class Cerberus : PuzzleEntity
     public void SetDisableCollsionAndShowPentagramMarker(bool disableAndShowPentagram)
     {
         SetCollisionsEnabled(!disableAndShowPentagram);
-        pushable = !disableAndShowPentagram;
+        pushableByStandardMove = !disableAndShowPentagram;
+        pushableByFireball = !disableAndShowPentagram;
+        pushableByJacksMultiPush = !disableAndShowPentagram;
+        pushableByJacksSuperPush = !disableAndShowPentagram;
         landable = disableAndShowPentagram;
         GetComponent<SpriteRenderer>().sprite = disableAndShowPentagram ? pentagramMarker : _cerberusSprite;
     }
+
 }

@@ -21,6 +21,7 @@ public class PuzzleGameplayInput : MonoBehaviour
         skipMove,
         mergeOrSplit,
         undoPressed,
+        resetPressed,
         cycleCharacter;
 
     private void Update()
@@ -48,6 +49,7 @@ public class PuzzleGameplayInput : MonoBehaviour
             mergeOrSplit = gamepad.squareButton.wasPressedThisFrame;
 
             undoPressed = gamepad.circleButton.wasPressedThisFrame;
+            resetPressed = gamepad.leftTrigger.wasPressedThisFrame;
 
             cycleCharacter = gamepad.rightShoulder.wasPressedThisFrame;
         }
@@ -76,6 +78,7 @@ public class PuzzleGameplayInput : MonoBehaviour
             mergeOrSplit = mergeOrSplit || keyboard.leftCtrlKey.wasPressedThisFrame;
 
             undoPressed = undoPressed || keyboard.rightShiftKey.wasPressedThisFrame;
+            resetPressed = resetPressed || keyboard.rKey.wasPressedThisFrame;
 
             cycleCharacter = cycleCharacter || keyboard.tabKey.wasPressedThisFrame;
         }
@@ -84,7 +87,7 @@ public class PuzzleGameplayInput : MonoBehaviour
     public void ClearInput()
     {
         leftPressed = rightPressed = upPressed = downPressed = leftReleased = rightReleased =
-            upReleased = downReleased = specialPressed =
-                specialHeld = specialReleased = skipMove = mergeOrSplit = undoPressed = cycleCharacter = false;
+            upReleased = downReleased = specialPressed = specialHeld = specialReleased =
+                skipMove = mergeOrSplit = undoPressed = resetPressed = cycleCharacter = false;
     }
 }

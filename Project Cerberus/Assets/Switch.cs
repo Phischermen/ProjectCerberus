@@ -36,6 +36,7 @@ public class Switch : PuzzleEntity
 
     Switch()
     {
+        entityRules = "Switches control other objects. A switch must be held down with an object.";
         isStatic = true;
         landable = true;
     }

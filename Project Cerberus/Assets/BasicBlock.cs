@@ -23,11 +23,16 @@ public class BasicBlock : PuzzleEntity
 
     protected BasicBlock()
     {
+        entityRules = "A basic pushable/pullable block. Not landable.";
         isBlock = true;
         stopsBlock = true;
         stopsPlayer = true;
+        pullable = true;
         pushableByFireball = true;
-        pushable = true;
+        pushableByStandardMove = true;
+        pushableByJacksMultiPush = true;
+        pushableByJacksSuperPush = true;
+        jumpable = true;
     }
 
     public override UndoData GetUndoData()

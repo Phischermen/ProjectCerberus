@@ -6,5 +6,13 @@ public static class Scenum
 	{
 		SampleScene,
 		TestLevel,
+		BasicPushTutorial,
+		FirstLevel,
+		OptimizeRoute,
+		SwitchTutorial,
+		SuperPushTutorial,
+		JackAndLaguna,
+		TrapSpikePuzzle,
+		JackTutorial,
 	}
 }

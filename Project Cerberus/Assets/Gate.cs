@@ -30,6 +30,11 @@ public class Gate : PuzzleEntity
     [SerializeField] private Sprite closeSprite;
     private SpriteRenderer _spriteRenderer;
 
+    public Gate()
+    {
+        entityRules = "Can be opened and closed via switches and levers. Jumpable when closed and landable when open.";
+    }
+
     protected override void Awake()
     {
         base.Awake();
@@ -81,6 +86,7 @@ public class Gate : PuzzleEntity
         stopsBlock = false;
         stopsPlayer = false;
         landable = true;
+        jumpable = false;
     }
 
     private void SetFieldsToClosedPreset()
@@ -89,5 +95,6 @@ public class Gate : PuzzleEntity
         stopsBlock = true;
         stopsPlayer = true;
         landable = false;
+        jumpable = true;
     }
 }

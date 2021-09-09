@@ -6,6 +6,14 @@ public class Jack : Cerberus
 {
     private static int _superPushRange = 32;
 
+    public AudioSource _superPushSFX;
+
+    public Jack()
+    {
+        entityRules =
+            "Jack can push a single object really far, but can't push a row of objects farther than one tile.";
+    }
+
     public override void ProcessMoveInput()
     {
         base.ProcessMoveInput();
@@ -69,13 +77,15 @@ public class Jack : Cerberus
     {
         var coord = position + offset;
         var newCell = puzzle.GetCell(coord);
-        var blocked = CollidesWith(newCell.floorTile) || CollidesWithAny(newCell.GetStaticEntities());
-
+        var blocked = CollidesWith(newCell.floorTile) ||
+                      CollidesWithAny(newCell.GetEntitesThatCannotBePushedByStandardMove());
         var entitiesToPush = GetEntitiesToPush(offset);
         if (!blocked && entitiesToPush.Count == 0)
         {
             puzzle.PushToUndoStack();
             Move(coord);
+            PlaySfxPitchShift(walkSFX, 0.9f, 1.1f);
+            PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
             DeclareDoneWithMove();
         }
         else if (entitiesToPush.Count == 1)
@@ -114,6 +124,10 @@ public class Jack : Cerberus
                 pushableEntity.Move(pushableEntity.position + offset);
             }
 
+            PlaySfx(_superPushSFX);
+            pushableEntity.PlayAnimation(
+                pushableEntity.SlideToDestination(searchPosition, AnimationUtility.superPushAnimationSpeed));
+            pushableEntity.PlaySfx(pushableEntity.superPushedSfx);
             DeclareDoneWithMove();
         }
         else if (!blocked)
@@ -131,10 +145,16 @@ public class Jack : Cerberus
                 for (var i = entitiesToPush.Count - 1; i >= 0; i--)
                 {
                     var entity = entitiesToPush[i];
-                    entity.Move(entity.position + offset);
+                    var entityPushCoord = entity.position + offset;
+                    entity.Move(entityPushCoord);
+                    entity.PlayAnimation(entity.SlideToDestination(entityPushCoord,
+                        AnimationUtility.basicMoveAndPushSpeed));
+                    entity.PlaySfx(entity.superPushedSfx);
                 }
 
                 Move(coord);
+                PlaySfxPitchShift(superPushedSfx, 0.9f, 1.1f);
+                PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                 DeclareDoneWithMove();
             }
         }
@@ -146,7 +166,10 @@ public class Jack : Cerberus
         var searchPosition = position;
         while (true)
         {
-            var nextPushableEntity = puzzle.GetCell(searchPosition + offset).GetPushableEntity();
+            var searchedCell = puzzle.GetCell(searchPosition + offset);
+            var nextPushableEntity = (entities.Count > 0)
+                ? searchedCell.GetPushableEntityForMultiPush()
+                : searchedCell.GetPushableEntityForSuperPush();
             if (nextPushableEntity == null)
             {
                 // Last entity found.
