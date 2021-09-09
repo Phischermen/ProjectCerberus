@@ -48,7 +48,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         puzzle = FindObjectOfType<PuzzleContainer>();
         manager = FindObjectOfType<GameManager>();
     }
-    
+
     private void Start()
     {
         // Invoke enter collision callback with puzzle entities in initial cell
@@ -126,6 +126,14 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     // This version of move does not trigger 'OnEnter' or 'OnExit' callbacks
     public void MoveForUndo(Vector2Int cell)
     {
+        /* Finish animation does not actually finish animation until next frame. In this context we don't actually want
+        the animation to finish but terminate completely, thus StopCoroutine().*/
+        FinishCurrentAnimation();
+        if (animationRoutine != null)
+        {
+            StopCoroutine(animationRoutine);
+        }
+        // Perform standard move
         puzzle.RemoveEntityFromCell(this, position);
         position = cell;
         transform.position = puzzle.tilemap.layoutGrid.GetCellCenterWorld(new Vector3Int(cell.x, cell.y, 0));
