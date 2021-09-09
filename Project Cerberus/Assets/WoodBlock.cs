@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class WoodBlock : BasicBlock
 {
-
     public class WoodBlockUndoData : UndoData
     {
-
         public WoodBlock wood;
         public bool burned;
 
@@ -19,13 +17,13 @@ public class WoodBlock : BasicBlock
 
         public override void Load()
         {
-            
+            wood.SetFieldsToShotPreset(burned);
         }
-
     }
 
     [SerializeField] private Sprite wholeSprite;
     [SerializeField] private Sprite destroyedSprite;
+    private SpriteRenderer _spriteRenderer;
 
     protected WoodBlock()
     {
@@ -34,35 +32,45 @@ public class WoodBlock : BasicBlock
         interactsWithFireball = true;
     }
 
+    private void Awake()
+    {
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
     public override void OnShotByKahuna()
     {
-        GetComponent<SpriteRenderer>().sprite = destroyedSprite;
-        SetCollisionsEnabled(false);
-        landable = true;
-        jumpable = false;
-        interactsWithFireball = false;
-        pushableByFireball = false;
-        pushableByStandardMove = false;
-        pushableByJacksMultiPush = false;
-        pushableByJacksSuperPush = false;
+        SetFieldsToShotPreset(true);
     }
 
-    public void BurntBlock(bool burn)
+    public void SetFieldsToShotPreset(bool shot)
     {
-        if (burn == true)
+        if (shot == true)
         {
-            GetComponent<SpriteRenderer>().sprite = destroyedSprite;
+            _spriteRenderer.sprite = destroyedSprite;
             SetCollisionsEnabled(false);
             landable = true;
-            pushable = false;
+            jumpable = false;
+            interactsWithFireball = false;
+            pushableByStandardMove = false;
+            pushableByJacksMultiPush = false;
+            pushableByJacksSuperPush = false;
         }
-
-        if (burn == false)
+        else
         {
+            _spriteRenderer.sprite = wholeSprite;
             SetCollisionsEnabled(true);
             landable = false;
-            pushable = true;
+            jumpable = true;
+            interactsWithFireball = true;
+            pushableByStandardMove = true;
+            pushableByJacksMultiPush = true;
+            pushableByJacksSuperPush = true;
         }
     }
 
+    public override UndoData GetUndoData()
+    {
+        var undoData = new WoodBlockUndoData(this, burned: collisionsEnabled);
+        return undoData;
+    }
 }
