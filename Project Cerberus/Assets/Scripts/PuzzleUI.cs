@@ -24,17 +24,21 @@ public class PuzzleUI : MonoBehaviour
 
         public void SetUIToCurrentlyControlledPreset()
         {
+            text.color = Color.red;
         }
 
         public void SetUIToYetToMovePreset()
         {
+            text.color = Color.white;
         }
         public void HideUI()
         {
+            text.gameObject.SetActive(false);
         }
 
         public void ShowUI()
         {
+            text.gameObject.SetActive(true);
         }
     }
 

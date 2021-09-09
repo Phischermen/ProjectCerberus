@@ -197,7 +197,13 @@ MonoBehaviour:
   firstDog: {fileID: 3031612095214863058}
   secondDog: {fileID: 3090635084876822537}
   thirdDog: {fileID: 2417029684126360429}
-  dogStatusArray: []
+  dogStatusArray:
+  - rectTransform: {fileID: 2461693625031811920}
+    text: {fileID: 3031612095214863058}
+  - rectTransform: {fileID: 2827342453373219395}
+    text: {fileID: 3090635084876822537}
+  - rectTransform: {fileID: 4416743150691991051}
+    text: {fileID: 2417029684126360429}
 --- !u!1 &6013021953963667286
 GameObject:
   m_ObjectHideFlags: 0
