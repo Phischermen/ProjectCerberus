@@ -13,6 +13,7 @@ public class CrackedTile : FloorTile
     public CrackedTile()
     {
         needsToBeCloned = true;
+        allowsAllSuperPushedEntitiesPassage = true;
     }
 
     public void Awake()

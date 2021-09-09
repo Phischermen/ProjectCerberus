@@ -3,6 +3,11 @@
 
 public class Laguna : Cerberus
 {
+    public Laguna()
+    {
+        entityRules = "Laguna can pull objects.";
+    }
+
     public override void ProcessMoveInput()
     {
         base.ProcessMoveInput();
@@ -64,30 +69,50 @@ public class Laguna : Cerberus
         var pullCoord = position - offset;
         var newCell = puzzle.GetCell(coord);
         var pullCell = puzzle.GetCell(pullCoord);
-        var blocked = CollidesWith(newCell.floorTile) || CollidesWithAny(newCell.GetStaticEntities());
+        var blocked = CollidesWith(newCell.floorTile) ||
+                      CollidesWithAny(newCell.GetEntitesThatCannotBePushedByStandardMove());
         if (!blocked)
         {
-            var pushableEntity = newCell.GetPushableEntity();
-            var entityToPull = pullCell.GetPushableEntity();
-            if (!pushableEntity)
+            var pushableEntity = newCell.GetEntityPushableByStandardMove();
+            var entityToPull = pullCell.GetPullableEntity();
+            // Pull move fails with no entity to pull
+            if (entityToPull)
             {
-                entityToPull?.Move(position);
-                Move(coord);
-                DeclareDoneWithMove();
-            }
-            else
-            {
-                // Push entity in front of Laguna one space
-                var pushCoord = pushableEntity.position + offset;
-                var pushEntityNewCell = puzzle.GetCell(pushCoord);
-                var pushBlocked = pushableEntity.CollidesWith(pushEntityNewCell.floorTile) ||
-                                  pushableEntity.CollidesWithAny(pushEntityNewCell.puzzleEntities);
-                if (!pushBlocked)
+                if (!pushableEntity)
                 {
-                    pushableEntity.Move(pushCoord);
-                    entityToPull?.Move(position);
+                    var p = position;
                     Move(coord);
+                    entityToPull.Move(p);
+                    PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
+                    entityToPull.PlayAnimation(entityToPull.SlideToDestination(p,
+                        AnimationUtility.basicMoveAndPushSpeed));
+                    PlaySfx(walkSFX);
+                    PlaySfx(entityToPull.pushedSfx);
                     DeclareDoneWithMove();
+                }
+                else
+                {
+                    // Push entity in front of Laguna one space and pull block behind
+                    var pushCoord = pushableEntity.position + offset;
+                    var pushEntityNewCell = puzzle.GetCell(pushCoord);
+                    var pushBlocked = pushableEntity.CollidesWith(pushEntityNewCell.floorTile) ||
+                                      pushableEntity.CollidesWithAny(pushEntityNewCell.puzzleEntities);
+                    if (!pushBlocked)
+                    {
+                        var p = position;
+                        pushableEntity.Move(pushCoord);
+                        Move(coord);
+                        entityToPull.Move(p);
+                        PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
+                        pushableEntity.PlayAnimation(
+                            pushableEntity.SlideToDestination(pushCoord, AnimationUtility.basicMoveAndPushSpeed));
+                        entityToPull.PlayAnimation(
+                            entityToPull.SlideToDestination(p, AnimationUtility.basicMoveAndPushSpeed));
+                        PlaySfx(walkSFX);
+                        PlaySfx(pushableEntity.pushedSfx);
+                        PlaySfx(entityToPull.pushedSfx);
+                        DeclareDoneWithMove();
+                    }
                 }
             }
         }

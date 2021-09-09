@@ -3,22 +3,42 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public abstract class PuzzleEntity : MonoBehaviour
 {
     protected PuzzleContainer puzzle;
     protected GameManager manager;
     [HideInInspector] public Vector2Int position;
+    public PuzzleContainer.LevelCell currentCell => puzzle.GetCell(position);
     [ShowInTileInspector] public bool collisionsEnabled { get; protected set; } = true;
     [ShowInTileInspector] public bool isStatic { get; protected set; }
     [ShowInTileInspector] public bool isPlayer { get; protected set; }
     [ShowInTileInspector] public bool isBlock { get; protected set; }
     [ShowInTileInspector] public bool stopsPlayer { get; protected set; }
     [ShowInTileInspector] public bool stopsBlock { get; protected set; }
+    [ShowInTileInspector] public bool pullable { get; protected set; }
     [ShowInTileInspector] public bool pushableByFireball { get; protected set; }
     [ShowInTileInspector] public bool interactsWithFireball { get; protected set; }
-    [ShowInTileInspector] public bool pushable { get; protected set; }
+    [ShowInTileInspector] public bool pushableByStandardMove { get; protected set; }
+    [ShowInTileInspector] public bool pushableByJacksMultiPush { get; protected set; }
+    [ShowInTileInspector] public bool pushableByJacksSuperPush { get; protected set; }
     [ShowInTileInspector] public bool landable { get; protected set; }
+    [ShowInTileInspector] public bool jumpable { get; protected set; }
+    public string entityRules { get; protected set; } = "No rules have been written for this object.";
+    public bool isSuperPushed { get; set; }
+
+    protected Coroutine animationRoutine;
+    protected bool animationIsRunning;
+    protected bool animationMustStop;
+    protected IEnumerator queuedAnimation;
+
+    [HideInInspector] public AudioSource pushedSfx;
+
+    [HideInInspector] public AudioSource superPushedSfx;
+
+    [HideInInspector] public AudioSource pushedByFireballSfx;
 
     protected virtual void Awake()
     {
@@ -28,11 +48,10 @@ public abstract class PuzzleEntity : MonoBehaviour
         puzzle = FindObjectOfType<PuzzleContainer>();
         manager = FindObjectOfType<GameManager>();
     }
-
+    
     private void Start()
     {
         // Invoke enter collision callback with puzzle entities in initial cell
-        var currentCell = puzzle.GetCell(position);
         foreach (var newCellPuzzleEntity in currentCell.puzzleEntities)
         {
             if (collisionsEnabled && newCellPuzzleEntity.collisionsEnabled && newCellPuzzleEntity != this)
@@ -40,6 +59,15 @@ public abstract class PuzzleEntity : MonoBehaviour
                 OnEnterCollisionWithEntity(newCellPuzzleEntity);
                 newCellPuzzleEntity.OnEnterCollisionWithEntity(this);
             }
+        }
+    }
+
+    private void Update()
+    {
+        if (queuedAnimation != null && !animationIsRunning)
+        {
+            PlayAnimation(queuedAnimation);
+            queuedAnimation = null;
         }
     }
 
@@ -58,7 +86,6 @@ public abstract class PuzzleEntity : MonoBehaviour
     public void Move(Vector2Int cell)
     {
         var newCell = puzzle.GetCell(cell);
-        var currentCell = puzzle.GetCell(position);
         puzzle.RemoveEntityFromCell(this, position);
         foreach (var currentCellPuzzleEntity in currentCell.puzzleEntities)
         {
@@ -75,8 +102,9 @@ public abstract class PuzzleEntity : MonoBehaviour
             puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
         }
 
+        // Note: Transform needs to be updated via animation
         position = cell;
-        transform.position = puzzle.tilemap.layoutGrid.GetCellCenterWorld(new Vector3Int(cell.x, cell.y, 0));
+
         foreach (var newCellPuzzleEntity in newCell.puzzleEntities)
         {
             if (collisionsEnabled && newCellPuzzleEntity.collisionsEnabled)
@@ -99,6 +127,8 @@ public abstract class PuzzleEntity : MonoBehaviour
     {
         foreach (var entity in entities)
         {
+            // Entities cannot collide with themselves
+            if (entity == this) continue;
             if (CollidesWith(entity)) return true;
         }
 
@@ -114,9 +144,24 @@ public abstract class PuzzleEntity : MonoBehaviour
 
     public bool CollidesWith(FloorTile floorTile)
     {
-        return collisionsEnabled && (
-            (isPlayer && floorTile.stopsPlayer) ||
-            (isBlock && floorTile.stopsBlock));
+        if (!collisionsEnabled)
+        {
+            return false;
+        }
+
+        // Jack's super push allows entities to 'sail' over certain tiles like pits and spikes.
+        if (isSuperPushed && floorTile.allowsAllSuperPushedEntitiesPassage)
+        {
+            return false;
+        }
+
+        return (isPlayer && floorTile.stopsPlayer) ||
+               (isBlock && floorTile.stopsBlock);
+    }
+
+    public bool CollidesWith(PuzzleContainer.LevelCell levelCell)
+    {
+        return CollidesWith(levelCell.floorTile) || CollidesWithAny(levelCell.puzzleEntities);
     }
 
     public void SetCollisionsEnabled(bool enable)
@@ -124,7 +169,6 @@ public abstract class PuzzleEntity : MonoBehaviour
         if (enable == collisionsEnabled) return;
         collisionsEnabled = enable;
         // Invoke callbacks
-        var currentCell = puzzle.GetCell(position);
         if (enable)
         {
             foreach (var entity in currentCell.puzzleEntities)
@@ -135,6 +179,9 @@ public abstract class PuzzleEntity : MonoBehaviour
                     entity.OnEnterCollisionWithEntity(this);
                 }
             }
+
+            currentCell.floorTile.OnEnterCollisionWithEntity(this);
+            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
         }
         else
         {
@@ -146,6 +193,89 @@ public abstract class PuzzleEntity : MonoBehaviour
                     entity.OnExitCollisionWithEntity(this);
                 }
             }
+
+            currentCell.floorTile.OnExitCollisionWithEntity(this);
+            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
         }
+    }
+
+    // Sound effects
+    /* KF 9/7/21 I am considering using Wwise for our project because even implementing basic pitch shifting is kind of
+     a pain. I do not like how minimum and maximum pitch is hard coded, because I know I am not going to be consistent 
+     throughout the entire project unless I cache those values somehow. If Wwise doesn't work out, I think I may try
+     using attributes to indicate that a sound effect is meant to be pitch shifted. */
+
+    public void PlaySfx(AudioSource source)
+    {
+        if (source)
+        {
+            source.Play();
+        }
+    }
+
+    public void StopSfx(AudioSource source)
+    {
+        if (source)
+        {
+            source.Stop();
+        }
+    }
+
+    public void PlaySfxPitchShift(AudioSource source, float min, float max)
+    {
+        if (source)
+        {
+            source.pitch = Random.Range(min, max);
+            source.Play();
+        }
+    }
+
+    // Animations
+    public void PlayAnimation(IEnumerator animationToPlay)
+    {
+        if (animationIsRunning)
+        {
+            animationMustStop = true;
+            // Queue animation routine for next frame
+            queuedAnimation = animationToPlay;
+        }
+        else
+        {
+            // Start animation routine 
+            animationRoutine = StartCoroutine(animationToPlay);
+        }
+    }
+
+    public void FinishCurrentAnimation()
+    {
+        if (animationIsRunning)
+        {
+            animationMustStop = true;
+        }
+    }
+
+    public IEnumerator SlideToDestination(Vector2Int destination, float speed)
+    {
+        animationIsRunning = true;
+        var startingPosition = transform.position;
+        var destinationPosition = puzzle.GetCellCenterWorld(destination);
+        var distanceToTravel = Vector3.Distance(startingPosition, destinationPosition);
+        var distanceTraveled = 0f;
+        while (distanceTraveled < distanceToTravel && animationMustStop == false)
+        {
+            // Increment distance travelled
+            var delta = speed * Time.deltaTime;
+            distanceTraveled += delta;
+            // Set position
+            var interpolation = distanceTraveled / distanceToTravel;
+            transform.position = Vector3.Lerp(startingPosition, destinationPosition, interpolation);
+            yield return new WaitForFixedUpdate();
+        }
+
+        StopSfx(superPushedSfx);
+        // Goto final destination
+        transform.position = destinationPosition;
+        animationIsRunning = false;
+        animationMustStop = false;
     }
 }

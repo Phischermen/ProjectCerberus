@@ -8,6 +8,7 @@ public class Pickup : PuzzleEntity
     [HideInInspector,ShowInTileInspector] public bool collected;
     public Pickup()
     {
+        entityRules = "A bonus pickup. Collecting this for a surprise reward.";
         landable = true;
     }
 

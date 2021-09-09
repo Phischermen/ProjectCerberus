@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
     public string nextScene;
+    [HideInInspector] public bool infinteTurns = true;
+    [HideInInspector] public int maxTurns;
     [SerializeField] private GameObject _uiPrefab;
     public List<Cerberus> moveOrder { get; protected set; }
     public int turn { get; protected set; }
@@ -43,9 +46,23 @@ public class GameManager : MonoBehaviour
 
         // Initialize moveOrder
         moveOrder = new List<Cerberus>();
-        if (_jack) moveOrder.Add(_jack);
-        if (_kahuna) moveOrder.Add(_kahuna);
-        if (_laguna) moveOrder.Add(_laguna);
+        if (_jack)
+        {
+            moveOrder.Add(_jack);
+            _cerberusYetToReachGoal += 1;
+        }
+
+        if (_kahuna)
+        {
+            moveOrder.Add(_kahuna);
+            _cerberusYetToReachGoal += 1;
+        }
+
+        if (_laguna)
+        {
+            moveOrder.Add(_laguna);
+            _cerberusYetToReachGoal += 1;
+        }
 
         // Set initial gameplay variables
         if (_cerberusMajor)
@@ -53,8 +70,6 @@ public class GameManager : MonoBehaviour
             joinAndSplitEnabled = true;
             _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(true);
         }
-
-        _cerberusYetToReachGoal = FindObjectsOfType<Finish>().Length;
     }
 
     // Update is called once per frame
@@ -70,7 +85,7 @@ public class GameManager : MonoBehaviour
             if (currentCerberus.onTopOfGoal && !currentCerberusWasOnTopOfGoal)
             {
                 // Decrement goal counter
-                _cerberusYetToReachGoal -= 1;
+                _cerberusYetToReachGoal -= (currentCerberus.isCerberusMajor) ? 3 : 1;
                 if (_cerberusYetToReachGoal == 0)
                 {
                     Debug.Log("You win!");
@@ -80,7 +95,7 @@ public class GameManager : MonoBehaviour
             else if (!currentCerberus.onTopOfGoal && currentCerberusWasOnTopOfGoal)
             {
                 // Increment goal counter 
-                _cerberusYetToReachGoal += 1;
+                _cerberusYetToReachGoal += (currentCerberus.isCerberusMajor) ? 3 : 1;
             }
 
 
@@ -88,14 +103,54 @@ public class GameManager : MonoBehaviour
             if (wantsToJoin && joinAndSplitEnabled)
             {
                 wantsToJoin = false;
-                FormCerberusMajor();
-                IncrementTurn();
+                // Check for collision at CerberusMajor
+                _cerberusMajor.SetCollisionsEnabled(true);
+                _jack.SetCollisionsEnabled(false);
+                _kahuna.SetCollisionsEnabled(false);
+                _laguna.SetCollisionsEnabled(false);
+                if (!_cerberusMajor.CollidesWith(_cerberusMajor.currentCell))
+                {
+                    FormCerberusMajor();
+                    // Don't increment turn if player merges or splits as their first action
+                    if (currentMove != 0)
+                    {
+                        IncrementTurn();
+                    }
+                }
+                else
+                {
+                    _cerberusMajor.SetCollisionsEnabled(false);
+                    _jack.SetCollisionsEnabled(true);
+                    _kahuna.SetCollisionsEnabled(true);
+                    _laguna.SetCollisionsEnabled(true);
+                }
             }
             else if (wantsToSplit && joinAndSplitEnabled)
             {
                 wantsToSplit = false;
-                SplitCerberusMajor();
-                IncrementTurn();
+                // Check for collision with every dog
+                _cerberusMajor.SetCollisionsEnabled(false);
+                _jack.SetCollisionsEnabled(true);
+                _kahuna.SetCollisionsEnabled(true);
+                _laguna.SetCollisionsEnabled(true);
+                if (!_jack.CollidesWith(_jack.currentCell) &&
+                    !_laguna.CollidesWith(_laguna.currentCell) &&
+                    !_kahuna.CollidesWith(_kahuna.currentCell))
+                {
+                    SplitCerberusMajor();
+                    // Don't increment turn if player merges or splits as their first action
+                    if (currentMove != 0)
+                    {
+                        IncrementTurn();
+                    }
+                }
+                else
+                {
+                    _cerberusMajor.SetCollisionsEnabled(true);
+                    _jack.SetCollisionsEnabled(false);
+                    _kahuna.SetCollisionsEnabled(false);
+                    _laguna.SetCollisionsEnabled(false);
+                }
             }
             else
             {
@@ -133,6 +188,11 @@ public class GameManager : MonoBehaviour
     void IncrementTurn()
     {
         turn += 1;
+        if (!infinteTurns && turn > maxTurns)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
         currentMove = 0;
         Debug.Log(turn);
     }
@@ -144,6 +204,11 @@ public class GameManager : MonoBehaviour
     // Merge and split Management
     public void FormCerberusMajor()
     {
+        // Stop animations
+        _jack.FinishCurrentAnimation();
+        _kahuna.FinishCurrentAnimation();
+        _laguna.FinishCurrentAnimation();
+        
         _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(false);
         _jack.SetDisableCollsionAndShowPentagramMarker(true);
         _kahuna.SetDisableCollsionAndShowPentagramMarker(true);
@@ -155,6 +220,9 @@ public class GameManager : MonoBehaviour
 
     public void SplitCerberusMajor()
     {
+        // Stop animation
+        _cerberusMajor.FinishCurrentAnimation();
+        
         _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(true);
         _jack.SetDisableCollsionAndShowPentagramMarker(false);
         _kahuna.SetDisableCollsionAndShowPentagramMarker(false);

@@ -6,21 +6,15 @@ public class BasicBlock : PuzzleEntity
 {
     protected BasicBlock()
     {
+        entityRules = "A basic pushable/pullable block. Not landable.";
         isBlock = true;
         stopsBlock = true;
         stopsPlayer = true;
+        pullable = true;
         pushableByFireball = true;
-        pushable = true;
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        pushableByStandardMove = true;
+        pushableByJacksMultiPush = true;
+        pushableByJacksSuperPush = true;
+        jumpable = true;
     }
 }

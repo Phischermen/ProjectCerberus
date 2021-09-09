@@ -11,6 +11,30 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TestLevel.unity
     guid: 1647b8b5beb12194f84595e9df612ded
+  - enabled: 1
+    path: Assets/Scenes/BasicPushTutorial.unity
+    guid: 158ffcbd94eb9c04abe2b85508a4a534
+  - enabled: 1
+    path: Assets/Scenes/FirstLevel.unity
+    guid: b855507de4e57d742b9a37e3c1c3e8f0
+  - enabled: 1
+    path: Assets/Scenes/OptimizeRoute.unity
+    guid: b55f19a67c4f95e43b5d146e872a67b0
+  - enabled: 1
+    path: Assets/Scenes/SwitchTutorial.unity
+    guid: 5d9515f48b822ea45963c0ead6a0341e
+  - enabled: 1
+    path: Assets/Scenes/SuperPushTutorial.unity
+    guid: 50103624a9f5b5f458eeb1bd78fe792b
+  - enabled: 1
+    path: Assets/Scenes/JackAndLaguna.unity
+    guid: dba7739682d09744bbd8d7ea0fa29950
+  - enabled: 1
+    path: Assets/Scenes/TrapSpikePuzzle.unity
+    guid: 686af41a23b5e044682ff1458cb3400a
+  - enabled: 1
+    path: Assets/Scenes/JackTutorial.unity
+    guid: bf01a71fc2dc10745b43c43eb044f7cd
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 90dfd16557c9de34499995dab2adeb9a,
       type: 2}
