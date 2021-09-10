@@ -14,7 +14,7 @@ public class FloorTile : Tile, IUndoable
     [ShowInTileInspector] public bool allowsAllSuperPushedEntitiesPassage;
     [ShowInTileInspector] public bool jumpable;
     [ShowInTileInspector] public bool landable;
-
+    
     public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
     {
         tileData.sprite = sprite;

@@ -284,10 +284,7 @@ public class PuzzleContainer : MonoBehaviour
                 }
                 else if (floorTile != null)
                 {
-                    if (floorTile.GetType().GetCustomAttribute<GetUndoDataReturnsNull>() == null)
-                    {
-                        _undoables.Add(floorTile);
-                    }
+                    
 
                     var levelCell = levelMap[i, j];
                     if (!floorTile.needsToBeCloned)
@@ -302,6 +299,10 @@ public class PuzzleContainer : MonoBehaviour
                         var floorTileClone = Instantiate(floorTile);
                         levelCell.floorTile = floorTileClone;
                         tilemap.SetTile(new Vector3Int(i, j, 0), floorTileClone);
+                        if (floorTileClone.GetType().GetCustomAttribute<GetUndoDataReturnsNull>() == null)
+                        {
+                            _undoables.Add(floorTileClone);
+                        }
                     }
                 }
             }
@@ -368,6 +369,8 @@ public class PuzzleContainer : MonoBehaviour
             {
                 undoData.Load();
             }
+            // Refresh tiles
+            tilemap.RefreshAllTiles();
         }
     }
 }
