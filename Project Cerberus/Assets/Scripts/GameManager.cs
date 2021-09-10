@@ -4,13 +4,50 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour, IUndoable
 {
+    class GameManagerUndoData : UndoData
+    {
+        private GameManager _gameManager;
+        private List<Cerberus> _moveOrder;
+        private int _currentMove;
+        private int _turn;
+
+        private bool _cerberusFormed;
+        private int _cerberusYetToReachGoal;
+        private bool _collectedStar;
+
+        public GameManagerUndoData(GameManager gameManager, List<Cerberus> moveOrder, int currentMove, int turn,
+            int cerberusYetToReachGoal, bool cerberusFormed, bool collectedStar)
+        {
+            _gameManager = gameManager;
+            _moveOrder = moveOrder;
+            _currentMove = currentMove;
+            _turn = turn;
+            _cerberusYetToReachGoal = cerberusYetToReachGoal;
+            _cerberusFormed = cerberusFormed;
+            _collectedStar = collectedStar;
+        }
+
+        public override void Load()
+        {
+            _gameManager.moveOrder = new List<Cerberus>(_moveOrder);
+            _gameManager.currentMove = _currentMove;
+            // Start the move of the newly controlled Cerberus
+            _gameManager.moveOrder[_currentMove].StartMove();
+            _gameManager.turn = _turn;
+            _gameManager._cerberusYetToReachGoal = _cerberusYetToReachGoal;
+            _gameManager.cerberusFormed = _cerberusFormed;
+            _gameManager.collectedStar = _collectedStar;
+        }
+    }
+
     public string nextScene;
     [HideInInspector] public bool infinteTurns = true;
     [HideInInspector] public int maxTurns;
     [SerializeField] private GameObject _uiPrefab;
     public List<Cerberus> moveOrder { get; protected set; }
+
     public int turn { get; protected set; }
     public int currentMove { get; protected set; }
 
@@ -19,16 +56,17 @@ public class GameManager : MonoBehaviour
     private Kahuna _kahuna;
     private CerberusMajor _cerberusMajor;
 
-    private CerberusMajorSpawnPoint _cerberusMajorSpawnPoint;
-
     public bool joinAndSplitEnabled { get; protected set; }
+    public bool cerberusFormed { get; protected set; }
 
     [HideInInspector] public bool wantsToJoin;
     [HideInInspector] public bool wantsToSplit;
     [HideInInspector] public bool wantsToCycleCharacter;
+    [HideInInspector] public bool wantsToUndo;
 
     private int _cerberusYetToReachGoal;
     [HideInInspector] public bool collectedStar;
+    private PuzzleContainer _puzzleContainer;
 
     void Awake()
     {
@@ -38,11 +76,12 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         // Get objects
+        _puzzleContainer = FindObjectOfType<PuzzleContainer>();
+
         _jack = FindObjectOfType<Jack>();
         _kahuna = FindObjectOfType<Kahuna>();
         _laguna = FindObjectOfType<Laguna>();
         _cerberusMajor = FindObjectOfType<CerberusMajor>();
-        _cerberusMajorSpawnPoint = FindObjectOfType<CerberusMajorSpawnPoint>();
 
         // Initialize moveOrder
         moveOrder = new List<Cerberus>();
@@ -72,7 +111,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         var currentCerberus = moveOrder[currentMove];
@@ -110,12 +148,14 @@ public class GameManager : MonoBehaviour
                 _laguna.SetCollisionsEnabled(false);
                 if (!_cerberusMajor.CollidesWith(_cerberusMajor.currentCell))
                 {
-                    FormCerberusMajor();
                     // Don't increment turn if player merges or splits as their first action
                     if (currentMove != 0)
                     {
+                        _puzzleContainer.PushToUndoStack();
                         IncrementTurn();
                     }
+
+                    FormCerberusMajor();
                 }
                 else
                 {
@@ -137,12 +177,14 @@ public class GameManager : MonoBehaviour
                     !_laguna.CollidesWith(_laguna.currentCell) &&
                     !_kahuna.CollidesWith(_kahuna.currentCell))
                 {
-                    SplitCerberusMajor();
-                    // Don't increment turn if player merges or splits as their first action
+                    // Don't increment turn or push undo if player merges or splits as their first action
                     if (currentMove != 0)
                     {
+                        _puzzleContainer.PushToUndoStack();
                         IncrementTurn();
                     }
+
+                    SplitCerberusMajor();
                 }
                 else
                 {
@@ -152,6 +194,7 @@ public class GameManager : MonoBehaviour
                     _laguna.SetCollisionsEnabled(false);
                 }
             }
+            // Increment turn normally
             else
             {
                 currentMove += 1;
@@ -166,6 +209,13 @@ public class GameManager : MonoBehaviour
             var nextCerberus = moveOrder[currentMove];
             nextCerberus.StartMove();
         }
+        // Handle request to undo
+        else if (wantsToUndo)
+        {
+            wantsToUndo = false;
+            _puzzleContainer.UndoLastMove();
+            Debug.Log("Ündo");
+        }
         // Handle request to cycle character
         else if (wantsToCycleCharacter)
         {
@@ -175,6 +225,16 @@ public class GameManager : MonoBehaviour
             var newCerberus = moveOrder[currentMove];
             newCerberus.StartMove();
         }
+    }
+
+    // Undo
+
+    public UndoData GetUndoData()
+    {
+        var moveOrderCopy = new List<Cerberus>(moveOrder);
+        var undoData = new GameManagerUndoData(this, moveOrderCopy, currentMove, turn, _cerberusYetToReachGoal,
+            cerberusFormed, collectedStar);
+        return undoData;
     }
 
     // Move order management
@@ -194,7 +254,6 @@ public class GameManager : MonoBehaviour
         }
 
         currentMove = 0;
-        Debug.Log(turn);
     }
 
     void GoBackToTurn(int newTurn)
@@ -204,11 +263,12 @@ public class GameManager : MonoBehaviour
     // Merge and split Management
     public void FormCerberusMajor()
     {
+        cerberusFormed = true;
         // Stop animations
         _jack.FinishCurrentAnimation();
         _kahuna.FinishCurrentAnimation();
         _laguna.FinishCurrentAnimation();
-        
+
         _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(false);
         _jack.SetDisableCollsionAndShowPentagramMarker(true);
         _kahuna.SetDisableCollsionAndShowPentagramMarker(true);
@@ -220,9 +280,10 @@ public class GameManager : MonoBehaviour
 
     public void SplitCerberusMajor()
     {
+        cerberusFormed = false;
         // Stop animation
         _cerberusMajor.FinishCurrentAnimation();
-        
+
         _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(true);
         _jack.SetDisableCollsionAndShowPentagramMarker(false);
         _kahuna.SetDisableCollsionAndShowPentagramMarker(false);

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-[CreateAssetMenu(menuName = "FloorTile/Basic")]
-public class FloorTile : Tile
+[CreateAssetMenu(menuName = "FloorTile/Basic"), GetUndoDataReturnsNull]
+public class FloorTile : Tile, IUndoable
 {
     [HideInInspector] public bool needsToBeCloned;
     [ShowInTileInspector] public bool stopsPlayer;
@@ -14,7 +14,7 @@ public class FloorTile : Tile
     [ShowInTileInspector] public bool allowsAllSuperPushedEntitiesPassage;
     [ShowInTileInspector] public bool jumpable;
     [ShowInTileInspector] public bool landable;
-
+    
     public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
     {
         tileData.sprite = sprite;
@@ -39,5 +39,10 @@ public class FloorTile : Tile
 
     public virtual void OnExitCollisionWithEntity(PuzzleEntity other)
     {
+    }
+    
+    public virtual UndoData GetUndoData()
+    {
+        return null;
     }
 }

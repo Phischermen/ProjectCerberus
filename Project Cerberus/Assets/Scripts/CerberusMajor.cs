@@ -91,6 +91,7 @@ public class CerberusMajor : Cerberus
         {
             if (_jumpSpaces.Count > 0)
             {
+                puzzle.PushToUndoStack();
                 // Travel across jump spaces
                 foreach (var jumpInfo in _jumpSpaces)
                 {
@@ -125,6 +126,19 @@ public class CerberusMajor : Cerberus
             else if (input.leftPressed)
             {
                 BasicMove(Vector2Int.left);
+            }
+        }
+
+        if (input.undoPressed)
+        {
+            if (_jumpSpaces.Count > 0)
+            {
+                _jumpSpaces.Clear();
+                RenderJumpPath();
+            }
+            else
+            {
+                manager.wantsToUndo = true;
             }
         }
 

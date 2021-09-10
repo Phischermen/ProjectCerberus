@@ -5,6 +5,24 @@ using UnityEngine.Events;
 
 public class Switch : PuzzleEntity
 {
+    public class SwitchUndoData : UndoData
+    {
+        public Switch lever;
+        public bool flipped;
+
+        public SwitchUndoData(Switch lever, bool flipped)
+        {
+            this.lever = lever;
+            this.flipped = flipped;
+        }
+
+        public override void Load()
+        {
+            lever.isPressed = flipped;
+            lever.SwitchOnVisually(flipped);
+        }
+    }
+
     public UnityEvent onPressed;
     public UnityEvent onReleased;
 
@@ -21,6 +39,12 @@ public class Switch : PuzzleEntity
         landable = true;
     }
 
+    public override UndoData GetUndoData()
+    {
+        var undoData = new SwitchUndoData(this, isPressed);
+        return undoData;
+    }
+
     protected override void Awake()
     {
         base.Awake();
@@ -35,9 +59,7 @@ public class Switch : PuzzleEntity
     {
         if (isPressed) return;
         isPressed = true;
-        _spriteRenderer.sprite = depressedSprite;
-        _lineRenderer.startColor = Color.green;
-        _lineRenderer.endColor = Color.green;
+        SwitchOnVisually(true);
         onPressed.Invoke();
     }
 
@@ -45,9 +67,24 @@ public class Switch : PuzzleEntity
     {
         if (!isPressed) return;
         isPressed = false;
-        _spriteRenderer.sprite = raisedSprite;
-        _lineRenderer.startColor = Color.red;
-        _lineRenderer.endColor = Color.red;
+        SwitchOnVisually(false);
         onReleased.Invoke();
+    }
+
+    public void SwitchOnVisually(bool on)
+    {
+        if (on == true)
+        {
+            _spriteRenderer.sprite = depressedSprite;
+            _lineRenderer.startColor = Color.green;
+            _lineRenderer.endColor = Color.green;
+        }
+
+        if (on == false)
+        {
+            _spriteRenderer.sprite = raisedSprite;
+            _lineRenderer.startColor = Color.red;
+            _lineRenderer.endColor = Color.red;
+        }
     }
 }

@@ -5,19 +5,53 @@ using UnityEngine;
 
 public class Gate : PuzzleEntity
 {
+
+    public class GateUndoData : UndoData
+    {
+        public Gate gate;
+        public bool open;
+
+
+        public GateUndoData(Gate gate, bool open)
+        {
+            this.gate = gate;
+            this.open = open;
+        }
+
+        public override void Load()
+        {
+            if (open)
+            {
+                gate.OpenGate();
+            }
+            else
+            {
+                gate.CloseGate();
+            }
+        }
+
+    }
     private bool wantsToClose;
     [ShowInTileInspector] public bool open;
     [SerializeField] private Sprite openSprite;
     [SerializeField] private Sprite closeSprite;
+    private SpriteRenderer _spriteRenderer;
 
     public Gate()
     {
         entityRules = "Can be opened and closed via switches and levers. Jumpable when closed and landable when open.";
     }
 
+    public override UndoData GetUndoData()
+    {
+        var undoData = new GateUndoData(this, open);
+        return undoData;
+    }
+
     protected override void Awake()
     {
         base.Awake();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
         if (open)
         {
             OpenGate();
@@ -43,7 +77,7 @@ public class Gate : PuzzleEntity
     public void OpenGate()
     {
         wantsToClose = false;
-        GetComponent<SpriteRenderer>().sprite = openSprite;
+        _spriteRenderer.sprite = openSprite;
         SetFieldsToOpenPreset();
     }
 
@@ -55,7 +89,7 @@ public class Gate : PuzzleEntity
     private void CloseGate()
     {
         wantsToClose = false;
-        GetComponent<SpriteRenderer>().sprite = closeSprite;
+        _spriteRenderer.sprite = closeSprite;
         SetFieldsToClosedPreset();
     }
 
