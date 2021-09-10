@@ -7,17 +7,20 @@ public class WoodBlock : BasicBlock
     public class WoodBlockUndoData : UndoData
     {
         public WoodBlock wood;
+        public Vector2Int position;
         public bool burned;
 
-        public WoodBlockUndoData(WoodBlock wood, bool burned)
+        public WoodBlockUndoData(WoodBlock wood, Vector2Int position, bool burned)
         {
             this.wood = wood;
+            this.position = position;
             this.burned = burned;
         }
 
         public override void Load()
         {
             wood.SetFieldsToShotPreset(burned);
+            wood.MoveForUndo(position);
         }
     }
 
@@ -34,6 +37,7 @@ public class WoodBlock : BasicBlock
 
     private void Awake()
     {
+        base.Awake();
         _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
@@ -44,7 +48,7 @@ public class WoodBlock : BasicBlock
 
     public void SetFieldsToShotPreset(bool shot)
     {
-        if (shot == true)
+        if (shot)
         {
             _spriteRenderer.sprite = destroyedSprite;
             SetCollisionsEnabled(false);
@@ -70,7 +74,7 @@ public class WoodBlock : BasicBlock
 
     public override UndoData GetUndoData()
     {
-        var undoData = new WoodBlockUndoData(this, burned: collisionsEnabled);
+        var undoData = new WoodBlockUndoData(this, position, burned: !collisionsEnabled);
         return undoData;
     }
 }
