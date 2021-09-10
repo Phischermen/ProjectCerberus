@@ -5,10 +5,8 @@ using UnityEngine.Events;
 
 public class Switch : PuzzleEntity
 {
-
     public class SwitchUndoData : UndoData
     {
-
         public Switch lever;
         public bool flipped;
 
@@ -20,9 +18,9 @@ public class Switch : PuzzleEntity
 
         public override void Load()
         {
+            lever.isPressed = flipped;
             lever.SwitchOnVisually(flipped);
         }
-
     }
 
     public UnityEvent onPressed;
@@ -71,12 +69,10 @@ public class Switch : PuzzleEntity
         isPressed = false;
         SwitchOnVisually(false);
         onReleased.Invoke();
-
     }
 
     public void SwitchOnVisually(bool on)
     {
-
         if (on == true)
         {
             _spriteRenderer.sprite = depressedSprite;
@@ -91,6 +87,4 @@ public class Switch : PuzzleEntity
             _lineRenderer.endColor = Color.red;
         }
     }
-
-
 }

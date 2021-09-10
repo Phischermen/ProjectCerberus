@@ -248,8 +248,12 @@ public class PuzzleContainer : MonoBehaviour
 
         _undoables = new List<IUndoable>();
         _undoStack = new Stack<List<UndoData>>();
-        
+
         _undoables.Add(FindObjectOfType<GameManager>());
+        foreach (var counter in FindObjectsOfType<Counter>())
+        {
+            _undoables.Add(counter);
+        }
 
         // Setup tilemap for parsing
         tilemap.CompressBounds();
@@ -284,8 +288,6 @@ public class PuzzleContainer : MonoBehaviour
                 }
                 else if (floorTile != null)
                 {
-                    
-
                     var levelCell = levelMap[i, j];
                     if (!floorTile.needsToBeCloned)
                     {
@@ -369,6 +371,7 @@ public class PuzzleContainer : MonoBehaviour
             {
                 undoData.Load();
             }
+
             // Refresh tiles
             tilemap.RefreshAllTiles();
         }

@@ -22,11 +22,11 @@ public class Gate : PuzzleEntity
         {
             if (open)
             {
-                gate.SetFieldsToOpenPreset();
+                gate.OpenGate();
             }
             else
             {
-                gate.SetFieldsToClosedPreset();
+                gate.CloseGate();
             }
         }
 
