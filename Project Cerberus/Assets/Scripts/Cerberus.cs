@@ -13,21 +13,22 @@ public class Cerberus : PuzzleEntity
     {
         public Cerberus cerberus;
         public Vector2Int position;
-        public bool collisionDisabled;
-        
+        public bool collisionDisabledAndPentagramDisplayed;
+
         public override void Load()
         {
             cerberus.MoveForUndo(position);
-            cerberus.SetDisableCollsionAndShowPentagramMarker(collisionDisabled);
+            cerberus.SetDisableCollsionAndShowPentagramMarker(collisionDisabledAndPentagramDisplayed);
         }
 
-        public CerberusUndoData(Cerberus cerberus, Vector2Int position, bool collisionDisabled)
+        public CerberusUndoData(Cerberus cerberus, Vector2Int position, bool collisionDisabledAndPentagramDisplayed)
         {
             this.cerberus = cerberus;
             this.position = position;
-            this.collisionDisabled = collisionDisabled;
+            this.collisionDisabledAndPentagramDisplayed = collisionDisabledAndPentagramDisplayed;
         }
     }
+
     public Cerberus()
     {
         isPlayer = true;
@@ -60,7 +61,8 @@ public class Cerberus : PuzzleEntity
 
     public override UndoData GetUndoData()
     {
-        var undoData = new CerberusUndoData(this, position, !collisionsEnabled);
+        var undoData = new CerberusUndoData(this, position,
+            collisionDisabledAndPentagramDisplayed: manager.cerberusFormed != isCerberusMajor);
         return undoData;
     }
 
@@ -155,5 +157,4 @@ public class Cerberus : PuzzleEntity
         landable = disableAndShowPentagram;
         GetComponent<SpriteRenderer>().sprite = disableAndShowPentagram ? pentagramMarker : _cerberusSprite;
     }
-
 }

@@ -13,17 +13,19 @@ public class GameManager : MonoBehaviour, IUndoable
         private int _currentMove;
         private int _turn;
 
+        private bool _cerberusFormed;
         private int _cerberusYetToReachGoal;
         private bool _collectedStar;
 
         public GameManagerUndoData(GameManager gameManager, List<Cerberus> moveOrder, int currentMove, int turn,
-            int cerberusYetToReachGoal, bool collectedStar)
+            int cerberusYetToReachGoal, bool cerberusFormed, bool collectedStar)
         {
             _gameManager = gameManager;
             _moveOrder = moveOrder;
             _currentMove = currentMove;
             _turn = turn;
             _cerberusYetToReachGoal = cerberusYetToReachGoal;
+            _cerberusFormed = cerberusFormed;
             _collectedStar = collectedStar;
         }
 
@@ -35,6 +37,7 @@ public class GameManager : MonoBehaviour, IUndoable
             _gameManager.moveOrder[_currentMove].StartMove();
             _gameManager.turn = _turn;
             _gameManager._cerberusYetToReachGoal = _cerberusYetToReachGoal;
+            _gameManager.cerberusFormed = _cerberusFormed;
             _gameManager.collectedStar = _collectedStar;
         }
     }
@@ -54,6 +57,7 @@ public class GameManager : MonoBehaviour, IUndoable
     private CerberusMajor _cerberusMajor;
 
     public bool joinAndSplitEnabled { get; protected set; }
+    public bool cerberusFormed { get; protected set; }
 
     [HideInInspector] public bool wantsToJoin;
     [HideInInspector] public bool wantsToSplit;
@@ -144,12 +148,14 @@ public class GameManager : MonoBehaviour, IUndoable
                 _laguna.SetCollisionsEnabled(false);
                 if (!_cerberusMajor.CollidesWith(_cerberusMajor.currentCell))
                 {
-                    FormCerberusMajor();
                     // Don't increment turn if player merges or splits as their first action
                     if (currentMove != 0)
                     {
+                        _puzzleContainer.PushToUndoStack();
                         IncrementTurn();
                     }
+
+                    FormCerberusMajor();
                 }
                 else
                 {
@@ -171,12 +177,14 @@ public class GameManager : MonoBehaviour, IUndoable
                     !_laguna.CollidesWith(_laguna.currentCell) &&
                     !_kahuna.CollidesWith(_kahuna.currentCell))
                 {
-                    SplitCerberusMajor();
-                    // Don't increment turn if player merges or splits as their first action
+                    // Don't increment turn or push undo if player merges or splits as their first action
                     if (currentMove != 0)
                     {
+                        _puzzleContainer.PushToUndoStack();
                         IncrementTurn();
                     }
+
+                    SplitCerberusMajor();
                 }
                 else
                 {
@@ -225,7 +233,7 @@ public class GameManager : MonoBehaviour, IUndoable
     {
         var moveOrderCopy = new List<Cerberus>(moveOrder);
         var undoData = new GameManagerUndoData(this, moveOrderCopy, currentMove, turn, _cerberusYetToReachGoal,
-            collectedStar);
+            cerberusFormed, collectedStar);
         return undoData;
     }
 
@@ -246,7 +254,6 @@ public class GameManager : MonoBehaviour, IUndoable
         }
 
         currentMove = 0;
-        Debug.Log(turn);
     }
 
     void GoBackToTurn(int newTurn)
@@ -256,6 +263,7 @@ public class GameManager : MonoBehaviour, IUndoable
     // Merge and split Management
     public void FormCerberusMajor()
     {
+        cerberusFormed = true;
         // Stop animations
         _jack.FinishCurrentAnimation();
         _kahuna.FinishCurrentAnimation();
@@ -272,6 +280,7 @@ public class GameManager : MonoBehaviour, IUndoable
 
     public void SplitCerberusMajor()
     {
+        cerberusFormed = false;
         // Stop animation
         _cerberusMajor.FinishCurrentAnimation();
 
