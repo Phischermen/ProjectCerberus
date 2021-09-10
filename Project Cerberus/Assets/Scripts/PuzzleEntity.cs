@@ -126,12 +126,12 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     // This version of move does not trigger 'OnEnter' or 'OnExit' callbacks
     public void MoveForUndo(Vector2Int cell)
     {
-        /* Finish animation does not actually finish animation until next frame. In this context we don't actually want
-        the animation to finish but terminate completely, thus StopCoroutine().*/
-        FinishCurrentAnimation();
+        // Stop animation
         if (animationRoutine != null)
         {
             StopCoroutine(animationRoutine);
+            animationIsRunning = false;
+            animationMustStop = false;
         }
         // Perform standard move
         puzzle.RemoveEntityFromCell(this, position);
