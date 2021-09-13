@@ -123,19 +123,20 @@ public class PuzzleContainer : MonoBehaviour
 
         if (_inspectorShown)
         {
+            var inspectorContentText = $"UndoStack size: {_undoStack.Count}\n";
             // Get cell that player is targeting
             var mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             var mouseCoord = new Vector2Int((int) mousePosition.x, (int) mousePosition.y);
             var inBounds = InBounds(mouseCoord);
             // Display information about that cell
-            var inspectorContentText = "Mouse over a tile to read data.";
+            inspectorContentText += "Mouse over a tile to read data.";
             if (inBounds)
             {
                 var cell = GetCell(mouseCoord);
                 if (cell != null)
                 {
+                    inspectorContentText = $"UndoStack size: {_undoStack.Count}\n";
                     // Read fields and properties exposed to tile inspector
-                    inspectorContentText = "";
                     // Read floor tile
                     if (cell.floorTile != null)
                     {
@@ -227,6 +228,9 @@ public class PuzzleContainer : MonoBehaviour
     public LevelCell[,] levelMap { get; protected set; }
     public Tilemap tilemap { get; protected set; }
 
+    private Stack<List<UndoData>> _undoStack;
+    private List<IUndoable> _undoables;
+
     void Awake()
     {
         // Get components
@@ -240,6 +244,15 @@ public class PuzzleContainer : MonoBehaviour
             {
                 levelMap[i, j] = new LevelCell();
             }
+        }
+
+        _undoables = new List<IUndoable>();
+        _undoStack = new Stack<List<UndoData>>();
+
+        _undoables.Add(FindObjectOfType<GameManager>());
+        foreach (var counter in FindObjectsOfType<Counter>())
+        {
+            _undoables.Add(counter);
         }
 
         // Setup tilemap for parsing
@@ -256,6 +269,10 @@ public class PuzzleContainer : MonoBehaviour
             var vec3Position = tilemap.layoutGrid.WorldToCell(entity.transform.position);
             var position = new Vector2Int(vec3Position.x, vec3Position.y);
             AddEntityToCell(entity, position);
+            if (entity.GetType().GetCustomAttribute<GetUndoDataReturnsNull>() == null)
+            {
+                _undoables.Add(entity);
+            }
         }
 
         for (var i = bounds.x; i < bounds.xMax; i++)
@@ -284,6 +301,10 @@ public class PuzzleContainer : MonoBehaviour
                         var floorTileClone = Instantiate(floorTile);
                         levelCell.floorTile = floorTileClone;
                         tilemap.SetTile(new Vector3Int(i, j, 0), floorTileClone);
+                        if (floorTileClone.GetType().GetCustomAttribute<GetUndoDataReturnsNull>() == null)
+                        {
+                            _undoables.Add(floorTileClone);
+                        }
                     }
                 }
             }
@@ -326,5 +347,33 @@ public class PuzzleContainer : MonoBehaviour
     public bool InBounds(Vector2Int coord)
     {
         return coord.x >= 0 && coord.x < maxLevelWidth && coord.y >= 0 && coord.y < maxLevelHeight;
+    }
+
+    // Undo system
+    public void PushToUndoStack()
+    {
+        var undoList = new List<UndoData>();
+        foreach (var undoable in _undoables)
+        {
+            var data = undoable.GetUndoData();
+            undoList.Add(data);
+        }
+
+        _undoStack.Push(undoList);
+    }
+
+    public void UndoLastMove()
+    {
+        if (_undoStack.Count > 0)
+        {
+            var undoList = _undoStack.Pop();
+            foreach (var undoData in undoList)
+            {
+                undoData.Load();
+            }
+
+            // Refresh tiles
+            tilemap.RefreshAllTiles();
+        }
     }
 }

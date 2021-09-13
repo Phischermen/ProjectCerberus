@@ -4,8 +4,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Counter : MonoBehaviour
+public class Counter : MonoBehaviour, IUndoable
 {
+    public class CounterUndoData : UndoData
+    {
+        private Counter _counter;
+        private int _count;
+        public CounterUndoData(Counter counter, int count)
+        {
+            _counter = counter;
+            _count = count;
+        }
+
+        public override void Load()
+        {
+            _counter.count = _count;
+        }
+    }
+    
     [SerializeField] public int initialValue;
     [HideInInspector] public int count;
 
@@ -54,4 +70,11 @@ public class Counter : MonoBehaviour
             OnCounterEqualsZero.Invoke();
         }
     }
+
+    public UndoData GetUndoData()
+    {
+        var undoData = new CounterUndoData(this, count);
+        return undoData;
+    }
+
 }

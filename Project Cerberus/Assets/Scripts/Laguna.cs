@@ -60,6 +60,11 @@ public class Laguna : Cerberus
         {
             manager.wantsToCycleCharacter = true;
         }
+
+        if (input.undoPressed)
+        {
+            manager.wantsToUndo = true;
+        }
     }
 
 
@@ -80,6 +85,7 @@ public class Laguna : Cerberus
             {
                 if (!pushableEntity)
                 {
+                    puzzle.PushToUndoStack();
                     var p = position;
                     Move(coord);
                     entityToPull.Move(p);
@@ -102,6 +108,7 @@ public class Laguna : Cerberus
                                       pushableEntity.CollidesWithAny(pushEntityNewCell.puzzleEntities);
                     if (!pushBlocked)
                     {
+                        puzzle.PushToUndoStack();
                         var p = position;
                         pushableEntity.Move(pushCoord);
                         Move(coord);

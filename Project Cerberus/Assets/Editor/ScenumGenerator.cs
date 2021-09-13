@@ -27,9 +27,9 @@ namespace Editor
 
             fileContents.Add("\t}");
             fileContents.Add("}");
-            var scriptPath = Application.dataPath + "/Scenum.cs";
+            var scriptPath = Application.dataPath + "/Scripts/Scenum.cs";
             File.WriteAllLines(scriptPath, fileContents);
-            AssetDatabase.ImportAsset("Assets/Scenum.cs");
+            AssetDatabase.ImportAsset("Assets/Scripts/Scenum.cs");
             Debug.Log("Scenum Generated!");
         }
     }

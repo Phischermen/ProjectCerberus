@@ -103,6 +103,18 @@ public class Kahuna : Cerberus
             fireArrow.SetActive(false);
             manager.wantsToCycleCharacter = true;
         }
+
+        if (input.undoPressed)
+        {
+            if (aim != Vector2Int.zero)
+            {
+                aim = Vector2Int.zero;
+            }
+            else
+            {
+                manager.wantsToUndo = true;
+            }
+        }
     }
 
     private void FireBall(Vector2Int offset)
@@ -136,9 +148,12 @@ public class Kahuna : Cerberus
         AfterWhile:
         if (entityToPushOrInteractWith != null)
         {
+            puzzle.PushToUndoStack();
             PlaySfxPitchShift(fireballSFX, 0.9f, 1.1f);
+            // Push or interact with entity
             if (entityToPushOrInteractWith.interactsWithFireball)
             {
+                // Interact with entity
                 entityToPushOrInteractWith.OnShotByKahuna();
                 DeclareDoneWithMove();
             }

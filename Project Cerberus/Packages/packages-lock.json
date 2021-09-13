@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.merlin.easyeventeditor": {
+      "version": "https://github.com/MerlinVR/EasyEventEditor.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "2078e15183c7cfc1d5df5b676635bb1f70c64eeb"
+    },
     "com.unity.2d.animation": {
       "version": "3.2.6",
       "depth": 0,

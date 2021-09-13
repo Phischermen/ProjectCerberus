@@ -9,6 +9,26 @@ using Random = UnityEngine.Random;
 
 public class Cerberus : PuzzleEntity
 {
+    class CerberusUndoData : UndoData
+    {
+        public Cerberus cerberus;
+        public Vector2Int position;
+        public bool collisionDisabledAndPentagramDisplayed;
+
+        public override void Load()
+        {
+            cerberus.MoveForUndo(position);
+            cerberus.SetDisableCollsionAndShowPentagramMarker(collisionDisabledAndPentagramDisplayed);
+        }
+
+        public CerberusUndoData(Cerberus cerberus, Vector2Int position, bool collisionDisabledAndPentagramDisplayed)
+        {
+            this.cerberus = cerberus;
+            this.position = position;
+            this.collisionDisabledAndPentagramDisplayed = collisionDisabledAndPentagramDisplayed;
+        }
+    }
+
     public Cerberus()
     {
         isPlayer = true;
@@ -37,6 +57,13 @@ public class Cerberus : PuzzleEntity
         base.Awake();
         input = FindObjectOfType<PuzzleGameplayInput>();
         _cerberusSprite = GetComponent<SpriteRenderer>().sprite;
+    }
+
+    public override UndoData GetUndoData()
+    {
+        var undoData = new CerberusUndoData(this, position,
+            collisionDisabledAndPentagramDisplayed: manager.cerberusFormed != isCerberusMajor);
+        return undoData;
     }
 
     public virtual void ProcessMoveInput()
@@ -78,6 +105,7 @@ public class Cerberus : PuzzleEntity
     }
 
     // Common movement methods
+
     protected void BasicMove(Vector2Int offset)
     {
         var coord = position + offset;
@@ -89,6 +117,7 @@ public class Cerberus : PuzzleEntity
             var pushableEntity = newCell.GetEntityPushableByStandardMove();
             if (!pushableEntity)
             {
+                puzzle.PushToUndoStack();
                 // Move one space
                 Move(coord);
                 PlaySfx(walkSFX);
@@ -104,6 +133,7 @@ public class Cerberus : PuzzleEntity
                                   pushableEntity.CollidesWithAny(pushEntityNewCell.puzzleEntities);
                 if (!pushBlocked)
                 {
+                    puzzle.PushToUndoStack();
                     pushableEntity.Move(pushCoord);
                     Move(coord);
                     
@@ -130,5 +160,4 @@ public class Cerberus : PuzzleEntity
         landable = disableAndShowPentagram;
         GetComponent<SpriteRenderer>().sprite = disableAndShowPentagram ? pentagramMarker : _cerberusSprite;
     }
-
 }

@@ -6,6 +6,30 @@ using UnityEngine.Tilemaps;
 [CreateAssetMenu(menuName = "FloorTile/Cracked")]
 public class CrackedTile : FloorTile
 {
+    public class CrackedTileUndoData : UndoData
+    {
+        public CrackedTile tile;
+        public int stage;
+
+        public CrackedTileUndoData(CrackedTile tile, int stage)
+        {
+            this.tile = tile;
+            this.stage = stage;
+        }
+
+        public override void Load()
+        {
+            tile.stage = stage;
+            if (stage < 3)
+            {
+                tile.SetFieldsToPreFinalStatePreset();
+            }
+            else
+            {
+                tile.SetFieldsToFinalStatePreset();
+            }
+        }
+    }
     [HideInInspector, ShowInTileInspector] public int stage = 0;
     [HideInInspector, ShowInTileInspector] public int initialState = 0;
     [SerializeField] private Sprite[] crackStageSprite = new Sprite[4];
@@ -61,5 +85,10 @@ public class CrackedTile : FloorTile
         landable = false;
         jumpable = true;
         stopsPlayer = true;
+    }
+
+    public override UndoData GetUndoData()
+    {
+        return new CrackedTileUndoData(this, stage);
     }
 }
