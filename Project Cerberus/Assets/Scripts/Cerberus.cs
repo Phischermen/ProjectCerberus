@@ -72,7 +72,10 @@ public class Cerberus : PuzzleEntity
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
+    }
 
+    protected void ProcessUndoMergeSplitSkipInput()
+    {
         if (input.skipMove)
         {
             DeclareDoneWithMove();
@@ -90,6 +93,16 @@ public class Cerberus : PuzzleEntity
                 manager.wantsToJoin = true;
                 DeclareDoneWithMove();
             }
+        }
+
+        if (input.cycleCharacter)
+        {
+            manager.wantsToCycleCharacter = true;
+        }
+
+        if (input.undoPressed)
+        {
+            manager.wantsToUndo = true;
         }
     }
 

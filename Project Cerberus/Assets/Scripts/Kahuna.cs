@@ -16,6 +16,7 @@ public class Kahuna : Cerberus
     {
         entityRules = "Kahuna can fire fireballs, that push or interact with objects.";
     }
+
     protected override void Awake()
     {
         base.Awake();
@@ -27,13 +28,12 @@ public class Kahuna : Cerberus
         base.ProcessMoveInput();
         fireArrow.SetActive(false);
         var wantsToFire = false;
-        if (input.specialPressed)
+        if (input.specialPressed && !_specialActive)
         {
-            aim = Vector2Int.zero;
+            aim = Vector2Int.left;
             _specialActive = true;
         }
-
-        if (input.specialReleased && _specialActive)
+        else if (input.specialPressed && _specialActive)
         {
             _specialActive = false;
             wantsToFire = true;
@@ -41,7 +41,7 @@ public class Kahuna : Cerberus
 
         if (_specialActive)
         {
-            fireArrow.SetActive(aim != Vector2Int.zero);
+            fireArrow.SetActive(true);
             if (input.upPressed)
             {
                 fireArrow.transform.eulerAngles = new Vector3(0, 0, 90);
@@ -64,6 +64,11 @@ public class Kahuna : Cerberus
             {
                 fireArrow.transform.eulerAngles = new Vector3(0, 0, 180);
                 aim = Vector2Int.left;
+            }
+
+            if (input.backOutOfAbility)
+            {
+                _specialActive = false;
             }
         }
         else if (wantsToFire)
@@ -94,25 +99,8 @@ public class Kahuna : Cerberus
             {
                 BasicMove(Vector2Int.left);
             }
-        }
 
-        if (input.cycleCharacter)
-        {
-            _specialActive = false;
-            fireArrow.SetActive(false);
-            manager.wantsToCycleCharacter = true;
-        }
-
-        if (input.undoPressed)
-        {
-            if (aim != Vector2Int.zero)
-            {
-                aim = Vector2Int.zero;
-            }
-            else
-            {
-                manager.wantsToUndo = true;
-            }
+            ProcessUndoMergeSplitSkipInput();
         }
     }
 
