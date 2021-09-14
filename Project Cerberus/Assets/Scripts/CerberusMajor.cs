@@ -266,6 +266,7 @@ public class CerberusMajor : Cerberus
             }
 
             transform.position = D;
+            PuzzleCameraController.AddShake(0.1f);
         }
 
         animationMustStop = false;
