@@ -83,7 +83,12 @@ namespace Editor
                     CreateEventField(onPulled);
                 }
             }
-
+            
+            // Apply changes
+            if (GUI.changed)
+            {
+                EditorUtility.SetDirty(entity);
+            }
             serializedObject.ApplyModifiedProperties();
         }
 
