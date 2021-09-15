@@ -154,7 +154,7 @@ public class Cerberus : PuzzleEntity
         pushableByFireball = !disableAndShowPentagram;
         pushableByJacksMultiPush = !disableAndShowPentagram;
         pushableByJacksSuperPush = !disableAndShowPentagram;
-        landable = disableAndShowPentagram;
+        landableScore = disableAndShowPentagram ? 0 : -1;
         GetComponent<SpriteRenderer>().sprite = disableAndShowPentagram ? pentagramMarker : _cerberusSprite;
     }
 }

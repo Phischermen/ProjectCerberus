@@ -26,7 +26,7 @@ public class Pickup : PuzzleEntity
     public Pickup()
     {
         entityRules = "A bonus pickup. Collecting this for a surprise reward.";
-        landable = true;
+        landableScore = 0;
     }
 
     public override UndoData GetUndoData()

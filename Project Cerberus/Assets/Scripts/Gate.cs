@@ -98,7 +98,7 @@ public class Gate : PuzzleEntity
         open = true;
         stopsBlock = false;
         stopsPlayer = false;
-        landable = true;
+        landableScore = 0;
         jumpable = false;
     }
 
@@ -107,7 +107,7 @@ public class Gate : PuzzleEntity
         open = false;
         stopsBlock = true;
         stopsPlayer = true;
-        landable = false;
+        landableScore = -1;
         jumpable = true;
     }
 }

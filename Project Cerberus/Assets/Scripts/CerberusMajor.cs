@@ -174,8 +174,9 @@ public class CerberusMajor : Cerberus
         if (canJump)
         {
             // Check for collision and if landable
-            var landableEntity = newJumpCell.GetLandableEntities();
-            var canLand = (landableEntity.Count > 0) ||
+            var landableEntities = newJumpCell.GetLandableEntities();
+            var newJumpCellLandableScore = newJumpCell.GetLandableScore();
+            var canLand = (newJumpCellLandableScore >= 0) ||
                           (newJumpCell.puzzleEntities.Count == 0 && newJumpCell.floorTile.landable);
             if (canLand)
             {
@@ -196,7 +197,7 @@ public class CerberusMajor : Cerberus
                     _jumpSpaces.Add(newJumpInfo);
                     RenderJumpPath();
                     // Check if cell being landed on has goal
-                    foreach (var entity in landableEntity)
+                    foreach (var entity in landableEntities)
                     {
                         if (entity is Finish)
                         {

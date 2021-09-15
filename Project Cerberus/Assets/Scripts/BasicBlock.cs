@@ -32,6 +32,7 @@ public class BasicBlock : PuzzleEntity
         pushableByStandardMove = true;
         pushableByJacksMultiPush = true;
         pushableByJacksSuperPush = true;
+        landableScore = -1;
         jumpable = true;
     }
 

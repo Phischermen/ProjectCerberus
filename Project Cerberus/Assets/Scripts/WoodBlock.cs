@@ -30,7 +30,7 @@ public class WoodBlock : BasicBlock
 
     protected WoodBlock()
     {
-        entityRules = "Wood blocks burn up when they are shot by Kahuna.";
+        entityRules = "Wood blocks burn up when they are shot by Kahuna. The ashes make a nice cushion for Cerberus.";
         pushableByFireball = false;
         interactsWithFireball = true;
     }
@@ -52,7 +52,7 @@ public class WoodBlock : BasicBlock
         {
             _spriteRenderer.sprite = destroyedSprite;
             SetCollisionsEnabled(false);
-            landable = true;
+            landableScore = 1;
             jumpable = false;
             interactsWithFireball = false;
             pushableByStandardMove = false;
@@ -63,7 +63,7 @@ public class WoodBlock : BasicBlock
         {
             _spriteRenderer.sprite = wholeSprite;
             SetCollisionsEnabled(true);
-            landable = false;
+            landableScore = -1;
             jumpable = true;
             interactsWithFireball = true;
             pushableByStandardMove = true;

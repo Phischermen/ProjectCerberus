@@ -24,7 +24,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     [ShowInTileInspector] public bool pushableByStandardMove { get; protected set; }
     [ShowInTileInspector] public bool pushableByJacksMultiPush { get; protected set; }
     [ShowInTileInspector] public bool pushableByJacksSuperPush { get; protected set; }
-    [ShowInTileInspector] public bool landable { get; protected set; }
+    [ShowInTileInspector] public int landableScore { get; protected set; }
     [ShowInTileInspector] public bool jumpable { get; protected set; }
     public string entityRules { get; protected set; } = "No rules have been written for this object.";
     public bool isSuperPushed { get; set; }

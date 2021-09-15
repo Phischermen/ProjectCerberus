@@ -36,7 +36,7 @@ public class Switch : PuzzleEntity
     {
         entityRules = "Switches control other objects. A switch must be held down with an object.";
         isStatic = true;
-        landable = true;
+        landableScore = 0;
     }
 
     public override UndoData GetUndoData()

@@ -63,11 +63,22 @@ public class PuzzleContainer : MonoBehaviour
             var list = new List<PuzzleEntity>();
             foreach (var entity in puzzleEntities)
             {
-                if (entity.landable)
+                if (entity.landableScore >= 0)
                     list.Add(entity);
             }
 
             return list;
+        }
+        
+        public int GetLandableScore()
+        {
+            var score = 0;
+            foreach (var entity in puzzleEntities)
+            {
+                score += entity.landableScore;
+            }
+
+            return score;
         }
 
         public PuzzleEntity GetJumpableEntity()
