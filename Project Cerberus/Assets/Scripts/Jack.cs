@@ -62,7 +62,15 @@ public class Jack : Cerberus
             }
         }
 
-        ProcessUndoMergeSplitSkipInput();
+        if (input.cycleCharacter)
+        {
+            manager.wantsToCycleCharacter = true;
+        }
+
+        if (input.undoPressed)
+        {
+            manager.wantsToUndo = true;
+        }
     }
 
     private void SuperPushMove(Vector2Int offset)

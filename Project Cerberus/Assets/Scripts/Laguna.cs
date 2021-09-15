@@ -56,7 +56,15 @@ public class Laguna : Cerberus
             }
         }
 
-        ProcessUndoMergeSplitSkipInput();
+        if (input.cycleCharacter)
+        {
+            manager.wantsToCycleCharacter = true;
+        }
+
+        if (input.undoPressed)
+        {
+            manager.wantsToUndo = true;
+        }
     }
 
 

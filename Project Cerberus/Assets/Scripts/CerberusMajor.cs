@@ -39,7 +39,6 @@ public class CerberusMajor : Cerberus
 
     private List<JumpInfo> _jumpSpaces;
     private static int _maxJumpArrows = 32;
-    private bool _specialActive;
 
     private static int _bezierCurveLengthEstimationSegments = 5;
     private static float _lengthEstimationDelta = 1f / _bezierCurveLengthEstimationSegments;
@@ -66,18 +65,7 @@ public class CerberusMajor : Cerberus
     public override void ProcessMoveInput()
     {
         base.ProcessMoveInput();
-        var wantsToJump = false;
-        if (input.specialPressed && !_specialActive)
-        {
-            _specialActive = true;
-        }
-        else if (input.specialPressed && _specialActive)
-        {
-            _specialActive = false;
-            wantsToJump = true;
-        }
-
-        if (_specialActive)
+        if (input.specialHeld)
         {
             if (input.upPressed)
             {
@@ -98,15 +86,8 @@ public class CerberusMajor : Cerberus
             {
                 AddJumpSpace(Vector2Int.left, 180);
             }
-
-            if (input.backOutOfAbility)
-            {
-                _specialActive = false;
-                _jumpSpaces.Clear();
-                RenderJumpPath();
-            }
         }
-        else if (wantsToJump)
+        else if (input.specialReleased)
         {
             if (_jumpSpaces.Count > 0)
             {
@@ -146,8 +127,26 @@ public class CerberusMajor : Cerberus
             {
                 BasicMove(Vector2Int.left);
             }
+        }
 
-            ProcessUndoMergeSplitSkipInput();
+        if (input.undoPressed)
+        {
+            if (_jumpSpaces.Count > 0)
+            {
+                _jumpSpaces.Clear();
+                RenderJumpPath();
+            }
+            else
+            {
+                manager.wantsToUndo = true;
+            }
+        }
+
+        if (input.cycleCharacter)
+        {
+            _jumpSpaces.Clear();
+            RenderJumpPath();
+            manager.wantsToCycleCharacter = true;
         }
     }
 
@@ -191,7 +190,7 @@ public class CerberusMajor : Cerberus
                     // Cerberus cannot possibly have goal in jump path.
                     goalIsOnJumpPath = false;
                 }
-                else if (!goalIsOnJumpPath)
+                else if(!goalIsOnJumpPath)
                 {
                     // Add space to path if goal is not in path
                     _jumpSpaces.Add(newJumpInfo);

@@ -22,8 +22,7 @@ public class PuzzleGameplayInput : MonoBehaviour
         mergeOrSplit,
         undoPressed,
         resetPressed,
-        cycleCharacter,
-        backOutOfAbility;
+        cycleCharacter;
 
     private void Update()
     {
@@ -83,8 +82,6 @@ public class PuzzleGameplayInput : MonoBehaviour
 
             cycleCharacter = cycleCharacter || keyboard.tabKey.wasPressedThisFrame;
         }
-
-        backOutOfAbility = cycleCharacter || undoPressed || skipMove || mergeOrSplit;
     }
 
     public void ClearInput()
