@@ -47,6 +47,9 @@ public class PuzzleUI : MonoBehaviour
     public Text firstDog;
     public Text secondDog;
     public Text thirdDog;
+    public Text mergeButton;
+    private string toMerge = "Merge";
+    private string toSplit = "Split";
 
 
     [SerializeField] private DogStatus[] dogStatusArray;
@@ -58,6 +61,7 @@ public class PuzzleUI : MonoBehaviour
     void Awake()
     {
         _manager = FindObjectOfType<GameManager>();
+
         // Check length of dogStatusArray
         if (dogStatusArray.Length != 3)
         {
@@ -86,7 +90,7 @@ public class PuzzleUI : MonoBehaviour
         // TODO Kevin: Move this out of Update loop into new UpdateUI method
         // Update turn counter
         turnCounter.text = $"Turns left:\n{_manager.maxTurns - _manager.turn}";
-        
+
         // Hide all dog status initially
         foreach (var dogStatus in dogStatusArray)
         {
@@ -101,6 +105,17 @@ public class PuzzleUI : MonoBehaviour
             {
                 dogStatusArray[0].text.text = cerberus.isCerberusMajor ? "Cerberus" : "Jack";
             }
+
+            // Print Ctrl button tutorial based on merge status.
+            if (cerberus.isCerberusMajor)
+            {
+                mergeButton.text = "Left Ctrl: " + toSplit;
+            }
+            else
+            {
+                mergeButton.text = "Left Ctrl: " + toMerge;
+            }
+
             // Get dogStatus from map
             var dogStatus = _dogStatusMap[cerberus.GetType()];
             dogStatus.ShowUI();
