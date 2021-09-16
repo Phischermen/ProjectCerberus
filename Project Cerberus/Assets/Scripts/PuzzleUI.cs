@@ -31,6 +31,7 @@ public class PuzzleUI : MonoBehaviour
         {
             text.color = Color.white;
         }
+
         public void HideUI()
         {
             text.gameObject.SetActive(false);
@@ -75,12 +76,12 @@ public class PuzzleUI : MonoBehaviour
         _dogStatusMap.Add(typeof(Laguna), dogStatusArray[2]);
         _dogStatusMap.Add(typeof(CerberusMajor), dogStatusArray[0]);
 
-        // Cache initial positions of UI elements
+        // Cache initial local positions of UI elements
         _positionCache = new Vector3[3];
         for (var i = 0; i < 3; i++)
         {
             var dogStatus = dogStatusArray[i];
-            _positionCache[i] = dogStatus.rectTransform.position;
+            _positionCache[i] = dogStatus.rectTransform.localPosition;
         }
     }
 
@@ -103,18 +104,11 @@ public class PuzzleUI : MonoBehaviour
             var cerberus = _manager.moveOrder[i];
             if (i == 0)
             {
+                // Set text based on merged status
                 dogStatusArray[0].text.text = cerberus.isCerberusMajor ? "Cerberus" : "Jack";
+                mergeButton.text = $"Left Ctrl: {(cerberus.isCerberusMajor ? toSplit : toMerge)}";
             }
 
-            // Print Ctrl button tutorial based on merge status.
-            if (cerberus.isCerberusMajor)
-            {
-                mergeButton.text = "Left Ctrl: " + toSplit;
-            }
-            else
-            {
-                mergeButton.text = "Left Ctrl: " + toMerge;
-            }
 
             // Get dogStatus from map
             var dogStatus = _dogStatusMap[cerberus.GetType()];
@@ -134,7 +128,7 @@ public class PuzzleUI : MonoBehaviour
             }
 
             // Set transform
-            dogStatus.rectTransform.position = _positionCache[i];
+            dogStatus.rectTransform.localPosition = _positionCache[i];
         }
     }
 }
