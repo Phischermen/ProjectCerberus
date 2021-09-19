@@ -169,7 +169,7 @@ public class CerberusMajor : Cerberus
 
         // Check for entity to jump over and valid place to land
         var canJump = (jumpedOverCell.GetJumpableEntity() || jumpedOverCell.floorTile.jumpable) &&
-                      newJumpCell.floorTile != null;
+                      newJumpCell.floorTile != null && newJumpCell.floorTile.landable;
 
         if (canJump)
         {
