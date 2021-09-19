@@ -17,20 +17,20 @@ public class PuzzleUI : MonoBehaviour
         public Text text;
 
         // UI Methods
-        public void SetUIToMovedPreset()
-        {
-            text.color = Color.gray;
-        }
+        // public void SetUIToMovedPreset()
+        // {
+        //     text.color = Color.gray;
+        // }
 
         public void SetUIToCurrentlyControlledPreset()
         {
             text.color = Color.red;
         }
 
-        public void SetUIToYetToMovePreset()
-        {
-            text.color = Color.white;
-        }
+        // public void SetUIToYetToMovePreset()
+        // {
+        //     text.color = Color.white;
+        // }
 
         public void HideUI()
         {
@@ -90,7 +90,8 @@ public class PuzzleUI : MonoBehaviour
     {
         // TODO Kevin: Move this out of Update loop into new UpdateUI method
         // Update turn counter
-        turnCounter.text = $"Turns left:\n{_manager.maxTurns - _manager.turn}";
+        //turnCounter.text = $"Turns left:\n{_manager.maxTurns - _manager.turn}";
+        turnCounter.text = $"Current Move:\n{_manager.maxMovesUntilStarLoss - _manager.move}";
 
         // Hide all dog status initially
         foreach (var dogStatus in dogStatusArray)
@@ -99,36 +100,36 @@ public class PuzzleUI : MonoBehaviour
         }
 
         // Iterate over moveOrder to update dogStatus
-        for (int i = 0; i < _manager.moveOrder.Count; i++)
-        {
-            var cerberus = _manager.moveOrder[i];
-            if (i == 0)
-            {
-                // Set text based on merged status
-                dogStatusArray[0].text.text = cerberus.isCerberusMajor ? "Cerberus" : "Jack";
-                mergeButton.text = $"Left Ctrl: {(cerberus.isCerberusMajor ? toSplit : toMerge)}";
-            }
-
-
-            // Get dogStatus from map
-            var dogStatus = _dogStatusMap[cerberus.GetType()];
-            dogStatus.ShowUI();
-            // Set preset
-            if (i < _manager.currentMove)
-            {
-                dogStatus.SetUIToMovedPreset();
-            }
-            else if (i == _manager.currentMove)
-            {
-                dogStatus.SetUIToCurrentlyControlledPreset();
-            }
-            else
-            {
-                dogStatus.SetUIToYetToMovePreset();
-            }
-
-            // Set transform
-            dogStatus.rectTransform.localPosition = _positionCache[i];
-        }
+        // for (int i = 0; i < _manager.moveOrder.Count; i++)
+        // {
+        //     var cerberus = _manager.moveOrder[i];
+        //     if (i == 0)
+        //     {
+        //         // Set text based on merged status
+        //         dogStatusArray[0].text.text = cerberus.isCerberusMajor ? "Cerberus" : "Jack";
+        //         mergeButton.text = $"Left Ctrl: {(cerberus.isCerberusMajor ? toSplit : toMerge)}";
+        //     }
+        //
+        //
+        //     // Get dogStatus from map
+        //     var dogStatus = _dogStatusMap[cerberus.GetType()];
+        //     dogStatus.ShowUI();
+        //     // Set preset
+        //     if (i < _manager.currentMove)
+        //     {
+        //         dogStatus.SetUIToMovedPreset();
+        //     }
+        //     else if (i == _manager.currentMove)
+        //     {
+        //         dogStatus.SetUIToCurrentlyControlledPreset();
+        //     }
+        //     else
+        //     {
+        //         dogStatus.SetUIToYetToMovePreset();
+        //     }
+        //
+        //     // Set transform
+        //     dogStatus.rectTransform.localPosition = _positionCache[i];
+        // }
     }
 }

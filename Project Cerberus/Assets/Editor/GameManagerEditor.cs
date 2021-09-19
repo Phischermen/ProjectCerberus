@@ -8,7 +8,7 @@ namespace Editor
     {
         public override void OnInspectorGUI()
         {
-            var gameManager = (GameManager)target;
+            var gameManager = (GameManager) target;
             DrawDefaultInspector();
 
             if (GUILayout.Button("Set Next Scene"))
@@ -25,11 +25,14 @@ namespace Editor
                 menu.ShowAsContext();
             }
 
-            gameManager.infinteTurns = EditorGUILayout.Toggle("Infinite Turns", gameManager.infinteTurns);
-            if (!gameManager.infinteTurns)
+            gameManager.infinteMovesTilStarLoss =
+                EditorGUILayout.Toggle("Infinite Turns", gameManager.infinteMovesTilStarLoss);
+            if (!gameManager.infinteMovesTilStarLoss)
             {
-                gameManager.maxTurns = EditorGUILayout.IntSlider("Max Turns",gameManager.maxTurns, 1, 50);
+                gameManager.maxMovesUntilStarLoss =
+                    EditorGUILayout.IntSlider("Max Turns", gameManager.maxMovesUntilStarLoss, 1, 50);
             }
+
             if (GUI.changed)
             {
                 EditorUtility.SetDirty(gameManager);
