@@ -91,7 +91,7 @@ public class PuzzleUI : MonoBehaviour
         // TODO Kevin: Move this out of Update loop into new UpdateUI method
         // Update turn counter
         //turnCounter.text = $"Turns left:\n{_manager.maxTurns - _manager.turn}";
-        turnCounter.text = $"Current Move:\n{_manager.maxMovesUntilStarLoss - _manager.move}";
+        turnCounter.text = $"Move til Star Loss:\n{_manager.maxMovesUntilStarLoss - _manager.move}\nTimer:{_manager._timer}";
 
         // Hide all dog status initially
         foreach (var dogStatus in dogStatusArray)

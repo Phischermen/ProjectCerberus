@@ -4,29 +4,49 @@ using UnityEngine;
 
 public class Pickup : PuzzleEntity
 {
-
     public class PickupUndoData : UndoData
     {
         Pickup pickup;
-        bool pickedUp;
+        bool collected;
 
-        public  PickupUndoData(Pickup pickup, bool pickedUp)
+        public PickupUndoData(Pickup pickup, bool collected)
         {
             this.pickup = pickup;
-            this.pickedUp = pickedUp;
+            this.collected = collected;
         }
 
         public override void Load()
         {
-            pickup.SetFieldsToCollectedPreset(pickedUp);
+            if (collected)
+            {
+                pickup.SetFieldsToCollectedPreset();
+            }
+            else if(pickup.manager.move > pickup.manager.maxMovesUntilStarLoss)
+            {
+                pickup.SetFieldsToUnavailablePreset();
+            }
+            else
+            {
+                pickup.SetFieldsToUncollectedPreset();
+            }
         }
     }
+
     public Color collectedColor;
-    [HideInInspector,ShowInTileInspector] public bool collected;
+    public Color unavailableColor;
+    [HideInInspector, ShowInTileInspector] public bool collected;
+    private SpriteRenderer _spriteRenderer;
+
     public Pickup()
     {
         entityRules = "A bonus pickup. Collecting this for a surprise reward.";
         landableScore = 0;
+    }
+
+    private void Awake()
+    {
+        base.Awake();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     public override UndoData GetUndoData()
@@ -37,17 +57,29 @@ public class Pickup : PuzzleEntity
 
     public override void OnEnterCollisionWithEntity(PuzzleEntity other)
     {
-        if (collected) return;
-        if (other is Cerberus cerberus)
+        if (collected || manager.move > manager.maxMovesUntilStarLoss) return;
+        if (other is Cerberus)
         {
             manager.collectedStar = true;
-            SetFieldsToCollectedPreset(true);
+            SetFieldsToCollectedPreset();
         }
     }
 
-    public void SetFieldsToCollectedPreset(bool pickedUp)
+    public void SetFieldsToUncollectedPreset()
     {
-        GetComponent<SpriteRenderer>().color = pickedUp ? collectedColor : Color.white;
+        _spriteRenderer.color = Color.white;
+        collected = false;
+    }
 
+    public void SetFieldsToCollectedPreset()
+    {
+        _spriteRenderer.color = collectedColor;
+        collected = true;
+    }
+
+    public void SetFieldsToUnavailablePreset()
+    {
+        _spriteRenderer.color = unavailableColor;
+        collected = false;
     }
 }

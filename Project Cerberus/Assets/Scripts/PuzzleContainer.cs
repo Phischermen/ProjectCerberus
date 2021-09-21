@@ -1,8 +1,14 @@
-﻿using System;
-using System.Collections;
+﻿/*
+ * PuzzleContainer manages a 2D array of level cells that store the entities residing in that cell. This 2D array is
+ * called levelMap, and it is initialized on Awake(). PuzzleContainer relies on the existence of a tilemap component in
+ * the scene to function. It expects the tilemap to be filled exclusively with tiles of type FloorTile. PuzzleContainer
+ * has methods for adding and removing puzzle entities from level cells. PuzzleContainer provides debug info about
+ * levelMap with an in-game tile inspector. PuzzleContainer is responsible for processing undoable objects, and
+ * restoring previous states of the game. 
+ */
+
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
@@ -11,6 +17,12 @@ public class PuzzleContainer : MonoBehaviour
 {
     public class LevelCell
     {
+        /*
+         * LevelCell holds a list of PuzzleEntity residing in the cell, and stores the FloorTile the entities sit on top
+         * of. The entities are considered dynamic, and will move from cell to cell, but the floor tiles are intended to
+         * be static. LevelCell also has helper methods to find entities with specific attributes or get other data
+         * about the cell as necessary.
+         */
         public FloorTile floorTile;
         public List<PuzzleEntity> puzzleEntities = new List<PuzzleEntity>();
 
@@ -69,7 +81,7 @@ public class PuzzleContainer : MonoBehaviour
 
             return list;
         }
-        
+
         public int GetLandableScore()
         {
             var score = 0;
@@ -126,6 +138,8 @@ public class PuzzleContainer : MonoBehaviour
 
     private void OnGUI()
     {
+        // Show tile inspector if F1 pressed.
+        // OnGUI triggers more than once, so a sanity check is needed to prevent the inspector from immediately closing
         if (Keyboard.current.f1Key.wasPressedThisFrame && _frameInspectorShown != Time.frameCount)
         {
             _inspectorShown = !_inspectorShown;
@@ -134,87 +148,41 @@ public class PuzzleContainer : MonoBehaviour
 
         if (_inspectorShown)
         {
-            var inspectorContentText = $"UndoStack size: {_undoStack.Count}\n";
+            var inspectorContentText = new List<string>();
+            inspectorContentText.Add($"UndoStack size: {_undoStack.Count}");
             // Get cell that player is targeting
             var mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             var mouseCoord = new Vector2Int((int) mousePosition.x, (int) mousePosition.y);
             var inBounds = InBounds(mouseCoord);
             // Display information about that cell
-            inspectorContentText += "Mouse over a tile to read data.";
+            inspectorContentText.Add("Mouse over a tile to read data.");
             if (inBounds)
             {
                 var cell = GetCell(mouseCoord);
                 if (cell != null)
                 {
-                    inspectorContentText = $"UndoStack size: {_undoStack.Count}\n";
-                    // Read fields and properties exposed to tile inspector
-                    // Read floor tile
+                    // Read fields and properties exposed to tile inspector.
+                    // Read floor tile.
                     if (cell.floorTile != null)
                     {
-                        inspectorContentText += $"Floor Tile: {cell.floorTile.name}\n";
+                        // User has followed directions. Remove it from content list.
+                        inspectorContentText.Remove("Mouse over a tile to read data.");
+                        inspectorContentText.Add($"Floor Tile: {cell.floorTile.name}");
                         if (_inspectorExpanded)
                         {
-                            var floorTile = cell.floorTile;
-                            foreach (var memberInfo in floorTile.GetType().GetMembers())
-                            {
-                                ShowInTileInspector attribute;
-                                switch (memberInfo)
-                                {
-                                    case PropertyInfo propertyInfo:
-                                        attribute = propertyInfo.GetCustomAttribute<ShowInTileInspector>();
-                                        if (attribute != null)
-                                        {
-                                            inspectorContentText +=
-                                                $"{propertyInfo.Name}: {propertyInfo.GetValue(floorTile)}\n";
-                                        }
-
-                                        break;
-                                    case FieldInfo fieldInfo:
-                                        attribute = fieldInfo.GetCustomAttribute<ShowInTileInspector>();
-                                        if (attribute != null)
-                                        {
-                                            inspectorContentText +=
-                                                $"{fieldInfo.Name}: {fieldInfo.GetValue(floorTile)}\n";
-                                        }
-
-                                        break;
-                                }
-                            }
+                            // Add properties with ShowInTileInspector attribute to content list.
+                            AddValidObjectMembersToContentList(cell.floorTile, inspectorContentText);
                         }
                     }
 
-                    // Read entity
-                    inspectorContentText += $"{cell.puzzleEntities.Count} Entity(s)\n";
+                    // Read PuzzleEntities
+                    inspectorContentText.Add($"{cell.puzzleEntities.Count} Entity(s)");
                     if (_inspectorExpanded)
                     {
                         foreach (var entity in cell.puzzleEntities)
                         {
-                            inspectorContentText += $"{entity.name}:\n";
-                            foreach (var memberInfo in entity.GetType().GetMembers())
-                            {
-                                ShowInTileInspector attribute;
-                                switch (memberInfo)
-                                {
-                                    case PropertyInfo propertyInfo:
-                                        attribute = propertyInfo.GetCustomAttribute<ShowInTileInspector>();
-                                        if (attribute != null)
-                                        {
-                                            inspectorContentText +=
-                                                $"{propertyInfo.Name}: {propertyInfo.GetValue(entity)}\n";
-                                        }
-
-                                        break;
-                                    case FieldInfo fieldInfo:
-                                        attribute = fieldInfo.GetCustomAttribute<ShowInTileInspector>();
-                                        if (attribute != null)
-                                        {
-                                            inspectorContentText +=
-                                                $"{fieldInfo.Name}: {fieldInfo.GetValue(entity)}\n";
-                                        }
-
-                                        break;
-                                }
-                            }
+                            inspectorContentText.Add($"{entity.name}:");
+                            AddValidObjectMembersToContentList(entity, inspectorContentText);
                         }
                     }
                 }
@@ -222,13 +190,44 @@ public class PuzzleContainer : MonoBehaviour
 
 
             // Construct GUI content
-            GUIContent content = new GUIContent(inspectorContentText);
+            string text = "";
+            foreach (var s in inspectorContentText)
+            {
+                text += s + "\n";
+            }
+
+            GUIContent content = new GUIContent(text);
             GUIStyle style = GUI.skin.box;
             style.wordWrap = true;
             var height = style.CalcHeight(content, inspectorWidth);
             GUI.Box(new Rect(0, 0, inspectorWidth, height), content, style);
             _inspectorExpanded =
                 GUI.Toggle(new Rect(0, height, inspectorWidth, 20), _inspectorExpanded, "Expand/Shrink");
+        }
+    }
+
+    void AddValidObjectMembersToContentList(object myObject, List<string> inspectorContentText)
+    {
+        foreach (var memberInfo in myObject.GetType().GetMembers())
+        {
+            // Search for attribute.
+            var attribute = memberInfo.GetCustomAttribute<ShowInTileInspector>();
+            if (attribute != null)
+            {
+                // Get value of property.
+                object value = null;
+                if (memberInfo is FieldInfo fieldInfo)
+                {
+                    value = fieldInfo.GetValue(myObject);
+                }
+                else if (memberInfo is PropertyInfo propertyInfo)
+                {
+                    value = propertyInfo.GetValue(myObject);
+                }
+
+                // Add to content list.
+                inspectorContentText.Add($"{memberInfo.Name}: {value}");
+            }
         }
     }
 
@@ -247,7 +246,7 @@ public class PuzzleContainer : MonoBehaviour
         // Get components
         tilemap = GetComponentInChildren<Tilemap>();
 
-        // Initialize collections
+        // Initialize levelMap
         levelMap = new LevelCell[maxLevelWidth, maxLevelHeight];
         for (int i = 0; i < maxLevelWidth; i++)
         {
@@ -257,40 +256,45 @@ public class PuzzleContainer : MonoBehaviour
             }
         }
 
+        // Initialize Undo collections.
         _undoables = new List<IUndoable>();
         _undoStack = new Stack<List<UndoData>>();
 
+        // Add Counters and GameManager to undoables.
         _undoables.Add(FindObjectOfType<GameManager>());
         foreach (var counter in FindObjectsOfType<Counter>())
         {
             _undoables.Add(counter);
         }
 
-        // Setup tilemap for parsing
+        // Setup tilemap for parsing by compressing bounds.
         tilemap.CompressBounds();
+        // Verify size is right.
         var bounds = tilemap.cellBounds;
         if (tilemap.size.x > maxLevelWidth || tilemap.size.y > maxLevelHeight)
         {
             NZ.NotifyZach($"Level is too big; level must be {maxLevelWidth} x {maxLevelHeight}");
         }
 
-        // Add entities to map
+        // Add entities to levelMap
         foreach (var entity in FindObjectsOfType<PuzzleEntity>())
         {
             var vec3Position = tilemap.layoutGrid.WorldToCell(entity.transform.position);
             var position = new Vector2Int(vec3Position.x, vec3Position.y);
             AddEntityToCell(entity, position);
+            // Add entity to undoables if necessary
             if (entity.GetType().GetCustomAttribute<GetUndoDataReturnsNull>() == null)
             {
                 _undoables.Add(entity);
             }
         }
 
+        // Parse tilemap for FloorTiles
         for (var i = bounds.x; i < bounds.xMax; i++)
         {
             for (var j = bounds.y; j < bounds.yMax; j++)
             {
-                // Get floor tile. Check validity.
+                // Get FloorTile. Check validity.
                 var floorTile = tilemap.GetTile<FloorTile>(new Vector3Int(i, j, 0));
                 var hasTile = tilemap.HasTile(new Vector3Int(i, j, 0));
                 if (hasTile && floorTile == null)
@@ -302,7 +306,7 @@ public class PuzzleContainer : MonoBehaviour
                     var levelCell = levelMap[i, j];
                     if (!floorTile.needsToBeCloned)
                     {
-                        // Set floor tile
+                        // Set floor tile in levelCell
                         levelCell.floorTile = floorTile;
                     }
                     else
@@ -312,6 +316,8 @@ public class PuzzleContainer : MonoBehaviour
                         var floorTileClone = Instantiate(floorTile);
                         levelCell.floorTile = floorTileClone;
                         tilemap.SetTile(new Vector3Int(i, j, 0), floorTileClone);
+                        // Add floorTileClone to undoables. We only do this with clones because data in non-clones is
+                        // expected to stay constant.
                         if (floorTileClone.GetType().GetCustomAttribute<GetUndoDataReturnsNull>() == null)
                         {
                             _undoables.Add(floorTileClone);
@@ -325,7 +331,7 @@ public class PuzzleContainer : MonoBehaviour
     // Level Map management
     public void AddEntityToCell(PuzzleEntity entity, Vector2Int cell)
     {
-        if (cell.x > 32 || cell.y > 32)
+        if (!InBounds(cell))
         {
             NZ.NotifyZach("Entity placed outside bounds: " + entity.name);
             return;
@@ -336,7 +342,7 @@ public class PuzzleContainer : MonoBehaviour
 
     public void RemoveEntityFromCell(PuzzleEntity entity, Vector2Int cell)
     {
-        if (cell.x > 32 || cell.y > 32)
+        if (!InBounds(cell))
         {
             NZ.NotifyZach("Entity placed outside bounds: " + entity.name);
             return;
@@ -363,6 +369,7 @@ public class PuzzleContainer : MonoBehaviour
     // Undo system
     public void PushToUndoStack()
     {
+        // Get undo data from every undoable, so board state can be recreated.
         var undoList = new List<UndoData>();
         foreach (var undoable in _undoables)
         {
@@ -375,6 +382,7 @@ public class PuzzleContainer : MonoBehaviour
 
     public void UndoLastMove()
     {
+        // Pop from undoStack. Load the undo data.
         if (_undoStack.Count > 0)
         {
             var undoList = _undoStack.Pop();
@@ -383,8 +391,26 @@ public class PuzzleContainer : MonoBehaviour
                 undoData.Load();
             }
 
-            // Refresh tiles
+            // Refresh tiles.
             tilemap.RefreshAllTiles();
         }
+    }
+
+    public void UndoToFirstMove()
+    {
+        // Pop from undoStack until data of the first move is uncovered.
+        while (_undoStack.Count != 1)
+        {
+            _undoStack.Pop();
+        }
+
+        var undoList = _undoStack.Pop();
+        foreach (var undoData in undoList)
+        {
+            undoData.Load();
+        }
+
+        // Refresh tiles.
+        tilemap.RefreshAllTiles();
     }
 }
