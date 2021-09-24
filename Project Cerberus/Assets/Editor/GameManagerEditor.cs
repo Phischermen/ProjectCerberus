@@ -1,4 +1,4 @@
- /*
+/*
  * Custom inspector for GameManager.
  */
 
@@ -14,10 +14,6 @@ namespace Editor
         {
             var gameManager = (GameManager) target;
             DrawDefaultInspector();
-
-
-            gameManager.infinteTurns = EditorGUILayout.Toggle("Infinite Turns", gameManager.infinteTurns);
-            if (!gameManager.infinteTurns)
             // Add toggle to set no limit on moves until star loss.
             gameManager.infinteMovesTilStarLoss =
                 EditorGUILayout.Toggle("No Move Limit For Star Loss", gameManager.infinteMovesTilStarLoss);
@@ -27,6 +23,7 @@ namespace Editor
                 gameManager.maxMovesUntilStarLoss =
                     EditorGUILayout.IntSlider("Moves until star loss", gameManager.maxMovesUntilStarLoss, 1, 50);
             }
+
             // Add toggle to set no time limit.
             gameManager.infiniteTimeLimit =
                 EditorGUILayout.Toggle("Infinite Time Limit", gameManager.infiniteTimeLimit);
@@ -36,7 +33,8 @@ namespace Editor
                 gameManager.timeLimit =
                     EditorGUILayout.Slider("Time Limit (sec)", gameManager.timeLimit, 1, 120);
             }
-           // Apply changes.
+
+            // Apply changes.
             if (GUI.changed)
             {
                 EditorUtility.SetDirty(gameManager);
