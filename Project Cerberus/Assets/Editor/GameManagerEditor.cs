@@ -1,6 +1,7 @@
-﻿/*
+ /*
  * Custom inspector for GameManager.
  */
+
 using UnityEditor;
 using UnityEngine;
 
@@ -13,27 +14,10 @@ namespace Editor
         {
             var gameManager = (GameManager) target;
             DrawDefaultInspector();
-            // Display value of nextLevel.
-            GUILayout.Label($"Next Level: {gameManager.nextScene}");
-            // Add button to set nextLevel.
-            if (GUILayout.Button("Set Next Scene"))
-            {
-                // Initialize generic menu.
-                GenericMenu menu = new GenericMenu();
-                // Populate generic menu with scene names from EditorBuildSettings.
-                foreach (var scene in EditorBuildSettings.scenes)
-                {
-                    // Get scene path
-                    var name = scene.path;
-                    // Extract name from the full path.
-                    name = name.Remove(name.LastIndexOf('.'));
-                    name = name.Remove(0, name.LastIndexOf('/') + 1);
-                    // Add the item to the menu. OnSelectScene is the callback.
-                    menu.AddItem(new GUIContent(name), gameManager.nextScene.Equals(name), OnSelectScene, name);
-                }
-                // Show menu.
-                menu.ShowAsContext();
-            }
+
+
+            gameManager.infinteTurns = EditorGUILayout.Toggle("Infinite Turns", gameManager.infinteTurns);
+            if (!gameManager.infinteTurns)
             // Add toggle to set no limit on moves until star loss.
             gameManager.infinteMovesTilStarLoss =
                 EditorGUILayout.Toggle("No Move Limit For Star Loss", gameManager.infinteMovesTilStarLoss);
@@ -52,20 +36,11 @@ namespace Editor
                 gameManager.timeLimit =
                     EditorGUILayout.Slider("Time Limit (sec)", gameManager.timeLimit, 1, 120);
             }
-            // Apply changes.
+           // Apply changes.
             if (GUI.changed)
             {
                 EditorUtility.SetDirty(gameManager);
             }
-        }
-
-        private void OnSelectScene(object scene)
-        {
-            // Set next scene
-            var gameManager = (GameManager) target;
-            gameManager.nextScene = (string) scene;
-            // Apply change
-            EditorUtility.SetDirty(target);
         }
     }
 }

@@ -56,7 +56,10 @@ public class GameManager : MonoBehaviour, IUndoable
         }
     }
 
-    [HideInInspector] public string nextScene;
+    private static LevelSequence _levelSequence;
+    private static int currentWorld = -1;
+    private static int currentLevel = -1;
+
 
     [HideInInspector] public bool infiniteTimeLimit = true;
     [HideInInspector] public float timeLimit = 1f;
@@ -93,6 +96,13 @@ public class GameManager : MonoBehaviour, IUndoable
     {
         // Create UI
         Instantiate(_uiPrefab);
+        // Load Level Sequence and get current world and level
+        if (_levelSequence == null)
+        {
+
+            _levelSequence = Resources.Load<CustomProjectSettings>(CustomProjectSettingsProvider.resourcePath).mainLevelSequence;
+            _levelSequence.FindCurrentLevelAndWorld(SceneManager.GetActiveScene().name, out currentLevel, out currentWorld);
+        }
     }
 
     void Start()
@@ -145,8 +155,9 @@ public class GameManager : MonoBehaviour, IUndoable
     {
         // Cache onTopOfGoal, to see if Cerberus enters/exits goal.
         var currentCerberusWasOnTopOfGoal = currentCerberus.onTopOfGoal;
+
         // Process movement of currently controlled cerberus if there is still time left.
-        if (_timer > 0f)
+        if (_timer > 0f || infiniteTimeLimit)
         {
             currentCerberus.ProcessMoveInput();
             // Check if cerberus made their move
@@ -173,7 +184,21 @@ public class GameManager : MonoBehaviour, IUndoable
                         // Player wins!
                         Debug.Log("You win!");
                         // Goto next scene
-                        SceneManager.LoadScene(nextScene);
+                        var nextLevel = currentLevel + 1;
+                        var nextWorld = currentWorld;
+                        if (nextLevel >= _levelSequence.GetNumberOfLevelsInWorld(currentWorld))
+                        {
+                            nextWorld += 1;
+                            if (nextWorld >= _levelSequence.GetNumberOfWorlds())
+                            {
+                                nextWorld = 0;
+                            }
+                            nextLevel = 0;
+                        }
+                        var nextScene = _levelSequence.GetLevel(nextWorld, nextLevel);
+                        currentLevel = nextLevel;
+                        currentWorld = nextWorld;
+                        SceneManager.LoadScene(nextScene.name);
                     }
                 }
 
