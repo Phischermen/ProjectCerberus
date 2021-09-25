@@ -4,12 +4,27 @@ using UnityEngine;
 
 public class DogTracker : MonoBehaviour
 {
+    //connected to undo
+    public class TrackerUndoData : UndoData
+    {
+        public DogTracker tracker;
+
+        public TrackerUndoData(DogTracker tracker)
+        {
+            this.tracker = tracker;
+        }
+
+        public override void Load()
+        {
+            tracker.revertTracker();
+        }
+
+    }
+
+    
+    
     //getting the GameManager
     private GameManager manager;
-
-    //time variables for lerp
-    float t;
-    float timeToReachTarget;
 
     //used to index moveOrder
     private int currentOrder;
@@ -36,8 +51,6 @@ public class DogTracker : MonoBehaviour
         //updates current dog by indexing moveOrder
         currentDog = manager.moveOrder[currentOrder];
 
-        t += Time.deltaTime / timeToReachTarget;       
-
         
         //checks if dog is done with move and then proceeds to next index in moveOrder
         if (currentDog.doneWithMove)
@@ -52,19 +65,29 @@ public class DogTracker : MonoBehaviour
 
         if (currentDog.name == "Jack")
         {
-            transform.position = Vector2.Lerp(transform.position, _jack.position, t);
+            //Debug.Log("Jack");
+            transform.position = Vector2.Lerp(transform.position, _jack.position, Time.deltaTime * 10);
         }
 
         else if (currentDog.name == "Kahuna")
         {
-            transform.position = Vector2.Lerp(transform.position, _kahuna.position, t);
+            //Debug.Log("Kahuna");
+            transform.position = Vector2.Lerp(transform.position, _kahuna.position, Time.deltaTime * 10);
         }
 
         else if (currentDog.name == "Laguna")
         {
-            transform.position = Vector2.Lerp(transform.position, _laguna.position, t);
+            //Debug.Log("Laguna");
+            transform.position = Vector2.Lerp(transform.position, _laguna.position, Time.deltaTime * 10);
         }
 
     }
+
+
+    public void revertTracker()
+    {
+        currentOrder -= 1;
+    }
+
 
 }
