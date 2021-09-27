@@ -64,6 +64,7 @@ public class GameManager : MonoBehaviour, IUndoable
     [HideInInspector] public bool infiniteTimeLimit = true;
     [HideInInspector] public float timeLimit = 1f;
     private bool _timerRunning = false;
+    // TODO Make timer run forwards instead of backwards so time can be displayed even in a level with an infinite time limit
     public float _timer { get; protected set; }
 
     public int move { get; protected set; }
@@ -71,6 +72,8 @@ public class GameManager : MonoBehaviour, IUndoable
     [HideInInspector] public int maxMovesUntilStarLoss;
 
     [SerializeField] private GameObject _uiPrefab;
+    [SerializeField] private GameObject _gameOverEndCard;
+    [SerializeField] private GameObject _victoryEndCard;
 
     private Laguna _laguna;
     private Jack _jack;
@@ -92,6 +95,7 @@ public class GameManager : MonoBehaviour, IUndoable
     private int _cerberusYetToReachGoal;
     [HideInInspector] public bool collectedStar;
 
+    [HideInInspector] public bool gameplayEnabled;
     void Awake()
     {
         // Create UI
@@ -149,6 +153,7 @@ public class GameManager : MonoBehaviour, IUndoable
 
         _timer = timeLimit;
         _timerRunning = false;
+        gameplayEnabled = true;
     }
 
     void Update()
@@ -156,8 +161,8 @@ public class GameManager : MonoBehaviour, IUndoable
         // Cache onTopOfGoal, to see if Cerberus enters/exits goal.
         var currentCerberusWasOnTopOfGoal = currentCerberus.onTopOfGoal;
 
-        // Process movement of currently controlled cerberus if there is still time left.
-        if (_timer > 0f || infiniteTimeLimit)
+        // Process movement of currently controlled cerberus if there is still time left and gameplay is enabled.
+        if (gameplayEnabled && (_timer > 0f || infiniteTimeLimit))
         {
             currentCerberus.ProcessMoveInput();
             // Check if cerberus made their move
@@ -181,24 +186,14 @@ public class GameManager : MonoBehaviour, IUndoable
                     _cerberusYetToReachGoal -= (currentCerberus.isCerberusMajor) ? 3 : 1;
                     if (_cerberusYetToReachGoal == 0)
                     {
-                        // Player wins!
-                        Debug.Log("You win!");
-                        // Goto next scene
-                        var nextLevel = currentLevel + 1;
-                        var nextWorld = currentWorld;
-                        if (nextLevel >= _levelSequence.GetNumberOfLevelsInWorld(currentWorld))
-                        {
-                            nextWorld += 1;
-                            if (nextWorld >= _levelSequence.GetNumberOfWorlds())
-                            {
-                                nextWorld = 0;
-                            }
-                            nextLevel = 0;
-                        }
-                        var nextScene = _levelSequence.GetLevel(nextWorld, nextLevel);
-                        currentLevel = nextLevel;
-                        currentWorld = nextWorld;
-                        SceneManager.LoadScene(nextScene.name);
+                        // Victory! Winning!
+                        // Disable gameplay.
+                        gameplayEnabled = false;
+                        // Stop timer
+                        _timerRunning = false;
+                        // Play victory animation
+                        // Display victory end card.
+                        Instantiate(_victoryEndCard);
                     }
                 }
 
@@ -265,8 +260,7 @@ public class GameManager : MonoBehaviour, IUndoable
                         move += 1;
                     }
                 }
-
-
+                
                 // Start the next move with currentCerberus
                 currentCerberus.StartMove();
             }
@@ -289,29 +283,21 @@ public class GameManager : MonoBehaviour, IUndoable
                 currentCerberus.StartMove();
             }
         }
-        else
-        {
-            // Check for reset/undo input
-            if (_input.resetPressed)
-            {
-                _puzzleContainer.UndoToFirstMove();
-            }
-            else if (_input.undoPressed)
-            {
-                _puzzleContainer.UndoLastMove();
-            }
-        }
-
 
         // Run timer
-        if (_timerRunning)
+        if (_timerRunning && !infiniteTimeLimit)
         {
             _timer -= Time.deltaTime;
             if (_timer < 0)
             {
-                // Time's up
+                // Time's up! Game over!
+                // Disable gameplay
+                gameplayEnabled = false;
+                // Stop timer
                 _timerRunning = false;
                 _timer = 0f;
+                // Display game over end card.
+                Instantiate(_gameOverEndCard);
             }
         }
     }
@@ -355,5 +341,33 @@ public class GameManager : MonoBehaviour, IUndoable
         _laguna.SetDisableCollsionAndShowPentagramMarker(false);
 
         currentCerberus = _jack;
+    }
+    
+    // Replay Level/Proceed Game
+    public void ReplayLevel()
+    {
+        _puzzleContainer.UndoToFirstMove();
+        gameplayEnabled = true;
+        // Note: Timer is reset via GameManagerUndoData.Load()
+    }
+
+    public void ProceedToNextLevel()
+    {
+        // Goto next scene
+        var nextLevel = currentLevel + 1;
+        var nextWorld = currentWorld;
+        if (nextLevel >= _levelSequence.GetNumberOfLevelsInWorld(currentWorld))
+        {
+            nextWorld += 1;
+            if (nextWorld >= _levelSequence.GetNumberOfWorlds())
+            {
+                nextWorld = 0;
+            }
+            nextLevel = 0;
+        }
+        var nextScene = _levelSequence.GetLevel(nextWorld, nextLevel);
+        currentLevel = nextLevel;
+        currentWorld = nextWorld;
+        SceneManager.LoadScene(nextScene.name);
     }
 }

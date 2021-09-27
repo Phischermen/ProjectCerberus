@@ -264,11 +264,14 @@ MonoBehaviour:
   rightReleased: 0
   upReleased: 0
   downReleased: 0
+  specialPressed: 0
   specialHeld: 0
   specialReleased: 0
   skipMove: 0
   mergeOrSplit: 0
   undoPressed: 0
+  resetPressed: 0
+  cycleCharacter: 0
 --- !u!1 &2715384113343177922
 GameObject:
   m_ObjectHideFlags: 0
@@ -312,7 +315,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bdefc15c8f3a5444a4cef1fc936a960, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  infiniteTimeLimit: 1
+  timeLimit: 1
+  infinteMovesTilStarLoss: 1
+  maxMovesUntilStarLoss: 0
   _uiPrefab: {fileID: 5552925204807599473, guid: bcfbc7b7922f7f54986d4d7e2413af3e,
     type: 3}
+  _gameOverEndCard: {fileID: 6748275472432033483, guid: 2c37ffdf5f8040047ade7d6be95b0902,
+    type: 3}
+  _victoryEndCard: {fileID: 6748275472432033483, guid: 04c485a2fb11ad44fb09745c92d95e06,
+    type: 3}
+  currentCerberus: {fileID: 0}
   wantsToJoin: 0
   wantsToSplit: 0
+  wantsToCycleCharacter: 0
+  wantsToUndo: 0
+  collectedStar: 0
+  gameplayEnabled: 0

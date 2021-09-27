@@ -118,7 +118,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1355444294670308318}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4409533594849766113}
+        m_MethodName: Retry
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &4054829067886870184
 GameObject:
   m_ObjectHideFlags: 0
@@ -361,6 +372,7 @@ GameObject:
   - component: {fileID: 6077352759947958485}
   - component: {fileID: 8080355526548015705}
   - component: {fileID: 6825436319842422681}
+  - component: {fileID: 4409533594849766113}
   m_Layer: 5
   m_Name: PlaceholderEndcardFailure
   m_TagString: Untagged
@@ -450,6 +462,18 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &4409533594849766113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6748275472432033483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfb9ade28888cf24f9f3e505d5c26c52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6780494605709641794
 GameObject:
   m_ObjectHideFlags: 0
@@ -798,7 +822,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Next Level
+  m_Text: Retry
 --- !u!1 &8651162388835272577
 GameObject:
   m_ObjectHideFlags: 0
