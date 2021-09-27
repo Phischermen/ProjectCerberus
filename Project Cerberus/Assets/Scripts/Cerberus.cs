@@ -13,18 +13,22 @@ public class Cerberus : PuzzleEntity
     {
         public Cerberus cerberus;
         public Vector2Int position;
+        public bool onTopOfGoal;
         public bool collisionDisabledAndPentagramDisplayed;
 
         public override void Load()
         {
             cerberus.MoveForUndo(position);
+            cerberus.onTopOfGoal = onTopOfGoal;
             cerberus.SetDisableCollsionAndShowPentagramMarker(collisionDisabledAndPentagramDisplayed);
         }
 
-        public CerberusUndoData(Cerberus cerberus, Vector2Int position, bool collisionDisabledAndPentagramDisplayed)
+        public CerberusUndoData(Cerberus cerberus, Vector2Int position, bool collisionDisabledAndPentagramDisplayed,
+            bool onTopOfGoal)
         {
             this.cerberus = cerberus;
             this.position = position;
+            this.onTopOfGoal = onTopOfGoal;
             this.collisionDisabledAndPentagramDisplayed = collisionDisabledAndPentagramDisplayed;
         }
     }
@@ -62,7 +66,7 @@ public class Cerberus : PuzzleEntity
     public override UndoData GetUndoData()
     {
         var undoData = new CerberusUndoData(this, position,
-            collisionDisabledAndPentagramDisplayed: manager.cerberusFormed != isCerberusMajor);
+            collisionDisabledAndPentagramDisplayed: manager.cerberusFormed != isCerberusMajor, onTopOfGoal);
         return undoData;
     }
 
