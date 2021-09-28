@@ -9,6 +9,8 @@ using UnityEngine;
 public class PuzzleUIEndCardFailure : MonoBehaviour
 {
     private GameManager _gameManager;
+    // TODO Samuel (When it's ready): List UI that displays various
+    // game over cards.
 
     private void Awake()
     {
