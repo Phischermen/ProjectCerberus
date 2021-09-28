@@ -13,6 +13,14 @@ namespace Editor
             style.wordWrap = true;
             EditorGUILayout.LabelField(entity.entityRules, style);
             DrawDefaultInspector();
+            // Check to see if entity overrides OnPlayerMadeMove via reflection
+            var methodInfo = entity.GetType().GetMethod(nameof(PuzzleEntity.OnPlayerMadeMove));
+            if (methodInfo.DeclaringType != typeof(PuzzleEntity))
+            {
+                // Add slider field to set process priority.
+                entity.processPriority =
+                    EditorGUILayout.Slider("Process Priority", entity.processPriority, 0f, 100f);
+            }
 
             // SFX related fields
             EditorGUILayout.LabelField("Optional Sound Effects");
@@ -29,6 +37,12 @@ namespace Editor
             if (entity.pushableByFireball)
             {
                 CreateSfxField("Pushed By Fireball", ref entity.pushedByFireballSfx);
+            }
+
+            // Apply changes
+            if (GUI.changed)
+            {
+                EditorUtility.SetDirty(entity);
             }
         }
 

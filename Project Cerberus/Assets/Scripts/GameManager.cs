@@ -260,7 +260,8 @@ public class GameManager : MonoBehaviour, IUndoable
                         move += 1;
                     }
                 }
-                
+                // Command PuzzleContainer to process entities in response to this move
+                _puzzleContainer.ProcessEntitiesInResponseToPlayerMove();
                 // Start the next move with currentCerberus
                 currentCerberus.StartMove();
             }
@@ -269,7 +270,6 @@ public class GameManager : MonoBehaviour, IUndoable
             {
                 wantsToUndo = false;
                 _puzzleContainer.UndoLastMove();
-                Debug.Log("Ündo");
             }
             // Handle request to cycle character
             else if (wantsToCycleCharacter)

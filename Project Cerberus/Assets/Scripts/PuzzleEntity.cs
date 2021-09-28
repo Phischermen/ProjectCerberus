@@ -28,6 +28,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     [ShowInTileInspector] public bool jumpable { get; protected set; }
     public string entityRules { get; protected set; } = "No rules have been written for this object.";
     public bool isSuperPushed { get; set; }
+    [HideInInspector] public float processPriority; 
 
     protected Coroutine animationRoutine;
     protected bool animationIsRunning;
@@ -69,6 +70,10 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             PlayAnimation(queuedAnimation);
             queuedAnimation = null;
         }
+    }
+
+    public virtual void OnPlayerMadeMove()
+    {
     }
 
     public virtual void OnEnterCollisionWithEntity(PuzzleEntity other)
@@ -133,6 +138,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             animationIsRunning = false;
             animationMustStop = false;
         }
+
         // Perform standard move
         puzzle.RemoveEntityFromCell(this, position);
         position = cell;

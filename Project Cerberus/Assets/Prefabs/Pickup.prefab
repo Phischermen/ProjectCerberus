@@ -96,5 +96,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   position: {x: 0, y: 0}
+  pushedSfx: {fileID: 0}
+  superPushedSfx: {fileID: 0}
+  pushedByFireballSfx: {fileID: 0}
+  initialColor: {r: 1, g: 1, b: 1, a: 1}
   collectedColor: {r: 1, g: 1, b: 1, a: 0.1882353}
+  unavailableColor: {r: 0.49056602, g: 0.3065786, b: 0, a: 1}
   collected: 0

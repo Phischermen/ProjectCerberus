@@ -21,7 +21,7 @@ public class Pickup : PuzzleEntity
             {
                 pickup.SetFieldsToCollectedPreset();
             }
-            else if(pickup.manager.move > pickup.manager.maxMovesUntilStarLoss)
+            else if (pickup.manager.move > pickup.manager.maxMovesUntilStarLoss)
             {
                 pickup.SetFieldsToUnavailablePreset();
             }
@@ -32,6 +32,7 @@ public class Pickup : PuzzleEntity
         }
     }
 
+    public Color initialColor;
     public Color collectedColor;
     public Color unavailableColor;
     [HideInInspector, ShowInTileInspector] public bool collected;
@@ -39,7 +40,7 @@ public class Pickup : PuzzleEntity
 
     public Pickup()
     {
-        entityRules = "A bonus pickup. Collecting this for a surprise reward.";
+        entityRules = "A bonus pickup. Collect this for a surprise reward.";
         landableScore = 0;
     }
 
@@ -47,6 +48,7 @@ public class Pickup : PuzzleEntity
     {
         base.Awake();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        initialColor = _spriteRenderer.color;
     }
 
     public override UndoData GetUndoData()
@@ -55,19 +57,35 @@ public class Pickup : PuzzleEntity
         return undoData;
     }
 
+    public override void OnPlayerMadeMove()
+    {
+        if (collected)
+        {
+            SetFieldsToCollectedPreset();
+        }
+        else if (manager.move > manager.maxMovesUntilStarLoss)
+        {
+            SetFieldsToUnavailablePreset();
+        }
+        else
+        {
+            SetFieldsToUncollectedPreset();
+        }
+    }
+
     public override void OnEnterCollisionWithEntity(PuzzleEntity other)
     {
         if (collected || manager.move > manager.maxMovesUntilStarLoss) return;
         if (other is Cerberus)
         {
+            collected = true;
             manager.collectedStar = true;
-            SetFieldsToCollectedPreset();
         }
     }
 
     public void SetFieldsToUncollectedPreset()
     {
-        _spriteRenderer.color = Color.white;
+        _spriteRenderer.color = initialColor;
         collected = false;
     }
 

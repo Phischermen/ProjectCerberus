@@ -9,6 +9,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+using Priority_Queue;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
@@ -241,6 +242,7 @@ public class PuzzleContainer : MonoBehaviour
     private Stack<List<UndoData>> _undoStack;
     private List<IUndoable> _undoables;
 
+    private SimplePriorityQueue<PuzzleEntity> _entitiesToProcessWhenPlayerMakesMove;
     void Awake()
     {
         // Get components
@@ -260,6 +262,9 @@ public class PuzzleContainer : MonoBehaviour
         _undoables = new List<IUndoable>();
         _undoStack = new Stack<List<UndoData>>();
 
+        // Initialize _entitiesToProcessWhenPlayerMakesMove collection
+        _entitiesToProcessWhenPlayerMakesMove = new SimplePriorityQueue<PuzzleEntity>();
+        
         // Add Counters and GameManager to undoables.
         _undoables.Add(FindObjectOfType<GameManager>());
         foreach (var counter in FindObjectsOfType<Counter>())
@@ -286,6 +291,12 @@ public class PuzzleContainer : MonoBehaviour
             if (entity.GetType().GetCustomAttribute<GetUndoDataReturnsNull>() == null)
             {
                 _undoables.Add(entity);
+            }
+            // Add entity to _entitiesToProcessWhenPlayerMakesMove if virtual method OnPlayerMadeMove is overridden
+            var methodInfo = entity.GetType().GetMethod(nameof(PuzzleEntity.OnPlayerMadeMove));
+            if (methodInfo.DeclaringType != typeof(PuzzleEntity))
+            {
+                _entitiesToProcessWhenPlayerMakesMove.Enqueue(entity, entity.processPriority);
             }
         }
 
@@ -328,6 +339,13 @@ public class PuzzleContainer : MonoBehaviour
         }
     }
 
+    public void ProcessEntitiesInResponseToPlayerMove()
+    {
+        foreach (var entity in _entitiesToProcessWhenPlayerMakesMove)
+        {
+            entity.OnPlayerMadeMove();
+        }
+    }
     // Level Map management
     public void AddEntityToCell(PuzzleEntity entity, Vector2Int cell)
     {
