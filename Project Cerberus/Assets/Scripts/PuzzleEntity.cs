@@ -288,8 +288,9 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         }
     }
 
-    public IEnumerator SlideToDestination(Vector2Int destination, float speed)
+    public IEnumerator SlideToDestination(Vector2Int destination, float speed, float delay = 0f)
     {
+        yield return new WaitForSeconds(delay);
         animationIsRunning = true;
         var startingPosition = transform.position;
         var destinationPosition = puzzle.GetCellCenterWorld(destination);
