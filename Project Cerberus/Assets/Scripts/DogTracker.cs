@@ -52,7 +52,7 @@ public class DogTracker : MonoBehaviour
     void Update()
     {
         //updates current dog by indexing moveOrder
-        currentDog = manager.moveOrder[manager.currentMove];
+        currentDog = manager.currentCerberus;
         // currentDog = manager.moveOrder[currentOrder];
 
         
