@@ -4,22 +4,25 @@ using UnityEngine;
 
 public class DogTracker : MonoBehaviour
 {
+    // TODO(Grant) Add particle emitter. Try to get it to render behind dog
+    // TODO Initialize location at the current dog at start of game
+
     //connected to undo
-    public class TrackerUndoData : UndoData
-    {
-        public DogTracker tracker;
-
-        public TrackerUndoData(DogTracker tracker)
-        {
-            this.tracker = tracker;
-        }
-
-        public override void Load()
-        {
-            tracker.revertTracker();
-        }
-
-    }
+    // public class TrackerUndoData : UndoData
+    // {
+    //     public DogTracker tracker;
+    //
+    //     public TrackerUndoData(DogTracker tracker)
+    //     {
+    //         this.tracker = tracker;
+    //     }
+    //
+    //     public override void Load()
+    //     {
+    //         tracker.revertTracker();
+    //     }
+    //
+    // }
 
     
     
@@ -40,54 +43,56 @@ public class DogTracker : MonoBehaviour
     {
         //finding and getting manager and the dogs
         manager = FindObjectOfType<GameManager>();
-        _jack = FindObjectOfType<Jack>();
-        _kahuna = FindObjectOfType<Kahuna>();
-        _laguna = FindObjectOfType<Laguna>();
+        // _jack = FindObjectOfType<Jack>();
+        // _kahuna = FindObjectOfType<Kahuna>();
+        // _laguna = FindObjectOfType<Laguna>();
         
     }
 
     void Update()
     {
         //updates current dog by indexing moveOrder
-        currentDog = manager.moveOrder[currentOrder];
+        currentDog = manager.moveOrder[manager.currentMove];
+        // currentDog = manager.moveOrder[currentOrder];
 
         
         //checks if dog is done with move and then proceeds to next index in moveOrder
-        if (currentDog.doneWithMove)
-        {
-            currentOrder += 1;
-            //resets currentOrder so it won't get out of list range
-            if (currentOrder > 2)
-            {
-                currentOrder = 0;
-            }
-        }
-
-        if (currentDog.name == "Jack")
-        {
-            //Debug.Log("Jack");
-            transform.position = Vector2.Lerp(transform.position, _jack.position, Time.deltaTime * 10);
-        }
-
-        else if (currentDog.name == "Kahuna")
-        {
-            //Debug.Log("Kahuna");
-            transform.position = Vector2.Lerp(transform.position, _kahuna.position, Time.deltaTime * 10);
-        }
-
-        else if (currentDog.name == "Laguna")
-        {
-            //Debug.Log("Laguna");
-            transform.position = Vector2.Lerp(transform.position, _laguna.position, Time.deltaTime * 10);
-        }
+        // if (currentDog.doneWithMove)
+        // {
+        //     currentOrder += 1;
+        //     //resets currentOrder so it won't get out of list range
+        //     if (currentOrder > 2)
+        //     {
+        //         currentOrder = 0;
+        //     }
+        // }
+        
+        transform.position = Vector3.Lerp(transform.position, currentDog.transform.position, Time.deltaTime * 10);
+        // if (currentDog.name == "Jack")
+        // {
+        //     //Debug.Log("Jack");
+        //     transform.position = Vector2.Lerp(transform.position, _jack.position, Time.deltaTime * 10);
+        // }
+        //
+        // else if (currentDog.name == "Kahuna")
+        // {
+        //     //Debug.Log("Kahuna");
+        //     transform.position = Vector2.Lerp(transform.position, _kahuna.position, Time.deltaTime * 10);
+        // }
+        //
+        // else if (currentDog.name == "Laguna")
+        // {
+        //     //Debug.Log("Laguna");
+        //     transform.position = Vector2.Lerp(transform.position, _laguna.position, Time.deltaTime * 10);
+        // }
 
     }
 
 
-    public void revertTracker()
-    {
-        currentOrder -= 1;
-    }
+    // public void revertTracker()
+    // {
+    //     currentOrder -= 1;
+    // }
 
 
 }
