@@ -63,7 +63,10 @@ public class GameManager : MonoBehaviour, IUndoable
 
     [HideInInspector] public bool infiniteTimeLimit = true;
     [HideInInspector] public float timeLimit = 1f;
+    [HideInInspector] public float parTime = 1f;
+
     private bool _timerRunning = false;
+
     // TODO Make timer run forwards instead of backwards so time can be displayed even in a level with an infinite time limit
     public float _timer { get; protected set; }
 
@@ -96,6 +99,7 @@ public class GameManager : MonoBehaviour, IUndoable
     [HideInInspector] public bool collectedStar;
 
     [HideInInspector] public bool gameplayEnabled;
+
     void Awake()
     {
         // Create UI
@@ -103,9 +107,10 @@ public class GameManager : MonoBehaviour, IUndoable
         // Load Level Sequence and get current world and level
         if (_levelSequence == null)
         {
-
-            _levelSequence = Resources.Load<CustomProjectSettings>(CustomProjectSettingsProvider.resourcePath).mainLevelSequence;
-            _levelSequence.FindCurrentLevelAndWorld(SceneManager.GetActiveScene().name, out currentLevel, out currentWorld);
+            _levelSequence = Resources.Load<CustomProjectSettings>(CustomProjectSettingsProvider.resourcePath)
+                .mainLevelSequence;
+            _levelSequence.FindCurrentLevelAndWorld(SceneManager.GetActiveScene().name, out currentLevel,
+                out currentWorld);
         }
     }
 
@@ -260,6 +265,7 @@ public class GameManager : MonoBehaviour, IUndoable
                         move += 1;
                     }
                 }
+
                 // Command PuzzleContainer to process entities in response to this move
                 _puzzleContainer.ProcessEntitiesInResponseToPlayerMove();
                 // Start the next move with currentCerberus
@@ -272,14 +278,42 @@ public class GameManager : MonoBehaviour, IUndoable
                 _puzzleContainer.UndoLastMove();
             }
             // Handle request to cycle character
-            else if (wantsToCycleCharacter)
+            else if (wantsToCycleCharacter && !cerberusFormed)
             {
                 wantsToCycleCharacter = false;
-                // TODO Implement method to get next cerberus to control based on position of currentCerberus.
-                currentCerberus =
-                    availableCerberus[
-                        (availableCerberus.FindIndex(cerberus => cerberus == currentCerberus) + 1) %
-                        availableCerberus.Count];
+                // Sort availableCerberus, from north-west most to south-east most.
+                availableCerberus.Sort(CompareCerberusByPosition);
+                // Get index of currentCerberus after sorting the list.
+                var currentIdx = availableCerberus.IndexOf(currentCerberus);
+                if (_input.cycleCharacterForward)
+                {
+                    // Switch to Cerberus south-east of current Cerberus.
+                    var idx = (currentIdx + 1) % availableCerberus.Count;
+                    currentCerberus = availableCerberus[idx];
+                }
+                else if (_input.cycleCharacterBackward)
+                {
+                    // Switch to Cerberus north-west of current Cerberus.
+                    // Note: To avoid getting a negative index from % operator, I add the array length to currentIndex. 
+                    var idx = ((currentIdx - 1 + availableCerberus.Count) % availableCerberus.Count);
+                    currentCerberus = availableCerberus[idx];
+                }
+                else if (_input.cycleCharacter0)
+                {
+                    // Switch to Cerberus at far north-west.
+                    currentCerberus = availableCerberus[0];
+                }
+                else if (_input.cycleCharacter1)
+                {
+                    // Switch to the Cerberus between Cerberus.
+                    currentCerberus = availableCerberus[1];
+                }
+                else if (_input.cycleCharacter2)
+                {
+                    // Switch to Cerberus at far south-east.
+                    currentCerberus = availableCerberus[2];
+                }
+
                 currentCerberus.StartMove();
             }
         }
@@ -302,8 +336,14 @@ public class GameManager : MonoBehaviour, IUndoable
         }
     }
 
-    // Undo
+    // Comparison Delegate
+    private int CompareCerberusByPosition(Cerberus a, Cerberus b)
+    {
+        return (a.position.x * PuzzleContainer.maxLevelWidth + (PuzzleContainer.maxLevelWidth - a.position.y)) -
+               (b.position.x * PuzzleContainer.maxLevelWidth + (PuzzleContainer.maxLevelWidth - b.position.y));
+    }
 
+    // Undo
     public UndoData GetUndoData()
     {
         var undoData = new GameManagerUndoData(this, move, _timer, currentCerberus, _cerberusYetToReachGoal,
@@ -342,7 +382,7 @@ public class GameManager : MonoBehaviour, IUndoable
 
         currentCerberus = _jack;
     }
-    
+
     // Replay Level/Proceed Game
     public void ReplayLevel()
     {
@@ -363,8 +403,10 @@ public class GameManager : MonoBehaviour, IUndoable
             {
                 nextWorld = 0;
             }
+
             nextLevel = 0;
         }
+
         var nextScene = _levelSequence.GetLevel(nextWorld, nextLevel);
         currentLevel = nextLevel;
         currentWorld = nextWorld;
