@@ -51,7 +51,8 @@ public class Cerberus : PuzzleEntity
     private Sprite _cerberusSprite;
     public Sprite pentagramMarker;
     [FormerlySerializedAs("_walkSFX")] public AudioSource walkSFX;
-
+    public AnimationCurve talkAnimationCurve;
+    
     protected override void Awake()
     {
         base.Awake();
@@ -136,6 +137,9 @@ public class Cerberus : PuzzleEntity
                     puzzle.PushToUndoStack();
                     pushableEntity.Move(pushCoord);
                     Move(coord);
+                    
+                    pushableEntity.onStandardPushed.Invoke();
+                    
                     PlaySfx(walkSFX);
                     pushableEntity.PlayAnimation(
                         pushableEntity.SlideToDestination(pushCoord, AnimationUtility.basicMoveAndPushSpeed));
@@ -157,4 +161,26 @@ public class Cerberus : PuzzleEntity
         landableScore = disableAndShowPentagram ? 0 : -1;
         GetComponent<SpriteRenderer>().sprite = disableAndShowPentagram ? pentagramMarker : _cerberusSprite;
     }
+    
+    // Animation
+
+    public IEnumerator Talk(float maxYOffset, float talkSpeed)
+    {
+        animationIsRunning = true;
+        var ogPosition = transform.position;
+        var delta = 0f;
+        
+        while (!animationMustStop)
+        {
+            // Hop up and down
+            delta += talkSpeed * Time.deltaTime;
+            transform.position = new Vector3(ogPosition.x, ogPosition.y + talkAnimationCurve.Evaluate(delta), ogPosition.z);
+            yield return new WaitForFixedUpdate();
+        }
+        // Reset position
+        transform.position = ogPosition;
+
+        animationMustStop = false;
+        animationIsRunning = false;
+    } 
 }

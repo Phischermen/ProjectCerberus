@@ -89,6 +89,9 @@ public class Laguna : Cerberus
                     var p = position;
                     Move(coord);
                     entityToPull.Move(p);
+
+                    entityToPull.onPulled.Invoke();
+
                     PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                     entityToPull.PlayAnimation(entityToPull.SlideToDestination(p,
                         AnimationUtility.basicMoveAndPushSpeed));
@@ -110,6 +113,10 @@ public class Laguna : Cerberus
                         pushableEntity.Move(pushCoord);
                         Move(coord);
                         entityToPull.Move(p);
+
+                        pushableEntity.onStandardPushed.Invoke();
+                        entityToPull.onPulled.Invoke();
+
                         PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                         pushableEntity.PlayAnimation(
                             pushableEntity.SlideToDestination(pushCoord, AnimationUtility.basicMoveAndPushSpeed));
