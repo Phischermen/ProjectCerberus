@@ -1,18 +1,27 @@
-﻿using System;
+﻿/*
+ * PuzzleEntity is the dynamic component of our puzzle. They have a lot of boolean fields/properties that define the way
+ * they interact with the player/other blocks. Puzzle entities are animated procedurally with coroutines, that are
+ * played via PlayAnimation(). Animations cannot be cancelled, but they can fast forward to the end by calling
+ * FinishCurrentAnimation(). PuzzleEntity also has virtual methods to respond to certain events, like when it is shot by
+ * Kahuna or when another PuzzleEntity enters/exits their cell. In the context of this class, "collisions" refer to when
+ * PuzzleEntity A cannot share the same cell as PuzzleEntity B based on the values of their respective fields/properties.
+ * Moving a PuzzleEntity across the board is done by calling Move() and then playing some kind of animation to update
+ * the transform. In the context of undoing a move, MoveForUndo() must be used to reset the transform.
+ */
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public abstract class PuzzleEntity : MonoBehaviour, IUndoable
 {
     protected PuzzleContainer puzzle;
     protected GameManager manager;
+    
     [HideInInspector] public Vector2Int position;
     public PuzzleContainer.LevelCell currentCell => puzzle.GetCell(position);
+    
     [ShowInTileInspector] public bool collisionsEnabled { get; protected set; } = true;
     [ShowInTileInspector] public bool isStatic { get; protected set; }
     [ShowInTileInspector] public bool isPlayer { get; protected set; }
@@ -38,9 +47,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
 
     [HideInInspector] public bool showOptionalSfx;
     [HideInInspector] public AudioSource pushedSfx;
-
     [HideInInspector] public AudioSource superPushedSfx;
-
     [HideInInspector] public AudioSource pushedByFireballSfx;
 
     [HideInInspector] public bool showOptionalEvents;
@@ -52,16 +59,17 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
 
     protected virtual void Awake()
     {
+        // Initialize position.
         var vec3Position = FindObjectOfType<Grid>().WorldToCell(transform.position);
         position = new Vector2Int(vec3Position.x, vec3Position.y);
-
+        // Get objects.
         puzzle = FindObjectOfType<PuzzleContainer>();
         manager = FindObjectOfType<GameManager>();
     }
 
     private void Start()
     {
-        // Invoke enter collision callback with puzzle entities in initial cell
+        // Invoke enter collision callback with puzzle entities in initial cell.
         foreach (var newCellPuzzleEntity in currentCell.puzzleEntities)
         {
             if (collisionsEnabled && newCellPuzzleEntity.collisionsEnabled && newCellPuzzleEntity != this)
@@ -74,6 +82,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
 
     private void Update()
     {
+        // Check for queued animation. Play it if there's not another animation already running.
         if (queuedAnimation != null && !animationIsRunning)
         {
             PlayAnimation(queuedAnimation);
@@ -81,10 +90,11 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         }
     }
 
+    // Called every time player does anything to increment move counter.
     public virtual void OnPlayerMadeMove()
     {
     }
-
+    
     public virtual void OnEnterCollisionWithEntity(PuzzleEntity other)
     {
     }
@@ -97,10 +107,15 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     {
     }
 
-    public void Move(Vector2Int cell)
+    public void Move(Vector2Int toCell)
     {
-        var newCell = puzzle.GetCell(cell);
+        // Get cell we're moving to.
+        var newCell = puzzle.GetCell(toCell);
+        // Remove ourselves from that cell.
         puzzle.RemoveEntityFromCell(this, position);
+        // Invoke the exit collision callback for every entity we are leaving behind.
+        // Note: Although we technically "removed" ourselves from our current cell, currentCell still references the cell
+        // we were at last.
         foreach (var currentCellPuzzleEntity in currentCell.puzzleEntities)
         {
             if (collisionsEnabled && currentCellPuzzleEntity.collisionsEnabled)
@@ -109,16 +124,17 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
                 currentCellPuzzleEntity.OnExitCollisionWithEntity(this);
             }
         }
-
+        // Invoke exit collision callback for the floorTile we left behind.
         if (collisionsEnabled)
         {
             currentCell.floorTile.OnExitCollisionWithEntity(this);
+            // Refresh the tile we left in case its state has changed from its callback.
             puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
         }
-
+        // Update our position.
         // Note: Transform needs to be updated via animation
-        position = cell;
-
+        position = toCell;
+        // Invoke enter collision callback for all the new entities we are meeting in our new cell.
         foreach (var newCellPuzzleEntity in newCell.puzzleEntities)
         {
             if (collisionsEnabled && newCellPuzzleEntity.collisionsEnabled)
@@ -127,13 +143,14 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
                 newCellPuzzleEntity.OnEnterCollisionWithEntity(this);
             }
         }
-
+        // Invoke enter collision callback for all the new floorTile we are meeting in our new cell.
         if (collisionsEnabled)
         {
             newCell.floorTile.OnEnterCollisionWithEntity(this);
+            // Refresh the tile we entered in case its state has changed from its callback.
             puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
         }
-
+        // Register that this entity belongs to the new cell.
         puzzle.AddEntityToCell(this, position);
     }
 
@@ -198,9 +215,10 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
 
     public void SetCollisionsEnabled(bool enable)
     {
+        // Avoid accidental invocation of callbacks when setting to same value twice.
         if (enable == collisionsEnabled) return;
         collisionsEnabled = enable;
-        // Invoke callbacks
+        // Invoke callbacks.
         if (enable)
         {
             foreach (var entity in currentCell.puzzleEntities)
@@ -213,6 +231,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             }
 
             currentCell.floorTile.OnEnterCollisionWithEntity(this);
+            // Refresh the tile we entered.
             puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
         }
         else
@@ -227,6 +246,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             }
 
             currentCell.floorTile.OnExitCollisionWithEntity(this);
+            // Refresh the tile we exited.
             puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
         }
     }
@@ -287,7 +307,26 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             animationMustStop = true;
         }
     }
-
+    /*
+     * PuzzleEntity animations are procedural. They take the form of coroutines. An animation must follow this pattern:
+     
+     public IEnumerator AnimationName(Vector3 animationParameters)
+     {
+         // Set this to true
+         animationIsRunning = true;
+         // Be able to stop at any point.
+         while(blah blah blah && animationMustStop == false)
+         {
+             
+         }
+         // Goto final state at end
+         transform.position = animationParameters;
+         // Set these to false
+         animationIsRunning = false;
+         animationMustStop = false;
+     }
+     */
+     
     public IEnumerator SlideToDestination(Vector2Int destination, float speed)
     {
         animationIsRunning = true;
