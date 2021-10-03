@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 
@@ -39,9 +38,6 @@ public class CerberusMajor : Cerberus
 
     private List<JumpInfo> _jumpSpaces;
     private static int _maxJumpArrows = 32;
-
-    private static int _bezierCurveLengthEstimationSegments = 5;
-    private static float _lengthEstimationDelta = 1f / _bezierCurveLengthEstimationSegments;
 
     public AudioSource jumpSfx;
 
@@ -241,17 +237,9 @@ public class CerberusMajor : Cerberus
             var C = D + Vector3.up; // Control point
 
             // Calculate approximate distance to travel
-            var distanceToTravel = 0f;
             var distanceTraveled = 0f;
-            var beginningOfSegment = A;
-            var interpolation = _lengthEstimationDelta;
-            for (int i = 0; i < _bezierCurveLengthEstimationSegments; i++)
-            {
-                var endOfSegment = AnimationUtility.DeCasteljausAlgorithm(A, B, C, D, interpolation);
-                distanceToTravel += Vector3.Distance(beginningOfSegment, endOfSegment);
-                beginningOfSegment = endOfSegment;
-                interpolation += _lengthEstimationDelta;
-            }
+            var interpolation = 0f;
+            var distanceToTravel = AnimationUtility.ApproximateLengthOfBezierCurve(A, B, C, D);
 
             PlaySfxPitchShift(jumpSfx, 0.9f, 1f);
 

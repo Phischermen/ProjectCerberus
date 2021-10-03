@@ -115,8 +115,6 @@ public class Jack : Cerberus
                 range -= 1;
             }
 
-            pushableEntity.isSuperPushed = false;
-
             // Move across searched tiles.
             puzzle.PushToUndoStack();
             
@@ -131,6 +129,7 @@ public class Jack : Cerberus
             {
                 pushableEntity.Move(pushableEntity.position + offset);
             }
+            pushableEntity.isSuperPushed = false;
             DeclareDoneWithMove();
         }
         else if (!blocked)

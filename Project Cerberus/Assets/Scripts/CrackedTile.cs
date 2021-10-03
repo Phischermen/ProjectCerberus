@@ -85,7 +85,8 @@ public class CrackedTile : FloorTile
         if (stage == 3 && !other.isSuperPushed)
         {
             // Play falling animation.
-            other.PlayAnimation(other.FallIntoPit(1f, 90f, 0f));
+            other.PlayAnimation(other.FallIntoPit(AnimationUtility.fallDuration, AnimationUtility.fallRotationSpeed,
+                AnimationUtility.fallFinalScale));
         }
     }
 

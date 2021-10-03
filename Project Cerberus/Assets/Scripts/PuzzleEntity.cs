@@ -392,4 +392,41 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         animationIsRunning = false;
         animationMustStop = false;
     }
+    
+    public IEnumerator Spiked(float rotationSpeed, Vector2 fallDelta, float controlPointHeight, float speed)
+    {
+        animationIsRunning = true;
+        // Use a bezier curve to model the path
+        var A = transform.position; // Start point
+        var B = A + Vector3.up * controlPointHeight; // Control point
+        var D = new Vector3(A.x + fallDelta.x, A.y + fallDelta.y, 0f); // End Point
+        var C = D + Vector3.up * controlPointHeight; // Control point
+        
+        // Calculate approximate distance to travel
+        var distanceTraveled = 0f;
+        var interpolation = 0f;
+        var distanceToTravel = AnimationUtility.ApproximateLengthOfBezierCurve(A, B, C, D);
+        
+        while (distanceTraveled < distanceToTravel && animationMustStop == false)
+        {
+            // Increment distance travelled
+            var delta = speed * Time.deltaTime;
+            distanceTraveled += delta;
+            // Set position
+            interpolation = distanceTraveled / distanceToTravel;
+            transform.position = AnimationUtility.DeCasteljausAlgorithm(A, B, C, D, interpolation);
+            // Set rotation
+            transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
+            yield return new WaitForFixedUpdate();
+        }
+
+        // Goto final state at end
+        transform.position = D;
+
+        manager.EndGameWithFailureStatus();
+
+        // Set these to false
+        animationIsRunning = false;
+        animationMustStop = false;
+    }
 }

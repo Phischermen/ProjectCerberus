@@ -57,7 +57,7 @@ public class Cerberus : PuzzleEntity
     public Sprite pentagramMarker;
     [FormerlySerializedAs("_walkSFX")] public AudioSource walkSFX;
     public AnimationCurve talkAnimationCurve;
-    
+
     protected override void Awake()
     {
         base.Awake();
@@ -140,15 +140,15 @@ public class Cerberus : PuzzleEntity
                 if (!pushBlocked)
                 {
                     puzzle.PushToUndoStack();
-                    
+
                     pushableEntity.onStandardPushed.Invoke();
-                    
+
                     PlaySfx(walkSFX);
                     pushableEntity.PlayAnimation(
                         pushableEntity.SlideToDestination(pushCoord, AnimationUtility.basicMoveAndPushSpeed));
                     PlaySfx(pushableEntity.pushedSfx);
                     PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
-                    
+
                     pushableEntity.Move(pushCoord);
                     Move(coord);
                     DeclareDoneWithMove();
@@ -167,7 +167,7 @@ public class Cerberus : PuzzleEntity
         landableScore = disableAndShowPentagram ? 0 : -1;
         GetComponent<SpriteRenderer>().sprite = disableAndShowPentagram ? pentagramMarker : _cerberusSprite;
     }
-    
+
     // Animation
 
     public IEnumerator Talk(float maxYOffset, float talkSpeed)
@@ -175,18 +175,22 @@ public class Cerberus : PuzzleEntity
         animationIsRunning = true;
         var ogPosition = transform.position;
         var delta = 0f;
-        
+
         while (!animationMustStop)
         {
             // Hop up and down
             delta += talkSpeed * Time.deltaTime;
-            transform.position = new Vector3(ogPosition.x, ogPosition.y + talkAnimationCurve.Evaluate(delta), ogPosition.z);
+            transform.position =
+                new Vector3(ogPosition.x, ogPosition.y + talkAnimationCurve.Evaluate(delta), ogPosition.z);
             yield return new WaitForFixedUpdate();
         }
+
         // Reset position
         transform.position = ogPosition;
 
         animationMustStop = false;
         animationIsRunning = false;
-    } 
+    }
+
+    
 }
