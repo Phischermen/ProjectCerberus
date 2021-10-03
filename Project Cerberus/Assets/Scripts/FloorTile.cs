@@ -7,6 +7,9 @@ using UnityEngine.Tilemaps;
 [CreateAssetMenu(menuName = "FloorTile/Basic"), GetUndoDataReturnsNull]
 public class FloorTile : Tile, IUndoable
 {
+    public PuzzleContainer puzzle;
+    public PuzzleContainer.LevelCell currentCell;
+    
     [HideInInspector] public bool needsToBeCloned;
     [ShowInTileInspector] public bool stopsPlayer;
     [ShowInTileInspector] public bool stopsBlock;

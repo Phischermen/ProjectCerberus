@@ -21,6 +21,7 @@ public class WoodBlock : BasicBlock
         {
             wood.SetFieldsToShotPreset(burned);
             wood.MoveForUndo(position);
+            wood.ResetTransformAndSpriteRendererForUndo();
         }
     }
 
@@ -51,7 +52,8 @@ public class WoodBlock : BasicBlock
         if (shot)
         {
             _spriteRenderer.sprite = destroyedSprite;
-            SetCollisionsEnabled(false);
+            stopsPlayer = false;
+            stopsBlock = false;
             landableScore = 1;
             jumpable = false;
             interactsWithFireball = false;
@@ -62,7 +64,8 @@ public class WoodBlock : BasicBlock
         else
         {
             _spriteRenderer.sprite = wholeSprite;
-            SetCollisionsEnabled(true);
+            stopsPlayer = true;
+            stopsBlock = true;
             landableScore = -1;
             jumpable = true;
             interactsWithFireball = true;
@@ -74,7 +77,7 @@ public class WoodBlock : BasicBlock
 
     public override UndoData GetUndoData()
     {
-        var undoData = new WoodBlockUndoData(this, position, burned: !collisionsEnabled);
+        var undoData = new WoodBlockUndoData(this, position, burned: !stopsPlayer);
         return undoData;
     }
 }

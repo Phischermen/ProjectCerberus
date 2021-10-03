@@ -18,6 +18,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
 {
     protected PuzzleContainer puzzle;
     protected GameManager manager;
+    protected SpriteRenderer spriteRenderer;
     
     [HideInInspector] public Vector2Int position;
     public PuzzleContainer.LevelCell currentCell => puzzle.GetCell(position);
@@ -65,6 +66,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         // Get objects.
         puzzle = FindObjectOfType<PuzzleContainer>();
         manager = FindObjectOfType<GameManager>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void Start()
@@ -78,6 +80,8 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
                 newCellPuzzleEntity.OnEnterCollisionWithEntity(this);
             }
         }
+        // Invoke enter collision callback with initial floorTile
+        currentCell.floorTile.OnEnterCollisionWithEntity(this);
     }
 
     private void Update()
@@ -172,6 +176,12 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         puzzle.AddEntityToCell(this, position);
     }
 
+    public void ResetTransformAndSpriteRendererForUndo()
+    {
+        spriteRenderer.color = Color.white;
+        transform.localRotation = Quaternion.identity;
+        transform.localScale = Vector3.one;
+    }
     public bool CollidesWithAny(List<PuzzleEntity> entities)
     {
         foreach (var entity in entities)
@@ -348,6 +358,37 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         StopSfx(superPushedSfx);
         // Goto final destination
         transform.position = destinationPosition;
+        animationIsRunning = false;
+        animationMustStop = false;
+    }
+
+    public IEnumerator FallIntoPit(float fallDuration, float rotationSpeed, float finalScale)
+    {
+        animationIsRunning = true;
+        var timeEllapsed = 0f;
+        while(timeEllapsed < fallDuration && animationMustStop == false)
+        {
+            timeEllapsed += Time.deltaTime;
+            var interpolation = timeEllapsed / fallDuration;
+            transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
+            transform.localScale = Vector3.Lerp(Vector3.one, Vector3.one * finalScale, interpolation);
+            spriteRenderer.color = Color.Lerp(Color.white, Color.black, interpolation);
+            yield return new WaitForFixedUpdate();
+        }
+        // Goto final state at end
+        transform.localScale = Vector3.one * finalScale;
+        spriteRenderer.color = Color.black;
+        if (isPlayer)
+        {
+            manager.EndGameWithFailureStatus();
+        }
+        else
+        {
+            // Remove from puzzle container so it can't be interacted with.
+            // Note: MoveForUndo() will put entity back into puzzle container.
+            puzzle.RemoveEntityFromCell(this, position);
+        }
+        // Set these to false
         animationIsRunning = false;
         animationMustStop = false;
     }

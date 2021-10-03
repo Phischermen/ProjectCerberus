@@ -18,6 +18,7 @@ public class BasicBlock : PuzzleEntity
         public override void Load()
         {
             block.MoveForUndo(position);
+            block.ResetTransformAndSpriteRendererForUndo();
         }
     }
 

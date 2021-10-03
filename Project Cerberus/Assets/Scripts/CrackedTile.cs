@@ -30,6 +30,7 @@ public class CrackedTile : FloorTile
             }
         }
     }
+
     [HideInInspector, ShowInTileInspector] public int stage = 0;
     [HideInInspector, ShowInTileInspector] public int initialState = 0;
     [SerializeField] private Sprite[] crackStageSprite = new Sprite[4];
@@ -70,6 +71,21 @@ public class CrackedTile : FloorTile
         else
         {
             SetFieldsToFinalStatePreset();
+            foreach (var entity in currentCell.puzzleEntities)
+            {
+                // Play falling animation.
+                entity.PlayAnimation(entity.FallIntoPit(1f, 90f, 0f));
+            }
+        }
+    }
+
+    public override void OnEnterCollisionWithEntity(PuzzleEntity other)
+    {
+        // Check if tile is cracked through, and the other entity is not super pushed.
+        if (stage == 3 && !other.isSuperPushed)
+        {
+            // Play falling animation.
+            other.PlayAnimation(other.FallIntoPit(1f, 90f, 0f));
         }
     }
 
@@ -77,14 +93,14 @@ public class CrackedTile : FloorTile
     {
         landable = true;
         jumpable = false;
-        stopsPlayer = false;
+        // stopsPlayer = false;
     }
 
     private void SetFieldsToFinalStatePreset()
     {
         landable = false;
         jumpable = true;
-        stopsPlayer = true;
+        // stopsPlayer = true;
     }
 
     public override UndoData GetUndoData()

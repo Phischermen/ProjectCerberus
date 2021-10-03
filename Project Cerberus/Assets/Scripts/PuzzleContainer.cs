@@ -315,8 +315,12 @@ public class PuzzleContainer : MonoBehaviour
                 else if (floorTile != null)
                 {
                     var levelCell = levelMap[i, j];
+                    
                     if (!floorTile.needsToBeCloned)
                     {
+                        // Initialize floorTile
+                        floorTile.puzzle = this;
+                        floorTile.currentCell = levelCell;
                         // Set floor tile in levelCell
                         levelCell.floorTile = floorTile;
                     }
@@ -325,6 +329,9 @@ public class PuzzleContainer : MonoBehaviour
                         // Set levelCell's floor tile to a clone so floor tile may have unique data
                         // Note: Cloned tiles will have '(Clone)' appended to their name.
                         var floorTileClone = Instantiate(floorTile);
+                        // Initialize floorTileClone
+                        floorTileClone.puzzle = this;
+                        floorTileClone.currentCell = levelCell;
                         levelCell.floorTile = floorTileClone;
                         tilemap.SetTile(new Vector3Int(i, j, 0), floorTileClone);
                         // Add floorTileClone to undoables. We only do this with clones because data in non-clones is

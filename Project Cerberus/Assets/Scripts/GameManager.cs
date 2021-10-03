@@ -60,7 +60,6 @@ public class GameManager : MonoBehaviour, IUndoable
     private static int currentWorld = -1;
     private static int currentLevel = -1;
 
-
     [HideInInspector] public bool infiniteTimeLimit = true;
     [HideInInspector] public float timeLimit = 1f;
     [HideInInspector] public float parTime = 1f;
@@ -192,13 +191,8 @@ public class GameManager : MonoBehaviour, IUndoable
                     if (_cerberusYetToReachGoal == 0)
                     {
                         // Victory! Winning!
-                        // Disable gameplay.
-                        gameplayEnabled = false;
-                        // Stop timer
-                        _timerRunning = false;
                         // Play victory animation
-                        // Display victory end card.
-                        Instantiate(_victoryEndCard);
+                        EndGameWithSuccessStatus();
                     }
                 }
 
@@ -325,15 +319,31 @@ public class GameManager : MonoBehaviour, IUndoable
             if (_timer < 0)
             {
                 // Time's up! Game over!
-                // Disable gameplay
-                gameplayEnabled = false;
-                // Stop timer
-                _timerRunning = false;
-                _timer = 0f;
-                // Display game over end card.
-                Instantiate(_gameOverEndCard);
+                EndGameWithFailureStatus();
             }
         }
+    }
+    
+    // Gameover
+    public void EndGameWithFailureStatus()
+    {
+        // Disable gameplay
+        gameplayEnabled = false;
+        // Stop timer
+        _timerRunning = false;
+        _timer = 0f;
+        // Display game over end card.
+        Instantiate(_gameOverEndCard);
+    }
+
+    public void EndGameWithSuccessStatus()
+    {
+        // Disable gameplay.
+        gameplayEnabled = false;
+        // Stop timer
+        _timerRunning = false;
+        // Display victory end card.
+        Instantiate(_victoryEndCard);
     }
 
     // Comparison Delegate
