@@ -108,7 +108,7 @@ public class GameManager : MonoBehaviour, IUndoable
         {
             _levelSequence = Resources.Load<CustomProjectSettings>(CustomProjectSettingsProvider.resourcePath)
                 .mainLevelSequence;
-            _levelSequence.FindCurrentLevelAndWorld(SceneManager.GetActiveScene().name, out currentLevel,
+            _levelSequence.FindCurrentLevelAndWorld(SceneManager.GetActiveScene().buildIndex, out currentLevel,
                 out currentWorld);
         }
     }
@@ -420,6 +420,6 @@ public class GameManager : MonoBehaviour, IUndoable
         var nextScene = _levelSequence.GetLevel(nextWorld, nextLevel);
         currentLevel = nextLevel;
         currentWorld = nextWorld;
-        SceneManager.LoadScene(nextScene.name);
+        SceneManager.LoadScene(nextScene);
     }
 }
