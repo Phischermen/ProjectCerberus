@@ -19,6 +19,7 @@ public class Cerberus : PuzzleEntity
         public override void Load()
         {
             cerberus.MoveForUndo(position);
+            cerberus.ResetTransformAndSpriteRendererForUndo();
             cerberus.onTopOfGoal = onTopOfGoal;
             cerberus.SetDisableCollsionAndShowPentagramMarker(collisionDisabledAndPentagramDisplayed);
         }
@@ -124,9 +125,9 @@ public class Cerberus : PuzzleEntity
             {
                 puzzle.PushToUndoStack();
                 // Move one space
-                Move(coord);
                 PlaySfx(walkSFX);
                 PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
+                Move(coord);
                 DeclareDoneWithMove();
             }
             else
@@ -139,8 +140,6 @@ public class Cerberus : PuzzleEntity
                 if (!pushBlocked)
                 {
                     puzzle.PushToUndoStack();
-                    pushableEntity.Move(pushCoord);
-                    Move(coord);
                     
                     pushableEntity.onStandardPushed.Invoke();
                     
@@ -149,6 +148,9 @@ public class Cerberus : PuzzleEntity
                         pushableEntity.SlideToDestination(pushCoord, AnimationUtility.basicMoveAndPushSpeed));
                     PlaySfx(pushableEntity.pushedSfx);
                     PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
+                    
+                    pushableEntity.Move(pushCoord);
+                    Move(coord);
                     DeclareDoneWithMove();
                 }
             }

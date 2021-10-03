@@ -73,6 +73,7 @@ public class Kahuna : Cerberus
             {
                 FireBall(aim);
             }
+            aim = Vector2Int.zero;
         }
         else
         {
@@ -166,11 +167,12 @@ public class Kahuna : Cerberus
                                   entityToPushOrInteractWith.CollidesWithAny(pushEntityNewCell.puzzleEntities);
                 if (!pushBlocked)
                 {
-                    entityToPushOrInteractWith.Move(pushCoord);
                     entityToPushOrInteractWith.PlaySfx(entityToPushOrInteractWith.pushedByFireballSfx);
                     entityToPushOrInteractWith.PlayAnimation(
                         entityToPushOrInteractWith.SlideToDestination(pushCoord,
                             AnimationUtility.basicMoveAndPushSpeed));
+                    
+                    entityToPushOrInteractWith.Move(pushCoord);
                     DeclareDoneWithMove();
                 }
             }
