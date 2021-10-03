@@ -63,7 +63,7 @@ public class Pickup : PuzzleEntity
         {
             SetFieldsToCollectedPreset();
         }
-        else if (manager.move > manager.maxMovesUntilStarLoss)
+        else if (!manager.infinteMovesTilStarLoss && manager.move > manager.maxMovesUntilStarLoss)
         {
             SetFieldsToUnavailablePreset();
         }
