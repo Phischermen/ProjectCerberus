@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour, IUndoable
         public override void Load()
         {
             // Start the move of the newly controlled Cerberus
+            _gameManager.currentCerberus = _currentCerberus;
             _currentCerberus.StartMove();
             _gameManager.move = _move;
             _gameManager.timer = _timer;
@@ -154,6 +155,7 @@ public class GameManager : MonoBehaviour, IUndoable
             // Cerberus Major is inactive by default
             _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(true);
         }
+
         // Sort availableCerberus for PuzzleUI.
         availableCerberus.Sort(CompareCerberusByPosition);
 
@@ -315,10 +317,10 @@ public class GameManager : MonoBehaviour, IUndoable
         }
 
         // Run timer
-        if (_timerRunning && !infiniteTimeLimit)
+        if (_timerRunning)
         {
             timer += Time.deltaTime;
-            if (timer > timeLimit)
+            if (timer > timeLimit && !infiniteTimeLimit)
             {
                 // Time's up! Game over!
                 EndGameWithFailureStatus();
