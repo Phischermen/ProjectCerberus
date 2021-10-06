@@ -90,9 +90,24 @@ public class PuzzleUI : MonoBehaviour
     {
         // TODO Kevin: Move this out of Update loop into new UpdateUI method
         // Update turn counter
-        //turnCounter.text = $"Turns left:\n{_manager.maxTurns - _manager.turn}";
-        turnCounter.text =
-            $"Move til Star Loss:\n{_manager.maxMovesUntilStarLoss - _manager.move}\nTimer:{_manager.timeLimit - _manager.timer}";
+        turnCounter.text = "";
+        if (_manager.infinteMovesTilStarLoss)
+        {
+            turnCounter.text += $"Move:{_manager.move}\n";
+        }
+        else
+        {
+            turnCounter.text += $"Move til Star Loss:{Mathf.Max(0,_manager.maxMovesUntilStarLoss - _manager.move)}\n";
+        }
+
+        if (_manager.infiniteTimeLimit)
+        {
+            turnCounter.text += $"Timer:{_manager.timer}";
+        }
+        else
+        {
+            turnCounter.text += $"Timer:{_manager.timeLimit - _manager.timer}";
+        }
 
         // Hide all dog status initially
         foreach (var dogStatus in dogStatusArray)
@@ -107,7 +122,7 @@ public class PuzzleUI : MonoBehaviour
             if (i == 0)
             {
                 // Set text based on merged status
-                
+
                 mergeButton.text = $"Left Ctrl: {(cerberus.isCerberusMajor ? toSplit : toMerge)}";
             }
 
@@ -115,7 +130,7 @@ public class PuzzleUI : MonoBehaviour
             var dogStatus = _dogStatusMap[cerberus.GetType()];
             dogStatus.ShowUI();
             // Set text.
-            dogStatusArray[0].text.text = cerberus.name;
+            dogStatus.text.text = cerberus.name;
             // Set preset.
             if (cerberus == _manager.currentCerberus)
             {
