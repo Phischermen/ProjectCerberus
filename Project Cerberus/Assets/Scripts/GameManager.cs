@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour, IUndoable
             // Start the move of the newly controlled Cerberus
             _currentCerberus.StartMove();
             _gameManager.move = _move;
-            _gameManager._timer = _timer;
+            _gameManager.timer = _timer;
             // Stop timer if first move. Otherwise run timer.
             if (_move == 0)
             {
@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviour, IUndoable
     private bool _timerRunning = false;
 
     // TODO Make timer run forwards instead of backwards so time can be displayed even in a level with an infinite time limit
-    public float _timer { get; protected set; }
+    public float timer { get; protected set; }
 
     public int move { get; protected set; }
     [HideInInspector] public bool infinteMovesTilStarLoss = true;
@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour, IUndoable
         // Load Level Sequence and get current world and level
         if (_levelSequence == null)
         {
-            _levelSequence = Resources.Load<CustomProjectSettings>(CustomProjectSettingsProvider.resourcePath)
+            _levelSequence = Resources.Load<CustomProjectSettings>(CustomProjectSettings.resourcePath)
                 .mainLevelSequence;
             _levelSequence.FindCurrentLevelAndWorld(SceneManager.GetActiveScene().buildIndex, out currentLevel,
                 out currentWorld);
@@ -154,8 +154,10 @@ public class GameManager : MonoBehaviour, IUndoable
             // Cerberus Major is inactive by default
             _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(true);
         }
+        // Sort availableCerberus for PuzzleUI.
+        availableCerberus.Sort(CompareCerberusByPosition);
 
-        _timer = timeLimit;
+        timer = 0;
         _timerRunning = false;
         gameplayEnabled = true;
     }
@@ -166,7 +168,7 @@ public class GameManager : MonoBehaviour, IUndoable
         var currentCerberusWasOnTopOfGoal = currentCerberus.onTopOfGoal;
 
         // Process movement of currently controlled cerberus if there is still time left and gameplay is enabled.
-        if (gameplayEnabled && (_timer > 0f || infiniteTimeLimit))
+        if (gameplayEnabled && (timer < timeLimit || infiniteTimeLimit))
         {
             currentCerberus.ProcessMoveInput();
             // Check if cerberus made their move
@@ -260,6 +262,8 @@ public class GameManager : MonoBehaviour, IUndoable
                     }
                 }
 
+                // Sort availableCerberus, from north-west most to south-east most.
+                availableCerberus.Sort(CompareCerberusByPosition);
                 // Command PuzzleContainer to process entities in response to this move
                 _puzzleContainer.ProcessEntitiesInResponseToPlayerMove();
                 // Start the next move with currentCerberus
@@ -275,8 +279,6 @@ public class GameManager : MonoBehaviour, IUndoable
             else if (wantsToCycleCharacter && !cerberusFormed)
             {
                 wantsToCycleCharacter = false;
-                // Sort availableCerberus, from north-west most to south-east most.
-                availableCerberus.Sort(CompareCerberusByPosition);
                 // Get index of currentCerberus after sorting the list.
                 var currentIdx = availableCerberus.IndexOf(currentCerberus);
                 if (_input.cycleCharacterForward)
@@ -315,15 +317,15 @@ public class GameManager : MonoBehaviour, IUndoable
         // Run timer
         if (_timerRunning && !infiniteTimeLimit)
         {
-            _timer -= Time.deltaTime;
-            if (_timer < 0)
+            timer += Time.deltaTime;
+            if (timer > timeLimit)
             {
                 // Time's up! Game over!
                 EndGameWithFailureStatus();
             }
         }
     }
-    
+
     // Gameover
     public void EndGameWithFailureStatus()
     {
@@ -331,7 +333,7 @@ public class GameManager : MonoBehaviour, IUndoable
         gameplayEnabled = false;
         // Stop timer
         _timerRunning = false;
-        _timer = 0f;
+        timer = timeLimit;
         // Display game over end card.
         Instantiate(_gameOverEndCard);
     }
@@ -356,7 +358,7 @@ public class GameManager : MonoBehaviour, IUndoable
     // Undo
     public UndoData GetUndoData()
     {
-        var undoData = new GameManagerUndoData(this, move, _timer, currentCerberus, _cerberusYetToReachGoal,
+        var undoData = new GameManagerUndoData(this, move, timer, currentCerberus, _cerberusYetToReachGoal,
             cerberusFormed,
             collectedStar);
         return undoData;
