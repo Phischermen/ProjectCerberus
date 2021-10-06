@@ -21,7 +21,7 @@ public class Pickup : PuzzleEntity
             {
                 pickup.SetFieldsToCollectedPreset();
             }
-            else if (pickup.manager.move > pickup.manager.maxMovesUntilStarLoss)
+            else if (!pickup.manager.infinteMovesTilStarLoss && pickup.manager.move > pickup.manager.maxMovesUntilStarLoss)
             {
                 pickup.SetFieldsToUnavailablePreset();
             }
@@ -75,7 +75,7 @@ public class Pickup : PuzzleEntity
 
     public override void OnEnterCollisionWithEntity(PuzzleEntity other)
     {
-        if (collected || manager.move > manager.maxMovesUntilStarLoss) return;
+        if (collected || !manager.infinteMovesTilStarLoss && manager.move > manager.maxMovesUntilStarLoss) return;
         if (other is Cerberus)
         {
             collected = true;
