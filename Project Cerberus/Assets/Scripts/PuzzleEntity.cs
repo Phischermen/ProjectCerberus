@@ -29,6 +29,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     [ShowInTileInspector] public bool isBlock { get; protected set; }
     [ShowInTileInspector] public bool stopsPlayer { get; protected set; }
     [ShowInTileInspector] public bool stopsBlock { get; protected set; }
+    [ShowInTileInspector, HideInInspector] public bool inHole;
     [ShowInTileInspector] public bool pullable { get; protected set; }
     [ShowInTileInspector] public bool pushableByFireball { get; protected set; }
     [ShowInTileInspector] public bool interactsWithFireball { get; protected set; }
@@ -365,6 +366,11 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     public IEnumerator FallIntoPit(float fallDuration, float rotationSpeed, float finalScale)
     {
         animationIsRunning = true;
+        // Mark this entity as in a hole, for undo.
+        inHole = true;
+        // Remove from puzzle container so it can't be interacted with.
+        // Note: MoveForUndo() will put entity back into puzzle container.
+        puzzle.RemoveEntityFromCell(this, position);
         var timeEllapsed = 0f;
         while(timeEllapsed < fallDuration && animationMustStop == false)
         {
@@ -381,12 +387,6 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         if (isPlayer)
         {
             manager.EndGameWithFailureStatus();
-        }
-        else
-        {
-            // Remove from puzzle container so it can't be interacted with.
-            // Note: MoveForUndo() will put entity back into puzzle container.
-            puzzle.RemoveEntityFromCell(this, position);
         }
         // Set these to false
         animationIsRunning = false;

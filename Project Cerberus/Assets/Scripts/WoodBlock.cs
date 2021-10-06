@@ -4,24 +4,21 @@ using UnityEngine;
 
 public class WoodBlock : BasicBlock
 {
-    public class WoodBlockUndoData : UndoData
+    public class WoodBlockUndoData : BasicBlockUndoData
     {
         public WoodBlock wood;
-        public Vector2Int position;
         public bool burned;
 
-        public WoodBlockUndoData(WoodBlock wood, Vector2Int position, bool burned)
+        public WoodBlockUndoData(WoodBlock wood, Vector2Int position, bool burned, bool inHole) : base(wood, position, inHole)
         {
             this.wood = wood;
-            this.position = position;
             this.burned = burned;
         }
 
         public override void Load()
         {
+            base.Load();
             wood.SetFieldsToShotPreset(burned);
-            wood.MoveForUndo(position);
-            wood.ResetTransformAndSpriteRendererForUndo();
         }
     }
 
@@ -77,7 +74,7 @@ public class WoodBlock : BasicBlock
 
     public override UndoData GetUndoData()
     {
-        var undoData = new WoodBlockUndoData(this, position, burned: !stopsPlayer);
+        var undoData = new WoodBlockUndoData(this, position, burned: !stopsPlayer, inHole);
         return undoData;
     }
 }

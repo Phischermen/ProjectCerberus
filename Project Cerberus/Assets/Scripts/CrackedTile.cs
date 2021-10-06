@@ -71,8 +71,11 @@ public class CrackedTile : FloorTile
         else
         {
             SetFieldsToFinalStatePreset();
-            foreach (var entity in currentCell.puzzleEntities)
+            // Make every entity on top this cell fall into a pit.
+            // Note: Calling FallIntoPit removes entity from currentCell.puzzleEntities.
+            while (currentCell.puzzleEntities.Count > 0)
             {
+                var entity = currentCell.puzzleEntities[0];
                 // Play falling animation.
                 entity.PlayAnimation(entity.FallIntoPit(1f, 90f, 0f));
             }
