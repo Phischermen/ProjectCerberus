@@ -18,7 +18,6 @@ public class PuzzleGameplayInput : MonoBehaviour
         specialPressed,
         specialHeld,
         specialReleased,
-        skipMove,
         mergeOrSplit,
         undoPressed,
         resetPressed,
@@ -50,7 +49,6 @@ public class PuzzleGameplayInput : MonoBehaviour
             specialHeld = gamepad.crossButton.isPressed;
             specialReleased = gamepad.crossButton.wasReleasedThisFrame;
 
-            skipMove = gamepad.triangleButton.wasPressedThisFrame;
             mergeOrSplit = gamepad.squareButton.wasPressedThisFrame;
 
             undoPressed = gamepad.circleButton.wasPressedThisFrame;
@@ -80,7 +78,6 @@ public class PuzzleGameplayInput : MonoBehaviour
             specialHeld = specialHeld || keyboard.leftShiftKey.isPressed;
             specialReleased = specialReleased || keyboard.leftShiftKey.wasReleasedThisFrame;
 
-            skipMove = skipMove || keyboard.enterKey.wasPressedThisFrame;
             mergeOrSplit = mergeOrSplit || keyboard.leftCtrlKey.wasPressedThisFrame;
 
             undoPressed = undoPressed || keyboard.rightShiftKey.wasPressedThisFrame;
@@ -98,9 +95,9 @@ public class PuzzleGameplayInput : MonoBehaviour
 
     public void ClearInput()
     {
-        leftPressed = rightPressed = upPressed = downPressed = leftReleased = rightReleased =
-            upReleased = downReleased = specialPressed = specialHeld = specialReleased =
-                skipMove = mergeOrSplit = undoPressed = resetPressed = cycleCharacter = cycleCharacterForward =
+        leftPressed = rightPressed = upPressed = downPressed = leftReleased = rightReleased = upReleased =
+            downReleased = specialPressed = specialHeld = specialReleased = mergeOrSplit =
+                undoPressed = resetPressed = cycleCharacter = cycleCharacterForward =
                     cycleCharacterBackward = cycleCharacter0 = cycleCharacter1 = cycleCharacter2 = false;
     }
 }

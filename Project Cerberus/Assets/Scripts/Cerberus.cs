@@ -79,11 +79,6 @@ public class Cerberus : PuzzleEntity
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
-        if (input.skipMove)
-        {
-            DeclareDoneWithMove();
-        }
-
         if (input.mergeOrSplit && manager.joinAndSplitEnabled)
         {
             if (isCerberusMajor)
