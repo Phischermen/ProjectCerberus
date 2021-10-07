@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviour, IUndoable
     private PuzzleContainer _puzzleContainer;
     private PuzzleGameplayInput _input;
 
-    public bool joinAndSplitEnabled { get; protected set; }
+    public bool joinAndSplitEnabled;
     public bool cerberusFormed { get; protected set; }
 
     [HideInInspector] public bool wantsToJoin;
@@ -379,7 +379,9 @@ public class GameManager : MonoBehaviour, IUndoable
         _jack.SetDisableCollsionAndShowPentagramMarker(true);
         _kahuna.SetDisableCollsionAndShowPentagramMarker(true);
         _laguna.SetDisableCollsionAndShowPentagramMarker(true);
-
+        // Repopulate availableCerberus
+        availableCerberus.Clear();
+        availableCerberus.Add(_cerberusMajor);
         currentCerberus = _cerberusMajor;
     }
 
@@ -393,8 +395,32 @@ public class GameManager : MonoBehaviour, IUndoable
         _jack.SetDisableCollsionAndShowPentagramMarker(false);
         _kahuna.SetDisableCollsionAndShowPentagramMarker(false);
         _laguna.SetDisableCollsionAndShowPentagramMarker(false);
-
+        // Repopulate availableCerberus
+        availableCerberus.Clear();
+        availableCerberus.Add(_jack);
+        availableCerberus.Add(_kahuna);
+        availableCerberus.Add(_laguna);
         currentCerberus = _jack;
+    }
+    
+    // Available Cerberus Management
+    public void RepopulateAvailableCerberus()
+    {
+        availableCerberus.Clear();
+        if (_jack)
+        {
+            availableCerberus.Add(_jack);
+        }
+
+        if (_kahuna)
+        {
+            availableCerberus.Add(_kahuna);
+        }
+
+        if (_laguna)
+        {
+            availableCerberus.Add(_laguna);
+        }
     }
 
     // Replay Level/Proceed Game
@@ -408,6 +434,8 @@ public class GameManager : MonoBehaviour, IUndoable
     {
         _puzzleContainer.UndoToFirstMove();
         gameplayEnabled = true;
+        // Repopulate availableCerberus
+        RepopulateAvailableCerberus();
         // Note: Timer is reset via GameManagerUndoData.Load()
     }
 

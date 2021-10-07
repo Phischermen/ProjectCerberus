@@ -127,9 +127,14 @@ public class Jack : Cerberus
             
             for (int i = 0; i < distancePushed; i++)
             {
+                if (i == distancePushed - 1)
+                {
+                    // The super pushed object "lands" at the last space it moves.
+                    pushableEntity.isSuperPushed = false;
+                }
                 pushableEntity.Move(pushableEntity.position + offset);
             }
-            pushableEntity.isSuperPushed = false;
+            
             DeclareDoneWithMove();
         }
         else if (!blocked)

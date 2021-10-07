@@ -8,6 +8,7 @@
  * Moving a PuzzleEntity across the board is done by calling Move() and then playing some kind of animation to update
  * the transform. In the context of undoing a move, MoveForUndo() must be used to reset the transform.
  */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,10 +20,10 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     protected PuzzleContainer puzzle;
     protected GameManager manager;
     protected SpriteRenderer spriteRenderer;
-    
+
     [HideInInspector] public Vector2Int position;
     public PuzzleContainer.LevelCell currentCell => puzzle.GetCell(position);
-    
+
     [ShowInTileInspector] public bool collisionsEnabled { get; protected set; } = true;
     [ShowInTileInspector] public bool isStatic { get; protected set; }
     [ShowInTileInspector] public bool isPlayer { get; protected set; }
@@ -40,7 +41,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     [ShowInTileInspector] public bool jumpable { get; protected set; }
     public string entityRules { get; protected set; } = "No rules have been written for this object.";
     public bool isSuperPushed { get; set; }
-    [HideInInspector] public float processPriority; 
+    [HideInInspector] public float processPriority;
 
     protected Coroutine animationRoutine;
     protected bool animationIsRunning;
@@ -53,9 +54,9 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     [HideInInspector] public AudioSource pushedByFireballSfx;
 
     [HideInInspector] public bool showOptionalEvents;
-    [HideInInspector] public UnityEvent onStandardPushed; 
-    [HideInInspector] public UnityEvent onSuperPushed; 
-    [HideInInspector] public UnityEvent onMultiPushed; 
+    [HideInInspector] public UnityEvent onStandardPushed;
+    [HideInInspector] public UnityEvent onSuperPushed;
+    [HideInInspector] public UnityEvent onMultiPushed;
     [HideInInspector] public UnityEvent onHitByFireball;
     [HideInInspector] public UnityEvent onPulled;
 
@@ -81,6 +82,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
                 newCellPuzzleEntity.OnEnterCollisionWithEntity(this);
             }
         }
+
         // Invoke enter collision callback with initial floorTile
         currentCell.floorTile.OnEnterCollisionWithEntity(this);
     }
@@ -99,7 +101,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     public virtual void OnPlayerMadeMove()
     {
     }
-    
+
     public virtual void OnEnterCollisionWithEntity(PuzzleEntity other)
     {
     }
@@ -129,6 +131,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
                 currentCellPuzzleEntity.OnExitCollisionWithEntity(this);
             }
         }
+
         // Invoke exit collision callback for the floorTile we left behind.
         if (collisionsEnabled)
         {
@@ -136,6 +139,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             // Refresh the tile we left in case its state has changed from its callback.
             puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
         }
+
         // Update our position.
         // Note: Transform needs to be updated via animation
         position = toCell;
@@ -148,6 +152,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
                 newCellPuzzleEntity.OnEnterCollisionWithEntity(this);
             }
         }
+
         // Invoke enter collision callback for all the new floorTile we are meeting in our new cell.
         if (collisionsEnabled)
         {
@@ -155,6 +160,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             // Refresh the tile we entered in case its state has changed from its callback.
             puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
         }
+
         // Register that this entity belongs to the new cell.
         puzzle.AddEntityToCell(this, position);
     }
@@ -183,6 +189,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         transform.localRotation = Quaternion.identity;
         transform.localScale = Vector3.one;
     }
+
     public bool CollidesWithAny(List<PuzzleEntity> entities)
     {
         foreach (var entity in entities)
@@ -337,7 +344,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
          animationMustStop = false;
      }
      */
-     
+
     public IEnumerator SlideToDestination(Vector2Int destination, float speed)
     {
         animationIsRunning = true;
@@ -372,7 +379,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         // Note: MoveForUndo() will put entity back into puzzle container.
         puzzle.RemoveEntityFromCell(this, position);
         var timeEllapsed = 0f;
-        while(timeEllapsed < fallDuration && animationMustStop == false)
+        while (timeEllapsed < fallDuration && animationMustStop == false)
         {
             timeEllapsed += Time.deltaTime;
             var interpolation = timeEllapsed / fallDuration;
@@ -381,18 +388,29 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             spriteRenderer.color = Color.Lerp(Color.white, Color.black, interpolation);
             yield return new WaitForFixedUpdate();
         }
+
         // Goto final state at end
         transform.localScale = Vector3.one * finalScale;
         spriteRenderer.color = Color.black;
         if (isPlayer)
         {
-            manager.EndGameWithFailureStatus();
+            // End game if this entity was in fact the player falling into a pit.
+            if (collisionsEnabled)
+            {
+                manager.EndGameWithFailureStatus();
+            }
+            // Cerberus is in its sigil state, so prevent player from unmerging 
+            else
+            {
+                manager.joinAndSplitEnabled = false;
+            }
         }
+
         // Set these to false
         animationIsRunning = false;
         animationMustStop = false;
     }
-    
+
     public IEnumerator Spiked(float rotationSpeed, Vector2 fallDelta, float controlPointHeight, float speed)
     {
         animationIsRunning = true;
@@ -401,12 +419,12 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         var B = A + Vector3.up * controlPointHeight; // Control point
         var D = new Vector3(A.x + fallDelta.x, A.y + fallDelta.y, 0f); // End Point
         var C = D + Vector3.up * controlPointHeight; // Control point
-        
+
         // Calculate approximate distance to travel
         var distanceTraveled = 0f;
         var interpolation = 0f;
         var distanceToTravel = AnimationUtility.ApproximateLengthOfBezierCurve(A, B, C, D);
-        
+
         while (distanceTraveled < distanceToTravel && animationMustStop == false)
         {
             // Increment distance travelled

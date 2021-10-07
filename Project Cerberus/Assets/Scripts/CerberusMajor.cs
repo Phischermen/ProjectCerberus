@@ -58,6 +58,12 @@ public class CerberusMajor : Cerberus
         }
     }
 
+    public override void StartMove()
+    {
+        base.StartMove();
+        goalIsOnJumpPath = false;
+    }
+
     public override void ProcessMoveInput()
     {
         base.ProcessMoveInput();
@@ -88,17 +94,19 @@ public class CerberusMajor : Cerberus
             if (_jumpSpaces.Count > 0)
             {
                 puzzle.PushToUndoStack();
+                
+                JumpInfo[] jumpInfoCopy = new JumpInfo[_jumpSpaces.Count];
+                _jumpSpaces.CopyTo(jumpInfoCopy);
+                PlayAnimation(JumpAlongPath(jumpInfoCopy, AnimationUtility.jumpSpeed));
+                
                 // Travel across jump spaces
                 foreach (var jumpInfo in _jumpSpaces)
                 {
                     Move(jumpInfo.position);
                 }
-
-                JumpInfo[] jumpInfoCopy = new JumpInfo[_jumpSpaces.Count];
-                _jumpSpaces.CopyTo(jumpInfoCopy);
-                PlayAnimation(JumpAlongPath(jumpInfoCopy, AnimationUtility.jumpSpeed));
                 _jumpSpaces.Clear();
                 RenderJumpPath();
+
                 DeclareDoneWithMove();
             }
         }
@@ -163,13 +171,11 @@ public class CerberusMajor : Cerberus
             return;
         }
 
-        // Check for entity to jump over and valid place to land
-        var canJump = (jumpedOverCell.GetJumpableEntity() || jumpedOverCell.floorTile.jumpable) &&
-                      newJumpCell.floorTile != null && newJumpCell.floorTile.landable;
-
+        // Check for entity to jump over.
+        var canJump = (jumpedOverCell.GetJumpableEntity() || jumpedOverCell.floorTile.jumpable);
         if (canJump)
         {
-            // Check for collision and if landable
+            // Check for collision and if landable.
             var landableEntities = newJumpCell.GetLandableEntities();
             var newJumpCellLandableScore = newJumpCell.GetLandableScore();
             var canLand = (newJumpCellLandableScore >= 0) ||

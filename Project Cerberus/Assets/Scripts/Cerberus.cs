@@ -94,7 +94,7 @@ public class Cerberus : PuzzleEntity
         }
     }
 
-    public void StartMove()
+    public virtual void StartMove()
     {
         doneWithMove = false;
     }
@@ -159,6 +159,8 @@ public class Cerberus : PuzzleEntity
         pushableByFireball = !disableAndShowPentagram;
         pushableByJacksMultiPush = !disableAndShowPentagram;
         pushableByJacksSuperPush = !disableAndShowPentagram;
+        pullable = !disableAndShowPentagram;
+        jumpable = !disableAndShowPentagram;
         landableScore = disableAndShowPentagram ? 0 : -1;
         GetComponent<SpriteRenderer>().sprite = disableAndShowPentagram ? pentagramMarker : _cerberusSprite;
     }
