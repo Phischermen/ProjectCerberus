@@ -30,8 +30,8 @@ namespace Editor
             if (!gameManager.infiniteTimeLimit)
             {
                 // If there will be a time limit, add slider to set that time limit.
-                gameManager.timeLimit =
-                    EditorGUILayout.Slider("Time Limit (sec)", gameManager.timeLimit, 1, 120);
+                gameManager.timeLimit = Mathf.Floor(
+                    EditorGUILayout.Slider("Time Limit (sec)", gameManager.timeLimit, 1, 240));
             }
 
             // Apply changes.
