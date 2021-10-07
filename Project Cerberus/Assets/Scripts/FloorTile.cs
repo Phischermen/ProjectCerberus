@@ -7,10 +7,10 @@ using UnityEngine.Tilemaps;
 [CreateAssetMenu(menuName = "FloorTile/Basic"), GetUndoDataReturnsNull]
 public class FloorTile : Tile, IUndoable
 {
-    public PuzzleContainer puzzle;
-    public PuzzleContainer.LevelCell currentCell;
+    [HideInInspector] public PuzzleContainer puzzle;
+    [HideInInspector] public PuzzleContainer.LevelCell currentCell;
     
-    [HideInInspector] public bool needsToBeCloned;
+    public bool needsToBeCloned;
     [ShowInTileInspector] public bool stopsPlayer;
     [ShowInTileInspector] public bool stopsBlock;
     [ShowInTileInspector] public bool stopsFireball;

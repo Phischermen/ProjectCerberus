@@ -32,7 +32,7 @@ public class CrackedTile : FloorTile
     }
 
     [HideInInspector, ShowInTileInspector] public int stage = 0;
-    [HideInInspector, ShowInTileInspector] public int initialState = 0;
+    [ShowInTileInspector] public int initialState = 0;
     [SerializeField] private Sprite[] crackStageSprite = new Sprite[4];
 
     public CrackedTile()
@@ -43,6 +43,7 @@ public class CrackedTile : FloorTile
 
     public void Awake()
     {
+        needsToBeCloned = true;
         stage = Mathf.Clamp(initialState, 0, crackStageSprite.Length - 1);
         if (initialState < 3)
         {
@@ -63,7 +64,11 @@ public class CrackedTile : FloorTile
 
     public override void OnExitCollisionWithEntity(PuzzleEntity other)
     {
-        stage += 1;
+        if (!other.isSuperPushed)
+        {
+            stage += 1;
+        }
+
         if (stage < 3)
         {
             SetFieldsToPreFinalStatePreset();
