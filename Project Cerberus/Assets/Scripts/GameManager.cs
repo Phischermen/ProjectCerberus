@@ -398,6 +398,12 @@ public class GameManager : MonoBehaviour, IUndoable
     }
 
     // Replay Level/Proceed Game
+    public void UndoLastMove()
+    {
+        _puzzleContainer.UndoLastMove();
+        gameplayEnabled = true;
+        // Note: Timer is reset via GameManagerUndoData.Load()
+    }
     public void ReplayLevel()
     {
         _puzzleContainer.UndoToFirstMove();
