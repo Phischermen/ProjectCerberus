@@ -206,7 +206,9 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     {
         return collisionsEnabled && entity.collisionsEnabled && (
             (isPlayer && entity.stopsPlayer) ||
-            (isBlock && entity.stopsBlock));
+            (stopsPlayer && entity.isPlayer) ||
+            (isBlock && entity.stopsBlock) ||
+            (stopsBlock && entity.isBlock));
     }
 
     public bool CollidesWith(FloorTile floorTile)
