@@ -10,14 +10,14 @@ public class SpikedTile : FloorTile
     {
         allowsAllSuperPushedEntitiesPassage = true;
         jumpable = true;
-        landable = false;
+        landableScore = -1;
         needsToBeCloned = true;
     }
 
     public override void OnEnterCollisionWithEntity(PuzzleEntity other)
     {
         // Check if tile is cracked through, and the other entity is not super pushed.
-        if (other.isPlayer && !other.isSuperPushed && currentCell.GetLandableScore() < 1)
+        if (other.isPlayer && !other.isSuperPushed && currentCell.GetLandableScore() < 0)
         {
             // Play spiked animation.
             other.PlayAnimation(other.Spiked(AnimationUtility.spikedRotationSpeed, AnimationUtility.spikedEndPosition,

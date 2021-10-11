@@ -178,8 +178,7 @@ public class CerberusMajor : Cerberus
             // Check for collision and if landable.
             var landableEntities = newJumpCell.GetLandableEntities();
             var newJumpCellLandableScore = newJumpCell.GetLandableScore();
-            var canLand = (newJumpCellLandableScore >= 0) ||
-                          (newJumpCell.puzzleEntities.Count == 0 && newJumpCell.floorTile.landable);
+            var canLand = newJumpCell.floorTile != null && (newJumpCellLandableScore >= 0);
             if (canLand)
             {
                 var newJumpInfo = new JumpInfo(newJumpSpace, rotation);

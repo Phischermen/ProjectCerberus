@@ -85,7 +85,7 @@ public class PuzzleContainer : MonoBehaviour
 
         public int GetLandableScore()
         {
-            var score = 0;
+            var score = floorTile.landableScore;
             foreach (var entity in puzzleEntities)
             {
                 score += entity.landableScore;

@@ -100,14 +100,14 @@ public class CrackedTile : FloorTile
 
     private void SetFieldsToPreFinalStatePreset()
     {
-        landable = true;
+        landableScore = 0;
         jumpable = false;
         // stopsPlayer = false;
     }
 
     private void SetFieldsToFinalStatePreset()
     {
-        landable = false;
+        landableScore = -100;
         jumpable = true;
         // stopsPlayer = true;
     }
