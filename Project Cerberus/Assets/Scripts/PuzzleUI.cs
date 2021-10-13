@@ -16,12 +16,6 @@ public class PuzzleUI : MonoBehaviour
         public RectTransform rectTransform;
         public Text text;
 
-        // UI Methods
-        // public void SetUIToMovedPreset()
-        // {
-        //     text.color = Color.gray;
-        // }
-
         public void SetUIToCurrentlyControlledPreset()
         {
             text.color = Color.red;
@@ -99,15 +93,7 @@ public class PuzzleUI : MonoBehaviour
         {
             turnCounter.text += $"Move til Star Loss:{Mathf.Max(0,_manager.maxMovesUntilStarLoss - _manager.move)}\n";
         }
-
-        if (_manager.infiniteTimeLimit)
-        {
-            turnCounter.text += $"Timer:{_manager.timer}";
-        }
-        else
-        {
-            turnCounter.text += $"Timer:{_manager.timeLimit - _manager.timer}";
-        }
+        turnCounter.text += $"Timer:{_manager.timer}";
 
         // Hide all dog status initially
         foreach (var dogStatus in dogStatusArray)
