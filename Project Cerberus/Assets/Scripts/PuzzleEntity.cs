@@ -114,27 +114,27 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     {
     }
 
-    public void Move(Vector2Int toCell)
+    public void Move(Vector2Int toCell, bool doNotTriggerOnEnter = false, bool doNotTriggerOnExit = false)
     {
         // Get cell we're moving to.
         var newCell = puzzle.GetCell(toCell);
         // Remove ourselves from that cell.
         puzzle.RemoveEntityFromCell(this, position);
-        // Invoke the exit collision callback for every entity we are leaving behind.
-        // Note: Although we technically "removed" ourselves from our current cell, currentCell still references the cell
-        // we were at last.
-        foreach (var currentCellPuzzleEntity in currentCell.puzzleEntities)
+        if (!doNotTriggerOnExit && collisionsEnabled)
         {
-            if (collisionsEnabled && currentCellPuzzleEntity.collisionsEnabled)
+            // Invoke the exit collision callback for every entity we are leaving behind.
+            // Note: Although we technically "removed" ourselves from our current cell, currentCell still references the cell
+            // we were at last.
+            foreach (var currentCellPuzzleEntity in currentCell.puzzleEntities)
             {
-                OnExitCollisionWithEntity(currentCellPuzzleEntity);
-                currentCellPuzzleEntity.OnExitCollisionWithEntity(this);
+                if (currentCellPuzzleEntity.collisionsEnabled)
+                {
+                    OnExitCollisionWithEntity(currentCellPuzzleEntity);
+                    currentCellPuzzleEntity.OnExitCollisionWithEntity(this);
+                }
             }
-        }
 
-        // Invoke exit collision callback for the floorTile we left behind.
-        if (collisionsEnabled)
-        {
+            // Invoke exit collision callback for the floorTile we left behind.
             currentCell.floorTile.OnExitCollisionWithEntity(this);
             // Refresh the tile we left in case its state has changed from its callback.
             puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
@@ -143,19 +143,19 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         // Update our position.
         // Note: Transform needs to be updated via animation
         position = toCell;
-        // Invoke enter collision callback for all the new entities we are meeting in our new cell.
-        foreach (var newCellPuzzleEntity in newCell.puzzleEntities)
+        if (!doNotTriggerOnEnter && collisionsEnabled)
         {
-            if (collisionsEnabled && newCellPuzzleEntity.collisionsEnabled)
+            // Invoke enter collision callback for all the new entities we are meeting in our new cell.
+            foreach (var newCellPuzzleEntity in newCell.puzzleEntities)
             {
-                OnEnterCollisionWithEntity(newCellPuzzleEntity);
-                newCellPuzzleEntity.OnEnterCollisionWithEntity(this);
+                if (newCellPuzzleEntity.collisionsEnabled)
+                {
+                    OnEnterCollisionWithEntity(newCellPuzzleEntity);
+                    newCellPuzzleEntity.OnEnterCollisionWithEntity(this);
+                }
             }
-        }
 
-        // Invoke enter collision callback for all the new floorTile we are meeting in our new cell.
-        if (collisionsEnabled)
-        {
+            // Invoke enter collision callback for all the new floorTile we are meeting in our new cell.
             newCell.floorTile.OnEnterCollisionWithEntity(this);
             // Refresh the tile we entered in case its state has changed from its callback.
             puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
