@@ -60,13 +60,11 @@ public class GameManager : MonoBehaviour, IUndoable
     private static int currentWorld = -1;
     private static int currentLevel = -1;
 
-    [HideInInspector] public bool infiniteTimeLimit = true;
-    [HideInInspector] public float timeLimit = 1f;
+    [HideInInspector] public bool infiniteParTime = true;
     [HideInInspector] public float parTime = 1f;
 
     private bool _timerRunning = false;
 
-    // TODO Make timer run forwards instead of backwards so time can be displayed even in a level with an infinite time limit
     public float timer { get; protected set; }
 
     public int move { get; protected set; }
@@ -166,7 +164,7 @@ public class GameManager : MonoBehaviour, IUndoable
     void Update()
     {
         // Process movement of currently controlled cerberus if there is still time left and gameplay is enabled.
-        if (gameplayEnabled && (timer < timeLimit || infiniteTimeLimit))
+        if (gameplayEnabled)
         {
             currentCerberus.ProcessMoveInput();
             // Check if cerberus made their move
@@ -313,11 +311,6 @@ public class GameManager : MonoBehaviour, IUndoable
         if (_timerRunning)
         {
             timer += Time.deltaTime;
-            if (timer > timeLimit && !infiniteTimeLimit)
-            {
-                // Time's up! Game over!
-                EndGameWithFailureStatus();
-            }
         }
     }
 
@@ -328,7 +321,6 @@ public class GameManager : MonoBehaviour, IUndoable
         gameplayEnabled = false;
         // Stop timer
         _timerRunning = false;
-        timer = timeLimit;
         // Display game over end card.
         Instantiate(_gameOverEndCard);
     }

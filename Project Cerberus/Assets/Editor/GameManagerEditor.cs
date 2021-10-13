@@ -25,15 +25,15 @@ namespace Editor
             }
 
             // Add toggle to set no time limit.
-            gameManager.infiniteTimeLimit =
-                EditorGUILayout.Toggle("Infinite Time Limit", gameManager.infiniteTimeLimit);
-            if (!gameManager.infiniteTimeLimit)
+            gameManager.infiniteParTime =
+                EditorGUILayout.Toggle("Infinite Time Limit", gameManager.infiniteParTime);
+            if (!gameManager.infiniteParTime)
             {
                 // If there will be a time limit, add slider to set that time limit.
-                gameManager.timeLimit = Mathf.Floor(
-                    EditorGUILayout.Slider("Time Limit (sec)", gameManager.timeLimit, 1, 240));
+                gameManager.parTime = Mathf.Floor(
+                    EditorGUILayout.Slider("Time Limit (sec)", gameManager.parTime, 1, 240));
             }
-
+            
             // Apply changes.
             if (GUI.changed)
             {
