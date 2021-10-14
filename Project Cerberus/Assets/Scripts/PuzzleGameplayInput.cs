@@ -28,10 +28,23 @@ public class PuzzleGameplayInput : MonoBehaviour
         cycleCharacter1,
         cycleCharacter2;
 
+    public Vector2 clickedCell;
+    public bool wasLeftClick;
+    
+    private PuzzleContainer _puzzleContainer;
+    private Camera mainCamera;
+
+    private void Awake()
+    {
+        _puzzleContainer = FindObjectOfType<PuzzleContainer>();
+        mainCamera = Camera.main;
+    }
+
     private void Update()
     {
         Gamepad gamepad = Gamepad.current;
         Keyboard keyboard = Keyboard.current;
+        Mouse mouse = Mouse.current;
         ClearInput();
         if (gamepad != null)
         {
@@ -89,12 +102,27 @@ public class PuzzleGameplayInput : MonoBehaviour
             cycleCharacter2 = cycleCharacter2 || keyboard.digit3Key.wasPressedThisFrame;
         }
 
+        if (mouse != null)
+        {
+            ProcessMouse(mouse);
+        }
         cycleCharacter = cycleCharacter0 || cycleCharacter1 || cycleCharacter2 || cycleCharacterForward ||
                          cycleCharacterBackward;
     }
 
+    private void ProcessMouse(Mouse mouse)
+    {
+        var mousePosition = mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        var mouseCoord = new Vector2Int((int) mousePosition.x, (int) mousePosition.y);
+        // TODO get levelCell coordinate that was clicked. Also get what mouse button was clicked.
+        //_puzzleContainer.tilemap.layoutGrid.WorldToCell(,, 0f);
+        // Convert mouse position to grid cell.
+        var inBounds = _puzzleContainer.InBounds(mouseCoord);
+    }
+
     public void ClearInput()
     {
+        // TODO Reset mouse click
         leftPressed = rightPressed = upPressed = downPressed = leftReleased = rightReleased = upReleased =
             downReleased = specialPressed = specialHeld = specialReleased = mergeOrSplit =
                 undoPressed = resetPressed = cycleCharacter = cycleCharacterForward =
