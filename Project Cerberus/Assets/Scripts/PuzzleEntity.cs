@@ -375,6 +375,8 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     public IEnumerator FallIntoPit(float fallDuration, float rotationSpeed, float finalScale)
     {
         animationIsRunning = true;
+        // Disable gameplay so player can't kill more dogs.
+        manager.gameplayEnabled = false;
         // Mark this entity as in a hole, for undo.
         inHole = true;
         // Remove from puzzle container so it can't be interacted with.
@@ -416,6 +418,8 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     public IEnumerator Spiked(float rotationSpeed, Vector2 fallDelta, float controlPointHeight, float speed)
     {
         animationIsRunning = true;
+        // Disable gameplay so player can't kill more dogs.
+        manager.gameplayEnabled = false;
         // Use a bezier curve to model the path
         var A = transform.position; // Start point
         var B = A + Vector3.up * controlPointHeight; // Control point
