@@ -12,6 +12,8 @@ using UnityEngine;
 public class PuzzleUIEndCardSuccess : MonoBehaviour
 {
     private GameManager _gameManager;
+    // TODO Get refrences to image and text components.
+    // TODO Compare manager.timer to manager.parTime and manager.move to manager.maxMovesUntilStarLoss to determine if star earned. Also check if last star collected with manager.collectedStar.
 
     private void Awake()
     {

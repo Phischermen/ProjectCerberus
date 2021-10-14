@@ -10,9 +10,29 @@ public class PuzzleUIEndCardFailure : MonoBehaviour
 {
     private GameManager _gameManager;
 
+    public enum DeathPresetName
+    {
+        spiked,
+        fellIntoPit,
+        last
+    }
+
+    [Serializable]
+    public class DeathPreset
+    {
+        public string title;
+        public Texture image;
+    }
+
+    public DeathPreset[] deathPresets;
     private void Awake()
     {
         _gameManager = FindObjectOfType<GameManager>();
+        // Validate length of deathPresets
+        if (deathPresets.Length > (int) DeathPresetName.last)
+        {
+            NZ.NotifyZach("Death Presets is too long!");
+        }
     }
 
     // Button actions
@@ -27,5 +47,11 @@ public class PuzzleUIEndCardFailure : MonoBehaviour
     {
         _gameManager.UndoLastMove();
         Destroy(gameObject);
+    }
+
+    public void SetFieldsToDeathPreset(DeathPresetName deathPresetName)
+    {
+        //TODO Get refrences to text and image components so that this can be implemented.
+        // Set UI fields to deathPreset.
     }
 }
