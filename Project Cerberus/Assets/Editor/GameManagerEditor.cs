@@ -26,12 +26,12 @@ namespace Editor
 
             // Add toggle to set no time limit.
             gameManager.infiniteParTime =
-                EditorGUILayout.Toggle("Infinite Time Limit", gameManager.infiniteParTime);
+                EditorGUILayout.Toggle("Infinite Par Time", gameManager.infiniteParTime);
             if (!gameManager.infiniteParTime)
             {
                 // If there will be a time limit, add slider to set that time limit.
                 gameManager.parTime = Mathf.Floor(
-                    EditorGUILayout.Slider("Time Limit (sec)", gameManager.parTime, 1, 240));
+                    EditorGUILayout.Slider("Par Time (sec)", gameManager.parTime, 1, 240));
             }
             
             // Apply changes.
