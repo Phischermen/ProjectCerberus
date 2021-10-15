@@ -51,6 +51,7 @@ public class WoodBlock : BasicBlock
             _spriteRenderer.sprite = destroyedSprite;
             stopsPlayer = false;
             stopsBlock = false;
+            isBlock = false;
             landableScore = 1;
             jumpable = false;
             interactsWithFireball = false;
@@ -63,6 +64,7 @@ public class WoodBlock : BasicBlock
             _spriteRenderer.sprite = wholeSprite;
             stopsPlayer = true;
             stopsBlock = true;
+            isBlock = true;
             landableScore = -1;
             jumpable = true;
             interactsWithFireball = true;
