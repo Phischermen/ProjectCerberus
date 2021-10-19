@@ -233,41 +233,44 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         return CollidesWith(levelCell.floorTile) || CollidesWithAny(levelCell.puzzleEntities);
     }
 
-    public void SetCollisionsEnabled(bool enable)
+    public void SetCollisionsEnabled(bool enable, bool invokeCallbacks = true)
     {
         // Avoid accidental invocation of callbacks when setting to same value twice.
         if (enable == collisionsEnabled) return;
         collisionsEnabled = enable;
         // Invoke callbacks.
-        if (enable)
+        if (invokeCallbacks)
         {
-            foreach (var entity in currentCell.puzzleEntities)
+            if (enable)
             {
-                if (entity.collisionsEnabled && entity != this)
+                foreach (var entity in currentCell.puzzleEntities)
                 {
-                    OnEnterCollisionWithEntity(entity);
-                    entity.OnEnterCollisionWithEntity(this);
+                    if (entity.collisionsEnabled && entity != this)
+                    {
+                        OnEnterCollisionWithEntity(entity);
+                        entity.OnEnterCollisionWithEntity(this);
+                    }
                 }
-            }
 
-            currentCell.floorTile.OnEnterCollisionWithEntity(this);
-            // Refresh the tile we entered.
-            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
-        }
-        else
-        {
-            foreach (var entity in currentCell.puzzleEntities)
+                currentCell.floorTile.OnEnterCollisionWithEntity(this);
+                // Refresh the tile we entered.
+                puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+            }
+            else
             {
-                if (entity.collisionsEnabled && entity != this)
+                foreach (var entity in currentCell.puzzleEntities)
                 {
-                    OnExitCollisionWithEntity(entity);
-                    entity.OnExitCollisionWithEntity(this);
+                    if (entity.collisionsEnabled && entity != this)
+                    {
+                        OnExitCollisionWithEntity(entity);
+                        entity.OnExitCollisionWithEntity(this);
+                    }
                 }
-            }
 
-            currentCell.floorTile.OnExitCollisionWithEntity(this);
-            // Refresh the tile we exited.
-            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+                currentCell.floorTile.OnExitCollisionWithEntity(this);
+                // Refresh the tile we exited.
+                puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+            }
         }
     }
 
@@ -375,8 +378,19 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     public IEnumerator FallIntoPit(float fallDuration, float rotationSpeed, float finalScale)
     {
         animationIsRunning = true;
-        // Disable gameplay so player can't kill more dogs.
-        manager.gameplayEnabled = false;
+        // Determine if the entity that has fallen is the player in split state
+        var playerIsFallingInPitInSplitState = isPlayer && collisionsEnabled;
+        if (playerIsFallingInPitInSplitState)
+        {
+            // Disable gameplay so player can't kill more dogs.
+            manager.gameplayEnabled = false;
+        }
+        // Cerberus is in its merged state, so prevent player from unmerging. 
+        else
+        {
+            manager.joinAndSplitEnabled = false;
+        }
+
         // Mark this entity as in a hole, for undo.
         inHole = true;
         // Remove from puzzle container so it can't be interacted with.
@@ -396,18 +410,10 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         // Goto final state at end
         transform.localScale = Vector3.one * finalScale;
         spriteRenderer.color = Color.black;
-        if (isPlayer)
+        if (playerIsFallingInPitInSplitState)
         {
             // End game if this entity was in fact the player falling into a pit.
-            if (collisionsEnabled)
-            {
-                manager.EndGameWithFailureStatus();
-            }
-            // Cerberus is in its sigil state, so prevent player from unmerging 
-            else
-            {
-                manager.joinAndSplitEnabled = false;
-            }
+            manager.EndGameWithFailureStatus();
         }
 
         // Set these to false

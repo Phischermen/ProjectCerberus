@@ -202,22 +202,23 @@ public class GameManager : MonoBehaviour, IUndoable
                     if (wantsToJoin)
                     {
                         wantsToJoin = false;
-                        // Set collisionsEnabled in preparation for collision test. JKL collisions are disabled in case they
-                        // happen to be standing on top of Cerberus.
-                        _cerberusMajor.SetCollisionsEnabled(true);
-                        _jack.SetCollisionsEnabled(false);
-                        _kahuna.SetCollisionsEnabled(false);
-                        _laguna.SetCollisionsEnabled(false);
+                        // Set collisionsEnabled in preparation for collision test. JKL collisions are disabled in case
+                        // they happen to be standing on top of Cerberus. Callbacks are not invoked, for this is meant
+                        // to be a test.
+                        _cerberusMajor.SetCollisionsEnabled(true, invokeCallbacks: false);
+                        _jack.SetCollisionsEnabled(false, invokeCallbacks: false);
+                        _kahuna.SetCollisionsEnabled(false, invokeCallbacks: false);
+                        _laguna.SetCollisionsEnabled(false, invokeCallbacks: false);
                         // Check for collision at CerberusMajor
-                        if (_cerberusMajor.CollidesWith(_cerberusMajor.currentCell))
-                        {
-                            // Reset collisionsEnabled
-                            _cerberusMajor.SetCollisionsEnabled(false);
-                            _jack.SetCollisionsEnabled(true);
-                            _kahuna.SetCollisionsEnabled(true);
-                            _laguna.SetCollisionsEnabled(true);
-                        }
-                        else
+                        var joinBlocked = _cerberusMajor.CollidesWith(_cerberusMajor.currentCell);
+
+                        // Reset collisionsEnabled, so that FormCerberusMajor() functions properly.
+                        _cerberusMajor.SetCollisionsEnabled(false, invokeCallbacks: false);
+                        _jack.SetCollisionsEnabled(true, invokeCallbacks: false);
+                        _kahuna.SetCollisionsEnabled(true, invokeCallbacks: false);
+                        _laguna.SetCollisionsEnabled(true, invokeCallbacks: false);
+
+                        if (!joinBlocked)
                         {
                             // Join request granted
                             _puzzleContainer.PushToUndoStack();
@@ -228,20 +229,21 @@ public class GameManager : MonoBehaviour, IUndoable
                     {
                         wantsToSplit = false;
                         // Check for collision at JKL
-                        _cerberusMajor.SetCollisionsEnabled(false);
-                        _jack.SetCollisionsEnabled(true);
-                        _kahuna.SetCollisionsEnabled(true);
-                        _laguna.SetCollisionsEnabled(true);
-                        if (_jack.CollidesWith(_jack.currentCell) || _kahuna.CollidesWith(_kahuna.currentCell) ||
-                            _laguna.CollidesWith(_laguna.currentCell))
-                        {
-                            // Reset collisionEnabled
-                            _cerberusMajor.SetCollisionsEnabled(true);
-                            _jack.SetCollisionsEnabled(false);
-                            _kahuna.SetCollisionsEnabled(false);
-                            _laguna.SetCollisionsEnabled(false);
-                        }
-                        else
+                        _cerberusMajor.SetCollisionsEnabled(false, invokeCallbacks: false);
+                        _jack.SetCollisionsEnabled(true, invokeCallbacks: false);
+                        _kahuna.SetCollisionsEnabled(true, invokeCallbacks: false);
+                        _laguna.SetCollisionsEnabled(true, invokeCallbacks: false);
+                        var splitBlocked = _jack.CollidesWith(_jack.currentCell) ||
+                                           _kahuna.CollidesWith(_kahuna.currentCell) ||
+                                           _laguna.CollidesWith(_laguna.currentCell);
+
+                        // Reset collisionEnabled, so that SplitCerberusMajor() functions properly.
+                        _cerberusMajor.SetCollisionsEnabled(true, invokeCallbacks: false);
+                        _jack.SetCollisionsEnabled(false, invokeCallbacks: false);
+                        _kahuna.SetCollisionsEnabled(false, invokeCallbacks: false);
+                        _laguna.SetCollisionsEnabled(false, invokeCallbacks: false);
+
+                        if (!splitBlocked)
                         {
                             // Split request granted
                             _puzzleContainer.PushToUndoStack();
