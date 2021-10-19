@@ -1,13 +1,15 @@
 ﻿/*
  * Game manager searches the scene on Start() for critical components, such as JKL, and manages their split, join, undo,
  * and cycle abilities. Game manager also defines certain constraints for the level such as time limit and max moves
- * until star loss. Game manager is also responsible for transitioning from gameplay to win/lose states
- * (NOT YET IMPLEMENTED), and loading the next scene
+ * until star loss. Game manager is also responsible for transitioning from gameplay to win/lose states, and loading the
+ * next scene.
  */
 
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour, IUndoable
 {
@@ -19,18 +21,20 @@ public class GameManager : MonoBehaviour, IUndoable
         private int _move;
         private float _timer;
 
+        private bool _joinSplitEnabled;
         private bool _cerberusFormed;
-        
+
         private bool _collectedStar;
 
         public GameManagerUndoData(GameManager gameManager, int move, float timer, Cerberus currentCerberus,
-            bool cerberusFormed, bool collectedStar)
+            bool cerberusFormed, bool joinSplitEnabled, bool collectedStar)
         {
             _gameManager = gameManager;
             _currentCerberus = currentCerberus;
             _move = move;
             _timer = timer;
             _cerberusFormed = cerberusFormed;
+            _joinSplitEnabled = joinSplitEnabled;
             _collectedStar = collectedStar;
         }
 
@@ -50,8 +54,11 @@ public class GameManager : MonoBehaviour, IUndoable
             {
                 _gameManager._timerRunning = true;
             }
-            
+
             _gameManager.cerberusFormed = _cerberusFormed;
+            _gameManager.joinAndSplitEnabled = _joinSplitEnabled;
+            // Repopulate available cerberus
+            _gameManager.RepopulateAvailableCerberus(!_cerberusFormed);
             _gameManager.collectedStar = _collectedStar;
         }
     }
@@ -69,7 +76,9 @@ public class GameManager : MonoBehaviour, IUndoable
 
     public int move { get; protected set; }
     [HideInInspector] public bool infinteMovesTilStarLoss = true;
-    [HideInInspector] public int maxMovesUntilStarLoss;
+
+    [FormerlySerializedAs("maxMovesUntilStarLoss")] [HideInInspector]
+    public int maxMovesBeforeStarLoss;
 
     [SerializeField] private GameObject _uiPrefab;
     [SerializeField] private GameObject _gameOverEndCard;
@@ -91,7 +100,7 @@ public class GameManager : MonoBehaviour, IUndoable
     [HideInInspector] public bool wantsToSplit;
     [HideInInspector] public bool wantsToCycleCharacter;
     [HideInInspector] public bool wantsToUndo;
-    
+
     private int _cerberusThatMustReachGoal;
     [HideInInspector] public bool collectedStar;
 
@@ -152,10 +161,6 @@ public class GameManager : MonoBehaviour, IUndoable
             // Cerberus Major is inactive by default
             _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(true);
         }
-
-        // Sort availableCerberus for PuzzleUI.
-        availableCerberus.Sort(CompareCerberusByPosition);
-
         timer = 0;
         _timerRunning = false;
         gameplayEnabled = true;
@@ -257,8 +262,6 @@ public class GameManager : MonoBehaviour, IUndoable
                     }
                 }
 
-                // Sort availableCerberus, from north-west most to south-east most.
-                availableCerberus.Sort(CompareCerberusByPosition);
                 // Command PuzzleContainer to process entities in response to this move
                 _puzzleContainer.ProcessEntitiesInResponseToPlayerMove();
                 // Start the next move with currentCerberus
@@ -274,32 +277,34 @@ public class GameManager : MonoBehaviour, IUndoable
             else if (wantsToCycleCharacter && !cerberusFormed)
             {
                 wantsToCycleCharacter = false;
+                // Sort availableCerberus, from north-west most to south-east most.
+                var availableCerberusSorted = availableCerberus.OrderBy(CompareCerberusByPosition).ToList();
                 // Get index of currentCerberus after sorting the list.
-                var currentIdx = availableCerberus.IndexOf(currentCerberus);
+                var currentIdx = availableCerberusSorted.IndexOf(currentCerberus);
                 if (_input.cycleCharacterForward)
                 {
                     // Switch to Cerberus south-east of current Cerberus.
-                    var idx = (currentIdx + 1) % availableCerberus.Count;
-                    currentCerberus = availableCerberus[idx];
+                    var idx = (currentIdx + 1) % availableCerberusSorted.Count;
+                    currentCerberus = availableCerberusSorted[idx];
                 }
                 else if (_input.cycleCharacterBackward)
                 {
                     // Switch to Cerberus north-west of current Cerberus.
                     // Note: To avoid getting a negative index from % operator, I add the array length to currentIndex. 
-                    var idx = ((currentIdx - 1 + availableCerberus.Count) % availableCerberus.Count);
-                    currentCerberus = availableCerberus[idx];
+                    var idx = ((currentIdx - 1 + availableCerberusSorted.Count) % availableCerberusSorted.Count);
+                    currentCerberus = availableCerberusSorted[idx];
                 }
-                else if (_input.cycleCharacter0)
+                else if (_input.cycleCharacter0 && availableCerberus.Count > 0)
                 {
                     // Switch to Cerberus at far north-west.
                     currentCerberus = availableCerberus[0];
                 }
-                else if (_input.cycleCharacter1)
+                else if (_input.cycleCharacter1 && availableCerberus.Count > 1)
                 {
                     // Switch to the Cerberus between Cerberus.
                     currentCerberus = availableCerberus[1];
                 }
-                else if (_input.cycleCharacter2)
+                else if (_input.cycleCharacter2 && availableCerberus.Count > 2)
                 {
                     // Switch to Cerberus at far south-east.
                     currentCerberus = availableCerberus[2];
@@ -338,16 +343,16 @@ public class GameManager : MonoBehaviour, IUndoable
     }
 
     // Comparison Delegate
-    private int CompareCerberusByPosition(Cerberus a, Cerberus b)
+    private int CompareCerberusByPosition(Cerberus a)
     {
-        return (a.position.x * PuzzleContainer.maxLevelWidth + (PuzzleContainer.maxLevelWidth - a.position.y)) -
-               (b.position.x * PuzzleContainer.maxLevelWidth + (PuzzleContainer.maxLevelWidth - b.position.y));
+        return a.position.x * PuzzleContainer.maxLevelWidth + (PuzzleContainer.maxLevelWidth - a.position.y);
     }
 
     // Undo
     public UndoData GetUndoData()
     {
-        var undoData = new GameManagerUndoData(this, move, timer, currentCerberus, cerberusFormed, collectedStar);
+        var undoData = new GameManagerUndoData(this, move, timer, currentCerberus, cerberusFormed, joinAndSplitEnabled,
+            collectedStar);
         return undoData;
     }
 
@@ -389,22 +394,30 @@ public class GameManager : MonoBehaviour, IUndoable
     }
 
     // Available Cerberus Management
-    public void RepopulateAvailableCerberus()
+    // ReSharper disable once InconsistentNaming
+    public void RepopulateAvailableCerberus(bool withJKL = true)
     {
         availableCerberus.Clear();
-        if (_jack)
+        if (withJKL)
         {
-            availableCerberus.Add(_jack);
-        }
+            if (_jack)
+            {
+                availableCerberus.Add(_jack);
+            }
 
-        if (_kahuna)
-        {
-            availableCerberus.Add(_kahuna);
-        }
+            if (_kahuna)
+            {
+                availableCerberus.Add(_kahuna);
+            }
 
-        if (_laguna)
+            if (_laguna)
+            {
+                availableCerberus.Add(_laguna);
+            }
+        }
+        else
         {
-            availableCerberus.Add(_laguna);
+            availableCerberus.Add(_cerberusMajor);
         }
     }
 
