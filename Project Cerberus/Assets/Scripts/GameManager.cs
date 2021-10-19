@@ -215,7 +215,7 @@ public class GameManager : MonoBehaviour, IUndoable
                         _kahuna.SetCollisionsEnabled(false, invokeCallbacks: false);
                         _laguna.SetCollisionsEnabled(false, invokeCallbacks: false);
                         // Check for collision at CerberusMajor
-                        var joinBlocked = _cerberusMajor.CollidesWith(_cerberusMajor.currentCell);
+                        var joinBlocked = _cerberusMajor.CollidesWith(_cerberusMajor.currentCell) && _cerberusMajor.currentCell.GetLandableScore() <= 0;
 
                         // Reset collisionsEnabled, so that FormCerberusMajor() functions properly.
                         _cerberusMajor.SetCollisionsEnabled(false, invokeCallbacks: false);
