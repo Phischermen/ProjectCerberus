@@ -96,6 +96,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   position: {x: 0, y: 0}
+  processPriority: 0
+  showOptionalSfx: 0
+  pushedSfx: {fileID: 0}
+  superPushedSfx: {fileID: 0}
+  pushedByFireballSfx: {fileID: 0}
+  showOptionalEvents: 0
+  onStandardPushed:
+    m_PersistentCalls:
+      m_Calls: []
+  onSuperPushed:
+    m_PersistentCalls:
+      m_Calls: []
+  onMultiPushed:
+    m_PersistentCalls:
+      m_Calls: []
+  onHitByFireball:
+    m_PersistentCalls:
+      m_Calls: []
+  onPulled:
+    m_PersistentCalls:
+      m_Calls: []
   open: 0
   openSprite: {fileID: 8059772277633314806, guid: f517efbb0e7cff84798d8ddd4641d42b,
     type: 3}
