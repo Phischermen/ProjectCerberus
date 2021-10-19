@@ -74,7 +74,7 @@ public class Cerberus : PuzzleEntity
 
     public override UndoData GetUndoData()
     {
-        var undoData = new CerberusUndoData(this, position,
+        var undoData = new CerberusUndoData(this, position, inHole,
             collisionDisabledAndPentagramDisplayed: manager.cerberusFormed != isCerberusMajor, onTopOfGoal);
         return undoData;
     }
