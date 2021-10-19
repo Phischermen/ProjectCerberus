@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 57682092317442452}
   - component: {fileID: 4781076114989600008}
   m_Layer: 0
-  m_Name: Pickup-MoveLimited
+  m_Name: BonusStar-MoveLimited
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
