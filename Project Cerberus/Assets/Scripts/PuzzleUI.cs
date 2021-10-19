@@ -52,11 +52,12 @@ public class PuzzleUI : MonoBehaviour
     private Vector3[] _positionCache;
 
     private GameManager _manager;
+    private BonusStar _bonusStar;
 
     void Awake()
     {
         _manager = FindObjectOfType<GameManager>();
-
+        _bonusStar = FindObjectOfType<BonusStar>();
         // Check length of dogStatusArray
         if (dogStatusArray.Length != 3)
         {
@@ -82,18 +83,13 @@ public class PuzzleUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // TODO Kevin: Move this out of Update loop into new UpdateUI method
         // Update turn counter
         turnCounter.text = "";
-        if (_manager.infinteMovesTilStarLoss)
+        if (_bonusStar != null)
         {
-            turnCounter.text += $"Move:{_manager.move}\n";
+            turnCounter.text += _bonusStar.GetStatusMessageForUI();
         }
-        else
-        {
-            turnCounter.text += $"Move til Star Loss:{Mathf.Max(0,_manager.maxMovesUntilStarLoss - _manager.move)}\n";
-        }
-        turnCounter.text += $"Timer:{_manager.timer}";
+        turnCounter.text += $"Move: {_manager.move}\nTimer: {_manager.timer,3:000}";
 
         // Hide all dog status initially
         foreach (var dogStatus in dogStatusArray)
