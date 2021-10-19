@@ -33,7 +33,7 @@ public class WoodBlock : BasicBlock
         interactsWithFireball = true;
     }
 
-    private void Awake()
+    private new void Awake()
     {
         base.Awake();
         _spriteRenderer = GetComponent<SpriteRenderer>();
