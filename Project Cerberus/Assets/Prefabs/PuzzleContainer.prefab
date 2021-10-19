@@ -205,7 +205,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_ConstantMin: 0
-    m_ConstantMax: 100
+    m_ConstantMax: 15
 --- !u!199 &2046736472675279814
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -225,7 +225,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10308, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: c2c6347ac4710f74d97257ca114fc569, type: 2}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -5255,11 +5255,15 @@ MonoBehaviour:
   specialPressed: 0
   specialHeld: 0
   specialReleased: 0
-  skipMove: 0
   mergeOrSplit: 0
   undoPressed: 0
   resetPressed: 0
   cycleCharacter: 0
+  cycleCharacterForward: 0
+  cycleCharacterBackward: 0
+  cycleCharacter0: 0
+  cycleCharacter1: 0
+  cycleCharacter2: 0
 --- !u!1 &2715384113343177922
 GameObject:
   m_ObjectHideFlags: 0
@@ -5303,10 +5307,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bdefc15c8f3a5444a4cef1fc936a960, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  infiniteTimeLimit: 1
-  timeLimit: 1
+  infiniteParTime: 1
+  parTime: 1
   infinteMovesTilStarLoss: 1
-  maxMovesUntilStarLoss: 0
+  maxMovesBeforeStarLoss: 0
   _uiPrefab: {fileID: 5552925204807599473, guid: bcfbc7b7922f7f54986d4d7e2413af3e,
     type: 3}
   _gameOverEndCard: {fileID: 6748275472432033483, guid: 2c37ffdf5f8040047ade7d6be95b0902,
@@ -5314,6 +5318,7 @@ MonoBehaviour:
   _victoryEndCard: {fileID: 6748275472432033483, guid: 04c485a2fb11ad44fb09745c92d95e06,
     type: 3}
   currentCerberus: {fileID: 0}
+  joinAndSplitEnabled: 0
   wantsToJoin: 0
   wantsToSplit: 0
   wantsToCycleCharacter: 0
