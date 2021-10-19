@@ -14,13 +14,15 @@ public class LevelSequence : ScriptableObject
     [Serializable]
     public class World
     {
-        public List<SceneAsset> levels;
+        // public List<SceneAsset> levels;
+        public List<int> levels;
         public bool expandedInInspector;
 
         public World()
         {
             expandedInInspector = true;
-            levels = new List<SceneAsset>();
+            // levels = new List<SceneAsset>();
+            levels = new List<int>();
         }
     }
     
@@ -46,7 +48,8 @@ public class LevelSequence : ScriptableObject
         worlds.Add(world);
     }
 
-    public void FindCurrentLevelAndWorld(string searchName, out int level, out int world)
+    // public void FindCurrentLevelAndWorld(string searchName, out int level, out int world)
+    public void FindCurrentLevelAndWorld(int searchIdx, out int level, out int world)
     {
         // Set to -1 to indicate scene was not found.
         world = -1;
@@ -55,7 +58,7 @@ public class LevelSequence : ScriptableObject
         for (int i = 0; i < worlds.Count; i++)
         {
             world = i;
-            level = worlds[i].levels.FindIndex((asset) => asset.name == searchName);
+            level = worlds[i].levels.FindIndex((idx) => idx == searchIdx);
             // If level found, break.
             if (level != -1) break;
         }
@@ -73,11 +76,12 @@ public class LevelSequence : ScriptableObject
         return worlds[world].levels.Count;
     }
     
-    public SceneAsset GetLevel(int world, int level)
+    // public SceneAsset GetLevel(int world, int level)
+    public int GetLevel(int world, int level)
     {
         // Bound check. Return null to indicate out of bounds.
-        if (world < 0 || world > worlds.Count) return null;
-        if (level < 0 || level > worlds[world].levels.Count) return null;
+        if (world < 0 || world > worlds.Count) return -1;
+        if (level < 0 || level > worlds[world].levels.Count) return -1;
         return worlds[world].levels[level];
     }
 }

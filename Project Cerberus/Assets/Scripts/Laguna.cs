@@ -87,8 +87,6 @@ public class Laguna : Cerberus
                 {
                     puzzle.PushToUndoStack();
                     var p = position;
-                    Move(coord);
-                    entityToPull.Move(p);
 
                     entityToPull.onPulled.Invoke();
 
@@ -97,6 +95,9 @@ public class Laguna : Cerberus
                         AnimationUtility.basicMoveAndPushSpeed));
                     PlaySfx(walkSFX);
                     PlaySfx(entityToPull.pushedSfx);
+                    
+                    Move(coord);
+                    entityToPull.Move(p);
                     DeclareDoneWithMove();
                 }
                 else
@@ -110,9 +111,6 @@ public class Laguna : Cerberus
                     {
                         puzzle.PushToUndoStack();
                         var p = position;
-                        pushableEntity.Move(pushCoord);
-                        Move(coord);
-                        entityToPull.Move(p);
 
                         pushableEntity.onStandardPushed.Invoke();
                         entityToPull.onPulled.Invoke();
@@ -125,6 +123,10 @@ public class Laguna : Cerberus
                         PlaySfx(walkSFX);
                         PlaySfx(pushableEntity.pushedSfx);
                         PlaySfx(entityToPull.pushedSfx);
+                        
+                        pushableEntity.Move(pushCoord);
+                        Move(coord);
+                        entityToPull.Move(p);
                         DeclareDoneWithMove();
                     }
                 }

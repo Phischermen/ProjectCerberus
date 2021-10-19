@@ -83,9 +83,9 @@ public class Jack : Cerberus
         if (!blocked && entitiesToPush.Count == 0)
         {
             puzzle.PushToUndoStack();
-            Move(coord);
             PlaySfxPitchShift(walkSFX, 0.9f, 1.1f);
             PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
+            Move(coord);
             DeclareDoneWithMove();
         }
         else if (entitiesToPush.Count == 1)
@@ -115,14 +115,8 @@ public class Jack : Cerberus
                 range -= 1;
             }
 
-            pushableEntity.isSuperPushed = false;
-
             // Move across searched tiles.
             puzzle.PushToUndoStack();
-            for (int i = 0; i < distancePushed; i++)
-            {
-                pushableEntity.Move(pushableEntity.position + offset);
-            }
 
             pushableEntity.onSuperPushed.Invoke();
 
@@ -130,6 +124,20 @@ public class Jack : Cerberus
             pushableEntity.PlayAnimation(
                 pushableEntity.SlideToDestination(searchPosition, AnimationUtility.superPushAnimationSpeed));
             pushableEntity.PlaySfx(pushableEntity.superPushedSfx);
+
+            for (int i = 0; i < distancePushed; i++)
+            {
+                var firstMove = i == 0;
+                var lastMove = i == distancePushed - 1;
+                if (lastMove)
+                {
+                    // The super pushed object "lands" at the last space it moves.
+                    pushableEntity.isSuperPushed = false;
+                }
+
+                pushableEntity.Move(pushableEntity.position + offset, !lastMove, lastMove && !firstMove);
+            }
+
             DeclareDoneWithMove();
         }
         else if (!blocked)
@@ -148,11 +156,14 @@ public class Jack : Cerberus
                 {
                     var entity = entitiesToPush[i];
                     var entityPushCoord = entity.position + offset;
-                    entity.Move(entityPushCoord);
+
+                    entity.onMultiPushed.Invoke();
+
                     entity.PlayAnimation(entity.SlideToDestination(entityPushCoord,
                         AnimationUtility.basicMoveAndPushSpeed));
                     entity.PlaySfx(entity.superPushedSfx);
-                    entity.onMultiPushed.Invoke();
+
+                    entity.Move(entityPushCoord);
                 }
 
                 Move(coord);

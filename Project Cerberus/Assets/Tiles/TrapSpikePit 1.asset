@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bba8c69caaf0eac47a6b9c1c2c9159af, type: 3}
-  m_Name: TrapSpikePit
+  m_Script: {fileID: 11500000, guid: 1b774314713982b40ac2b02f09f18f9e, type: 3}
+  m_Name: TrapSpikePit 1
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: -8755759305468139169, guid: f517efbb0e7cff84798d8ddd4641d42b,
     type: 3}
@@ -35,10 +35,11 @@ MonoBehaviour:
   m_InstancedGameObject: {fileID: 0}
   m_Flags: 1
   m_ColliderType: 1
-  needsToBeCloned: 0
-  stopsPlayer: 1
+  puzzle: {fileID: 0}
+  needsToBeCloned: 1
+  stopsPlayer: 0
   stopsBlock: 0
   stopsFireball: 0
   allowsAllSuperPushedEntitiesPassage: 1
   jumpable: 0
-  landable: 1
+  landable: 0

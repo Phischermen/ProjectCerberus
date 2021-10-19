@@ -1,13 +1,15 @@
 ﻿/*
  * Game manager searches the scene on Start() for critical components, such as JKL, and manages their split, join, undo,
  * and cycle abilities. Game manager also defines certain constraints for the level such as time limit and max moves
- * until star loss. Game manager is also responsible for transitioning from gameplay to win/lose states
- * (NOT YET IMPLEMENTED), and loading the next scene
+ * until star loss. Game manager is also responsible for transitioning from gameplay to win/lose states, and loading the
+ * next scene.
  */
 
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour, IUndoable
 {
@@ -18,28 +20,31 @@ public class GameManager : MonoBehaviour, IUndoable
 
         private int _move;
         private float _timer;
+
+        private bool _joinSplitEnabled;
         private bool _cerberusFormed;
-        private int _cerberusYetToReachGoal;
+
         private bool _collectedStar;
 
         public GameManagerUndoData(GameManager gameManager, int move, float timer, Cerberus currentCerberus,
-            int cerberusYetToReachGoal, bool cerberusFormed, bool collectedStar)
+            bool cerberusFormed, bool joinSplitEnabled, bool collectedStar)
         {
             _gameManager = gameManager;
             _currentCerberus = currentCerberus;
             _move = move;
             _timer = timer;
-            _cerberusYetToReachGoal = cerberusYetToReachGoal;
             _cerberusFormed = cerberusFormed;
+            _joinSplitEnabled = joinSplitEnabled;
             _collectedStar = collectedStar;
         }
 
         public override void Load()
         {
             // Start the move of the newly controlled Cerberus
+            _gameManager.currentCerberus = _currentCerberus;
             _currentCerberus.StartMove();
             _gameManager.move = _move;
-            _gameManager._timer = _timer;
+            _gameManager.timer = _timer;
             // Stop timer if first move. Otherwise run timer.
             if (_move == 0)
             {
@@ -50,8 +55,10 @@ public class GameManager : MonoBehaviour, IUndoable
                 _gameManager._timerRunning = true;
             }
 
-            _gameManager._cerberusYetToReachGoal = _cerberusYetToReachGoal;
             _gameManager.cerberusFormed = _cerberusFormed;
+            _gameManager.joinAndSplitEnabled = _joinSplitEnabled;
+            // Repopulate available cerberus
+            _gameManager.RepopulateAvailableCerberus(!_cerberusFormed);
             _gameManager.collectedStar = _collectedStar;
         }
     }
@@ -60,16 +67,18 @@ public class GameManager : MonoBehaviour, IUndoable
     private static int currentWorld = -1;
     private static int currentLevel = -1;
 
+    [HideInInspector] public bool infiniteParTime = true;
+    [HideInInspector] public float parTime = 1f;
 
-    [HideInInspector] public bool infiniteTimeLimit = true;
-    [HideInInspector] public float timeLimit = 1f;
     private bool _timerRunning = false;
-    // TODO Make timer run forwards instead of backwards so time can be displayed even in a level with an infinite time limit
-    public float _timer { get; protected set; }
+
+    public float timer { get; protected set; }
 
     public int move { get; protected set; }
     [HideInInspector] public bool infinteMovesTilStarLoss = true;
-    [HideInInspector] public int maxMovesUntilStarLoss;
+
+    [FormerlySerializedAs("maxMovesUntilStarLoss")] [HideInInspector]
+    public int maxMovesBeforeStarLoss;
 
     [SerializeField] private GameObject _uiPrefab;
     [SerializeField] private GameObject _gameOverEndCard;
@@ -84,7 +93,7 @@ public class GameManager : MonoBehaviour, IUndoable
     private PuzzleContainer _puzzleContainer;
     private PuzzleGameplayInput _input;
 
-    public bool joinAndSplitEnabled { get; protected set; }
+    public bool joinAndSplitEnabled;
     public bool cerberusFormed { get; protected set; }
 
     [HideInInspector] public bool wantsToJoin;
@@ -92,10 +101,11 @@ public class GameManager : MonoBehaviour, IUndoable
     [HideInInspector] public bool wantsToCycleCharacter;
     [HideInInspector] public bool wantsToUndo;
 
-    private int _cerberusYetToReachGoal;
+    private int _cerberusThatMustReachGoal;
     [HideInInspector] public bool collectedStar;
 
     [HideInInspector] public bool gameplayEnabled;
+
     void Awake()
     {
         // Create UI
@@ -103,9 +113,10 @@ public class GameManager : MonoBehaviour, IUndoable
         // Load Level Sequence and get current world and level
         if (_levelSequence == null)
         {
-
-            _levelSequence = Resources.Load<CustomProjectSettings>(CustomProjectSettingsProvider.resourcePath).mainLevelSequence;
-            _levelSequence.FindCurrentLevelAndWorld(SceneManager.GetActiveScene().name, out currentLevel, out currentWorld);
+            _levelSequence = Resources.Load<CustomProjectSettings>(CustomProjectSettings.resourcePath)
+                .mainLevelSequence;
+            _levelSequence.FindCurrentLevelAndWorld(SceneManager.GetActiveScene().buildIndex, out currentLevel,
+                out currentWorld);
         }
     }
 
@@ -125,19 +136,19 @@ public class GameManager : MonoBehaviour, IUndoable
         if (_jack)
         {
             availableCerberus.Add(_jack);
-            _cerberusYetToReachGoal += 1;
+            _cerberusThatMustReachGoal += 1;
         }
 
         if (_kahuna)
         {
             availableCerberus.Add(_kahuna);
-            _cerberusYetToReachGoal += 1;
+            _cerberusThatMustReachGoal += 1;
         }
 
         if (_laguna)
         {
             availableCerberus.Add(_laguna);
-            _cerberusYetToReachGoal += 1;
+            _cerberusThatMustReachGoal += 1;
         }
 
         currentCerberus = availableCerberus[0];
@@ -150,19 +161,15 @@ public class GameManager : MonoBehaviour, IUndoable
             // Cerberus Major is inactive by default
             _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(true);
         }
-
-        _timer = timeLimit;
+        timer = 0;
         _timerRunning = false;
         gameplayEnabled = true;
     }
 
     void Update()
     {
-        // Cache onTopOfGoal, to see if Cerberus enters/exits goal.
-        var currentCerberusWasOnTopOfGoal = currentCerberus.onTopOfGoal;
-
         // Process movement of currently controlled cerberus if there is still time left and gameplay is enabled.
-        if (gameplayEnabled && (_timer > 0f || infiniteTimeLimit))
+        if (gameplayEnabled)
         {
             currentCerberus.ProcessMoveInput();
             // Check if cerberus made their move
@@ -170,31 +177,23 @@ public class GameManager : MonoBehaviour, IUndoable
             {
                 // Start timer
                 _timerRunning = true;
-                // Check if currentCerberus entered/exited a goal
-                if (!currentCerberus.onTopOfGoal || currentCerberusWasOnTopOfGoal)
+                // Check how many of available cerberus are on goal.
+                var availableCerberusOnGoal = 0;
+                foreach (var cerberus in availableCerberus)
                 {
-                    if (!currentCerberus.onTopOfGoal && currentCerberusWasOnTopOfGoal)
+                    if (cerberus.onTopOfGoal)
                     {
-                        // Increment _cerberusYetToReachGoal. 
-                        _cerberusYetToReachGoal += (currentCerberus.isCerberusMajor) ? 3 : 1;
+                        // Cerberus Major represents JKL combined, hence why we increment by three if Cerberus Major
+                        // is on goal.
+                        availableCerberusOnGoal += (cerberus.isCerberusMajor) ? 3 : 1;
                     }
                 }
-                else
+
+                if (availableCerberusOnGoal == _cerberusThatMustReachGoal)
                 {
-                    // Decrement _cerberusYetToReachGoal. Cerberus Major represents JKL combined, hence why we decrement by
-                    // three if Cerberus Major steps off goal.
-                    _cerberusYetToReachGoal -= (currentCerberus.isCerberusMajor) ? 3 : 1;
-                    if (_cerberusYetToReachGoal == 0)
-                    {
-                        // Victory! Winning!
-                        // Disable gameplay.
-                        gameplayEnabled = false;
-                        // Stop timer
-                        _timerRunning = false;
-                        // Play victory animation
-                        // Display victory end card.
-                        Instantiate(_victoryEndCard);
-                    }
+                    // Victory! Winning!
+                    // Play victory animation
+                    EndGameWithSuccessStatus();
                 }
 
                 if (!joinAndSplitEnabled)
@@ -208,22 +207,23 @@ public class GameManager : MonoBehaviour, IUndoable
                     if (wantsToJoin)
                     {
                         wantsToJoin = false;
-                        // Set collisionsEnabled in preparation for collision test. JKL collisions are disabled in case they
-                        // happen to be standing on top of Cerberus.
-                        _cerberusMajor.SetCollisionsEnabled(true);
-                        _jack.SetCollisionsEnabled(false);
-                        _kahuna.SetCollisionsEnabled(false);
-                        _laguna.SetCollisionsEnabled(false);
+                        // Set collisionsEnabled in preparation for collision test. JKL collisions are disabled in case
+                        // they happen to be standing on top of Cerberus. Callbacks are not invoked, for this is meant
+                        // to be a test.
+                        _cerberusMajor.SetCollisionsEnabled(true, invokeCallbacks: false);
+                        _jack.SetCollisionsEnabled(false, invokeCallbacks: false);
+                        _kahuna.SetCollisionsEnabled(false, invokeCallbacks: false);
+                        _laguna.SetCollisionsEnabled(false, invokeCallbacks: false);
                         // Check for collision at CerberusMajor
-                        if (_cerberusMajor.CollidesWith(_cerberusMajor.currentCell))
-                        {
-                            // Reset collisionsEnabled
-                            _cerberusMajor.SetCollisionsEnabled(false);
-                            _jack.SetCollisionsEnabled(true);
-                            _kahuna.SetCollisionsEnabled(true);
-                            _laguna.SetCollisionsEnabled(true);
-                        }
-                        else
+                        var joinBlocked = _cerberusMajor.CollidesWith(_cerberusMajor.currentCell);
+
+                        // Reset collisionsEnabled, so that FormCerberusMajor() functions properly.
+                        _cerberusMajor.SetCollisionsEnabled(false, invokeCallbacks: false);
+                        _jack.SetCollisionsEnabled(true, invokeCallbacks: false);
+                        _kahuna.SetCollisionsEnabled(true, invokeCallbacks: false);
+                        _laguna.SetCollisionsEnabled(true, invokeCallbacks: false);
+
+                        if (!joinBlocked)
                         {
                             // Join request granted
                             _puzzleContainer.PushToUndoStack();
@@ -234,20 +234,21 @@ public class GameManager : MonoBehaviour, IUndoable
                     {
                         wantsToSplit = false;
                         // Check for collision at JKL
-                        _cerberusMajor.SetCollisionsEnabled(false);
-                        _jack.SetCollisionsEnabled(true);
-                        _kahuna.SetCollisionsEnabled(true);
-                        _laguna.SetCollisionsEnabled(true);
-                        if (_jack.CollidesWith(_jack.currentCell) || _kahuna.CollidesWith(_kahuna.currentCell) ||
-                            _laguna.CollidesWith(_laguna.currentCell))
-                        {
-                            // Reset collisionEnabled
-                            _cerberusMajor.SetCollisionsEnabled(true);
-                            _jack.SetCollisionsEnabled(false);
-                            _kahuna.SetCollisionsEnabled(false);
-                            _laguna.SetCollisionsEnabled(false);
-                        }
-                        else
+                        _cerberusMajor.SetCollisionsEnabled(false, invokeCallbacks: false);
+                        _jack.SetCollisionsEnabled(true, invokeCallbacks: false);
+                        _kahuna.SetCollisionsEnabled(true, invokeCallbacks: false);
+                        _laguna.SetCollisionsEnabled(true, invokeCallbacks: false);
+                        var splitBlocked = _jack.CollidesWith(_jack.currentCell) ||
+                                           _kahuna.CollidesWith(_kahuna.currentCell) ||
+                                           _laguna.CollidesWith(_laguna.currentCell);
+
+                        // Reset collisionEnabled, so that SplitCerberusMajor() functions properly.
+                        _cerberusMajor.SetCollisionsEnabled(true, invokeCallbacks: false);
+                        _jack.SetCollisionsEnabled(false, invokeCallbacks: false);
+                        _kahuna.SetCollisionsEnabled(false, invokeCallbacks: false);
+                        _laguna.SetCollisionsEnabled(false, invokeCallbacks: false);
+
+                        if (!splitBlocked)
                         {
                             // Split request granted
                             _puzzleContainer.PushToUndoStack();
@@ -260,6 +261,7 @@ public class GameManager : MonoBehaviour, IUndoable
                         move += 1;
                     }
                 }
+
                 // Command PuzzleContainer to process entities in response to this move
                 _puzzleContainer.ProcessEntitiesInResponseToPlayerMove();
                 // Start the next move with currentCerberus
@@ -272,42 +274,84 @@ public class GameManager : MonoBehaviour, IUndoable
                 _puzzleContainer.UndoLastMove();
             }
             // Handle request to cycle character
-            else if (wantsToCycleCharacter)
+            else if (wantsToCycleCharacter && !cerberusFormed)
             {
                 wantsToCycleCharacter = false;
-                // TODO Implement method to get next cerberus to control based on position of currentCerberus.
-                currentCerberus =
-                    availableCerberus[
-                        (availableCerberus.FindIndex(cerberus => cerberus == currentCerberus) + 1) %
-                        availableCerberus.Count];
+                // Sort availableCerberus, from north-west most to south-east most.
+                var availableCerberusSorted = availableCerberus.OrderBy(CompareCerberusByPosition).ToList();
+                // Get index of currentCerberus after sorting the list.
+                var currentIdx = availableCerberusSorted.IndexOf(currentCerberus);
+                if (_input.cycleCharacterForward)
+                {
+                    // Switch to Cerberus south-east of current Cerberus.
+                    var idx = (currentIdx + 1) % availableCerberusSorted.Count;
+                    currentCerberus = availableCerberusSorted[idx];
+                }
+                else if (_input.cycleCharacterBackward)
+                {
+                    // Switch to Cerberus north-west of current Cerberus.
+                    // Note: To avoid getting a negative index from % operator, I add the array length to currentIndex. 
+                    var idx = ((currentIdx - 1 + availableCerberusSorted.Count) % availableCerberusSorted.Count);
+                    currentCerberus = availableCerberusSorted[idx];
+                }
+                else if (_input.cycleCharacter0 && availableCerberus.Count > 0)
+                {
+                    // Switch to Cerberus at far north-west.
+                    currentCerberus = availableCerberus[0];
+                }
+                else if (_input.cycleCharacter1 && availableCerberus.Count > 1)
+                {
+                    // Switch to the Cerberus between Cerberus.
+                    currentCerberus = availableCerberus[1];
+                }
+                else if (_input.cycleCharacter2 && availableCerberus.Count > 2)
+                {
+                    // Switch to Cerberus at far south-east.
+                    currentCerberus = availableCerberus[2];
+                }
+
                 currentCerberus.StartMove();
             }
         }
 
         // Run timer
-        if (_timerRunning && !infiniteTimeLimit)
+        if (_timerRunning)
         {
-            _timer -= Time.deltaTime;
-            if (_timer < 0)
-            {
-                // Time's up! Game over!
-                // Disable gameplay
-                gameplayEnabled = false;
-                // Stop timer
-                _timerRunning = false;
-                _timer = 0f;
-                // Display game over end card.
-                Instantiate(_gameOverEndCard);
-            }
+            timer += Time.deltaTime;
         }
     }
 
-    // Undo
+    // Gameover
+    public void EndGameWithFailureStatus()
+    {
+        // Disable gameplay
+        gameplayEnabled = false;
+        // Stop timer
+        _timerRunning = false;
+        // Display game over end card.
+        Instantiate(_gameOverEndCard);
+    }
 
+    public void EndGameWithSuccessStatus()
+    {
+        // Disable gameplay.
+        gameplayEnabled = false;
+        // Stop timer
+        _timerRunning = false;
+        // Display victory end card.
+        Instantiate(_victoryEndCard);
+    }
+
+    // Comparison Delegate
+    private int CompareCerberusByPosition(Cerberus a)
+    {
+        return a.position.x * PuzzleContainer.maxLevelWidth + (PuzzleContainer.maxLevelWidth - a.position.y);
+    }
+
+    // Undo
     public UndoData GetUndoData()
     {
-        var undoData = new GameManagerUndoData(this, move, _timer, currentCerberus, _cerberusYetToReachGoal,
-            cerberusFormed,
+        var undoData = new GameManagerUndoData(this, move, timer, currentCerberus, cerberusFormed, joinAndSplitEnabled,
             collectedStar);
         return undoData;
     }
@@ -325,7 +369,9 @@ public class GameManager : MonoBehaviour, IUndoable
         _jack.SetDisableCollsionAndShowPentagramMarker(true);
         _kahuna.SetDisableCollsionAndShowPentagramMarker(true);
         _laguna.SetDisableCollsionAndShowPentagramMarker(true);
-
+        // Repopulate availableCerberus
+        availableCerberus.Clear();
+        availableCerberus.Add(_cerberusMajor);
         currentCerberus = _cerberusMajor;
     }
 
@@ -339,15 +385,56 @@ public class GameManager : MonoBehaviour, IUndoable
         _jack.SetDisableCollsionAndShowPentagramMarker(false);
         _kahuna.SetDisableCollsionAndShowPentagramMarker(false);
         _laguna.SetDisableCollsionAndShowPentagramMarker(false);
-
+        // Repopulate availableCerberus
+        availableCerberus.Clear();
+        availableCerberus.Add(_jack);
+        availableCerberus.Add(_kahuna);
+        availableCerberus.Add(_laguna);
         currentCerberus = _jack;
     }
-    
+
+    // Available Cerberus Management
+    // ReSharper disable once InconsistentNaming
+    public void RepopulateAvailableCerberus(bool withJKL = true)
+    {
+        availableCerberus.Clear();
+        if (withJKL)
+        {
+            if (_jack)
+            {
+                availableCerberus.Add(_jack);
+            }
+
+            if (_kahuna)
+            {
+                availableCerberus.Add(_kahuna);
+            }
+
+            if (_laguna)
+            {
+                availableCerberus.Add(_laguna);
+            }
+        }
+        else
+        {
+            availableCerberus.Add(_cerberusMajor);
+        }
+    }
+
     // Replay Level/Proceed Game
+    public void UndoLastMove()
+    {
+        _puzzleContainer.UndoLastMove();
+        gameplayEnabled = true;
+        // Note: Timer is reset via GameManagerUndoData.Load()
+    }
+
     public void ReplayLevel()
     {
         _puzzleContainer.UndoToFirstMove();
         gameplayEnabled = true;
+        // Repopulate availableCerberus
+        RepopulateAvailableCerberus();
         // Note: Timer is reset via GameManagerUndoData.Load()
     }
 
@@ -363,11 +450,13 @@ public class GameManager : MonoBehaviour, IUndoable
             {
                 nextWorld = 0;
             }
+
             nextLevel = 0;
         }
+
         var nextScene = _levelSequence.GetLevel(nextWorld, nextLevel);
         currentLevel = nextLevel;
         currentWorld = nextWorld;
-        SceneManager.LoadScene(nextScene.name);
+        SceneManager.LoadScene(nextScene);
     }
 }

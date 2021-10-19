@@ -22,4 +22,10 @@ public class PuzzleUIEndCardFailure : MonoBehaviour
         // TODO Play animation to hide UI instead of imediately destroying it.
         Destroy(gameObject);
     }
+
+    public void UndoLastMove()
+    {
+        _gameManager.UndoLastMove();
+        Destroy(gameObject);
+    }
 }

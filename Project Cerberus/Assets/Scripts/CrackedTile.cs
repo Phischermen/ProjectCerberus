@@ -30,8 +30,9 @@ public class CrackedTile : FloorTile
             }
         }
     }
+
     [HideInInspector, ShowInTileInspector] public int stage = 0;
-    [HideInInspector, ShowInTileInspector] public int initialState = 0;
+    [ShowInTileInspector] public int initialState = 0;
     [SerializeField] private Sprite[] crackStageSprite = new Sprite[4];
 
     public CrackedTile()
@@ -42,6 +43,7 @@ public class CrackedTile : FloorTile
 
     public void Awake()
     {
+        needsToBeCloned = true;
         stage = Mathf.Clamp(initialState, 0, crackStageSprite.Length - 1);
         if (initialState < 3)
         {
@@ -62,7 +64,11 @@ public class CrackedTile : FloorTile
 
     public override void OnExitCollisionWithEntity(PuzzleEntity other)
     {
-        stage += 1;
+        if (!other.isSuperPushed)
+        {
+            stage += 1;
+        }
+
         if (stage < 3)
         {
             SetFieldsToPreFinalStatePreset();
@@ -70,21 +76,40 @@ public class CrackedTile : FloorTile
         else
         {
             SetFieldsToFinalStatePreset();
+            // Make every entity on top this cell fall into a pit.
+            // Note: Calling FallIntoPit removes entity from currentCell.puzzleEntities.
+            while (currentCell.puzzleEntities.Count > 0)
+            {
+                var entity = currentCell.puzzleEntities[0];
+                // Play falling animation.
+                entity.PlayAnimation(entity.FallIntoPit(1f, 90f, 0f));
+            }
+        }
+    }
+
+    public override void OnEnterCollisionWithEntity(PuzzleEntity other)
+    {
+        // Check if tile is cracked through, and the other entity is not super pushed.
+        if (stage == 3 && !other.isSuperPushed)
+        {
+            // Play falling animation.
+            other.PlayAnimation(other.FallIntoPit(AnimationUtility.fallDuration, AnimationUtility.fallRotationSpeed,
+                AnimationUtility.fallFinalScale));
         }
     }
 
     private void SetFieldsToPreFinalStatePreset()
     {
-        landable = true;
+        landableScore = 0;
         jumpable = false;
-        stopsPlayer = false;
+        // stopsPlayer = false;
     }
 
     private void SetFieldsToFinalStatePreset()
     {
-        landable = false;
+        landableScore = -100;
         jumpable = true;
-        stopsPlayer = true;
+        // stopsPlayer = true;
     }
 
     public override UndoData GetUndoData()

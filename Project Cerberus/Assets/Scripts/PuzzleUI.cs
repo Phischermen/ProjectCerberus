@@ -16,21 +16,15 @@ public class PuzzleUI : MonoBehaviour
         public RectTransform rectTransform;
         public Text text;
 
-        // UI Methods
-        // public void SetUIToMovedPreset()
-        // {
-        //     text.color = Color.gray;
-        // }
-
         public void SetUIToCurrentlyControlledPreset()
         {
             text.color = Color.red;
         }
 
-        // public void SetUIToYetToMovePreset()
-        // {
-        //     text.color = Color.white;
-        // }
+        public void SetUIToYetToMovePreset()
+        {
+            text.color = Color.white;
+        }
 
         public void HideUI()
         {
@@ -58,11 +52,12 @@ public class PuzzleUI : MonoBehaviour
     private Vector3[] _positionCache;
 
     private GameManager _manager;
+    private BonusStar _bonusStar;
 
     void Awake()
     {
         _manager = FindObjectOfType<GameManager>();
-
+        _bonusStar = FindObjectOfType<BonusStar>();
         // Check length of dogStatusArray
         if (dogStatusArray.Length != 3)
         {
@@ -88,10 +83,13 @@ public class PuzzleUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // TODO Kevin: Move this out of Update loop into new UpdateUI method
         // Update turn counter
-        //turnCounter.text = $"Turns left:\n{_manager.maxTurns - _manager.turn}";
-        turnCounter.text = $"Move til Star Loss:\n{_manager.maxMovesUntilStarLoss - _manager.move}\nTimer:{_manager._timer}";
+        turnCounter.text = "";
+        if (_bonusStar != null)
+        {
+            turnCounter.text += _bonusStar.GetStatusMessageForUI();
+        }
+        turnCounter.text += $"Move: {_manager.move}\nTimer: {_manager.timer,3:000}";
 
         // Hide all dog status initially
         foreach (var dogStatus in dogStatusArray)
@@ -100,36 +98,33 @@ public class PuzzleUI : MonoBehaviour
         }
 
         // Iterate over moveOrder to update dogStatus
-        // for (int i = 0; i < _manager.moveOrder.Count; i++)
-        // {
-        //     var cerberus = _manager.moveOrder[i];
-        //     if (i == 0)
-        //     {
-        //         // Set text based on merged status
-        //         dogStatusArray[0].text.text = cerberus.isCerberusMajor ? "Cerberus" : "Jack";
-        //         mergeButton.text = $"Left Ctrl: {(cerberus.isCerberusMajor ? toSplit : toMerge)}";
-        //     }
-        //
-        //
-        //     // Get dogStatus from map
-        //     var dogStatus = _dogStatusMap[cerberus.GetType()];
-        //     dogStatus.ShowUI();
-        //     // Set preset
-        //     if (i < _manager.currentMove)
-        //     {
-        //         dogStatus.SetUIToMovedPreset();
-        //     }
-        //     else if (i == _manager.currentMove)
-        //     {
-        //         dogStatus.SetUIToCurrentlyControlledPreset();
-        //     }
-        //     else
-        //     {
-        //         dogStatus.SetUIToYetToMovePreset();
-        //     }
-        //
-        //     // Set transform
-        //     dogStatus.rectTransform.localPosition = _positionCache[i];
-        // }
+        for (int i = 0; i < _manager.availableCerberus.Count; i++)
+        {
+            var cerberus = _manager.availableCerberus[i];
+            if (i == 0)
+            {
+                // Set text based on merged status
+
+                mergeButton.text = $"Left Ctrl: {(cerberus.isCerberusMajor ? toSplit : toMerge)}";
+            }
+
+            // Get dogStatus from map.
+            var dogStatus = _dogStatusMap[cerberus.GetType()];
+            dogStatus.ShowUI();
+            // Set text.
+            dogStatus.text.text = cerberus.name;
+            // Set preset.
+            if (cerberus == _manager.currentCerberus)
+            {
+                dogStatus.SetUIToCurrentlyControlledPreset();
+            }
+            else
+            {
+                dogStatus.SetUIToYetToMovePreset();
+            }
+
+            // Set transform
+            dogStatus.rectTransform.localPosition = _positionCache[i];
+        }
     }
 }

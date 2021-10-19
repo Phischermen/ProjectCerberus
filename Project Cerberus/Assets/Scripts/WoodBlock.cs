@@ -4,23 +4,21 @@ using UnityEngine;
 
 public class WoodBlock : BasicBlock
 {
-    public class WoodBlockUndoData : UndoData
+    public class WoodBlockUndoData : BasicBlockUndoData
     {
         public WoodBlock wood;
-        public Vector2Int position;
         public bool burned;
 
-        public WoodBlockUndoData(WoodBlock wood, Vector2Int position, bool burned)
+        public WoodBlockUndoData(WoodBlock wood, Vector2Int position, bool burned, bool inHole) : base(wood, position, inHole)
         {
             this.wood = wood;
-            this.position = position;
             this.burned = burned;
         }
 
         public override void Load()
         {
+            base.Load();
             wood.SetFieldsToShotPreset(burned);
-            wood.MoveForUndo(position);
         }
     }
 
@@ -35,7 +33,7 @@ public class WoodBlock : BasicBlock
         interactsWithFireball = true;
     }
 
-    private void Awake()
+    private new void Awake()
     {
         base.Awake();
         _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -51,7 +49,9 @@ public class WoodBlock : BasicBlock
         if (shot)
         {
             _spriteRenderer.sprite = destroyedSprite;
-            SetCollisionsEnabled(false);
+            stopsPlayer = false;
+            stopsBlock = false;
+            isBlock = false;
             landableScore = 1;
             jumpable = false;
             interactsWithFireball = false;
@@ -62,7 +62,9 @@ public class WoodBlock : BasicBlock
         else
         {
             _spriteRenderer.sprite = wholeSprite;
-            SetCollisionsEnabled(true);
+            stopsPlayer = true;
+            stopsBlock = true;
+            isBlock = true;
             landableScore = -1;
             jumpable = true;
             interactsWithFireball = true;
@@ -74,7 +76,7 @@ public class WoodBlock : BasicBlock
 
     public override UndoData GetUndoData()
     {
-        var undoData = new WoodBlockUndoData(this, position, burned: !collisionsEnabled);
+        var undoData = new WoodBlockUndoData(this, position, burned: !stopsPlayer, inHole);
         return undoData;
     }
 }

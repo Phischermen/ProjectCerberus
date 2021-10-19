@@ -66,10 +66,18 @@ public class Gate : PuzzleEntity
     {
         if (wantsToClose)
         {
-            var myCell = puzzle.GetCell(position);
-            if (!CollidesWithAny(myCell.puzzleEntities))
+            // Set collision parameters in preparation for collision check.
+            stopsPlayer = true;
+            stopsBlock = true;
+            if (!CollidesWithAny(currentCell.puzzleEntities))
             {
                 CloseGate();
+            }
+            else
+            {
+                // Reset collision parameters.
+                stopsBlock = false;
+                stopsPlayer = false;
             }
         }
     }

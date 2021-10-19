@@ -13,23 +13,31 @@ public class Cerberus : PuzzleEntity
     {
         public Cerberus cerberus;
         public Vector2Int position;
+        public bool inHole;
         public bool onTopOfGoal;
         public bool collisionDisabledAndPentagramDisplayed;
 
-        public override void Load()
-        {
-            cerberus.MoveForUndo(position);
-            cerberus.onTopOfGoal = onTopOfGoal;
-            cerberus.SetDisableCollsionAndShowPentagramMarker(collisionDisabledAndPentagramDisplayed);
-        }
-
-        public CerberusUndoData(Cerberus cerberus, Vector2Int position, bool collisionDisabledAndPentagramDisplayed,
+        public CerberusUndoData(Cerberus cerberus, Vector2Int position, bool inHole,
+            bool collisionDisabledAndPentagramDisplayed,
             bool onTopOfGoal)
         {
             this.cerberus = cerberus;
             this.position = position;
             this.onTopOfGoal = onTopOfGoal;
+            this.inHole = inHole;
             this.collisionDisabledAndPentagramDisplayed = collisionDisabledAndPentagramDisplayed;
+        }
+
+        public override void Load()
+        {
+            cerberus.inHole = inHole;
+            if (!inHole)
+            {
+                cerberus.MoveForUndo(position);
+                cerberus.ResetTransformAndSpriteRendererForUndo();
+            }
+            cerberus.onTopOfGoal = onTopOfGoal;
+            cerberus.SetDisableCollsionAndShowPentagramMarker(collisionDisabledAndPentagramDisplayed, false);
         }
     }
 
@@ -56,7 +64,7 @@ public class Cerberus : PuzzleEntity
     public Sprite pentagramMarker;
     [FormerlySerializedAs("_walkSFX")] public AudioSource walkSFX;
     public AnimationCurve talkAnimationCurve;
-    
+
     protected override void Awake()
     {
         base.Awake();
@@ -66,7 +74,7 @@ public class Cerberus : PuzzleEntity
 
     public override UndoData GetUndoData()
     {
-        var undoData = new CerberusUndoData(this, position,
+        var undoData = new CerberusUndoData(this, position, inHole,
             collisionDisabledAndPentagramDisplayed: manager.cerberusFormed != isCerberusMajor, onTopOfGoal);
         return undoData;
     }
@@ -76,11 +84,6 @@ public class Cerberus : PuzzleEntity
         if (input.resetPressed)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
-
-        if (input.skipMove)
-        {
-            DeclareDoneWithMove();
         }
 
         if (input.mergeOrSplit && manager.joinAndSplitEnabled)
@@ -98,7 +101,7 @@ public class Cerberus : PuzzleEntity
         }
     }
 
-    public void StartMove()
+    public virtual void StartMove()
     {
         doneWithMove = false;
     }
@@ -124,9 +127,9 @@ public class Cerberus : PuzzleEntity
             {
                 puzzle.PushToUndoStack();
                 // Move one space
-                Move(coord);
                 PlaySfx(walkSFX);
                 PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
+                Move(coord);
                 DeclareDoneWithMove();
             }
             else
@@ -139,33 +142,36 @@ public class Cerberus : PuzzleEntity
                 if (!pushBlocked)
                 {
                     puzzle.PushToUndoStack();
-                    pushableEntity.Move(pushCoord);
-                    Move(coord);
-                    
+
                     pushableEntity.onStandardPushed.Invoke();
-                    
+
                     PlaySfx(walkSFX);
                     pushableEntity.PlayAnimation(
                         pushableEntity.SlideToDestination(pushCoord, AnimationUtility.basicMoveAndPushSpeed));
                     PlaySfx(pushableEntity.pushedSfx);
                     PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
+
+                    pushableEntity.Move(pushCoord);
+                    Move(coord);
                     DeclareDoneWithMove();
                 }
             }
         }
     }
 
-    public void SetDisableCollsionAndShowPentagramMarker(bool disableAndShowPentagram)
+    public void SetDisableCollsionAndShowPentagramMarker(bool disableAndShowPentagram, bool invokeCallbacks = true)
     {
-        SetCollisionsEnabled(!disableAndShowPentagram);
+        SetCollisionsEnabled(!disableAndShowPentagram, invokeCallbacks);
         pushableByStandardMove = !disableAndShowPentagram;
         pushableByFireball = !disableAndShowPentagram;
         pushableByJacksMultiPush = !disableAndShowPentagram;
         pushableByJacksSuperPush = !disableAndShowPentagram;
+        pullable = !disableAndShowPentagram;
+        jumpable = !disableAndShowPentagram;
         landableScore = disableAndShowPentagram ? 0 : -1;
         GetComponent<SpriteRenderer>().sprite = disableAndShowPentagram ? pentagramMarker : _cerberusSprite;
     }
-    
+
     // Animation
 
     public IEnumerator Talk(float maxYOffset, float talkSpeed)
@@ -173,18 +179,20 @@ public class Cerberus : PuzzleEntity
         animationIsRunning = true;
         var ogPosition = transform.position;
         var delta = 0f;
-        
+
         while (!animationMustStop)
         {
             // Hop up and down
             delta += talkSpeed * Time.deltaTime;
-            transform.position = new Vector3(ogPosition.x, ogPosition.y + talkAnimationCurve.Evaluate(delta), ogPosition.z);
+            transform.position =
+                new Vector3(ogPosition.x, ogPosition.y + talkAnimationCurve.Evaluate(delta), ogPosition.z);
             yield return new WaitForFixedUpdate();
         }
+
         // Reset position
         transform.position = ogPosition;
 
         animationMustStop = false;
         animationIsRunning = false;
-    } 
+    }
 }

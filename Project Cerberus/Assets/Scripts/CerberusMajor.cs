@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 
@@ -40,9 +39,6 @@ public class CerberusMajor : Cerberus
     private List<JumpInfo> _jumpSpaces;
     private static int _maxJumpArrows = 32;
 
-    private static int _bezierCurveLengthEstimationSegments = 5;
-    private static float _lengthEstimationDelta = 1f / _bezierCurveLengthEstimationSegments;
-
     public AudioSource jumpSfx;
 
     CerberusMajor()
@@ -60,6 +56,12 @@ public class CerberusMajor : Cerberus
             _jumpArrows[i].gameObject.SetActive(false);
             jumpArrowSource.gameObject.SetActive(false);
         }
+    }
+
+    public override void StartMove()
+    {
+        base.StartMove();
+        goalIsOnJumpPath = false;
     }
 
     public override void ProcessMoveInput()
@@ -92,17 +94,19 @@ public class CerberusMajor : Cerberus
             if (_jumpSpaces.Count > 0)
             {
                 puzzle.PushToUndoStack();
+                
+                JumpInfo[] jumpInfoCopy = new JumpInfo[_jumpSpaces.Count];
+                _jumpSpaces.CopyTo(jumpInfoCopy);
+                PlayAnimation(JumpAlongPath(jumpInfoCopy, AnimationUtility.jumpSpeed));
+                
                 // Travel across jump spaces
                 foreach (var jumpInfo in _jumpSpaces)
                 {
                     Move(jumpInfo.position);
                 }
-
-                JumpInfo[] jumpInfoCopy = new JumpInfo[_jumpSpaces.Count];
-                _jumpSpaces.CopyTo(jumpInfoCopy);
-                PlayAnimation(JumpAlongPath(jumpInfoCopy, AnimationUtility.jumpSpeed));
                 _jumpSpaces.Clear();
                 RenderJumpPath();
+
                 DeclareDoneWithMove();
             }
         }
@@ -167,17 +171,14 @@ public class CerberusMajor : Cerberus
             return;
         }
 
-        // Check for entity to jump over and valid place to land
-        var canJump = (jumpedOverCell.GetJumpableEntity() || jumpedOverCell.floorTile.jumpable) &&
-                      newJumpCell.floorTile != null && newJumpCell.floorTile.landable;
-
+        // Check for entity to jump over.
+        var canJump = (jumpedOverCell.GetJumpableEntity() || jumpedOverCell.floorTile.jumpable);
         if (canJump)
         {
-            // Check for collision and if landable
+            // Check for collision and if landable.
             var landableEntities = newJumpCell.GetLandableEntities();
             var newJumpCellLandableScore = newJumpCell.GetLandableScore();
-            var canLand = (newJumpCellLandableScore >= 0) ||
-                          (newJumpCell.puzzleEntities.Count == 0 && newJumpCell.floorTile.landable);
+            var canLand = newJumpCell.floorTile != null && (newJumpCellLandableScore >= 0);
             if (canLand)
             {
                 var newJumpInfo = new JumpInfo(newJumpSpace, rotation);
@@ -241,17 +242,9 @@ public class CerberusMajor : Cerberus
             var C = D + Vector3.up; // Control point
 
             // Calculate approximate distance to travel
-            var distanceToTravel = 0f;
             var distanceTraveled = 0f;
-            var beginningOfSegment = A;
-            var interpolation = _lengthEstimationDelta;
-            for (int i = 0; i < _bezierCurveLengthEstimationSegments; i++)
-            {
-                var endOfSegment = AnimationUtility.DeCasteljausAlgorithm(A, B, C, D, interpolation);
-                distanceToTravel += Vector3.Distance(beginningOfSegment, endOfSegment);
-                beginningOfSegment = endOfSegment;
-                interpolation += _lengthEstimationDelta;
-            }
+            var interpolation = 0f;
+            var distanceToTravel = AnimationUtility.ApproximateLengthOfBezierCurve(A, B, C, D);
 
             PlaySfxPitchShift(jumpSfx, 0.9f, 1f);
 

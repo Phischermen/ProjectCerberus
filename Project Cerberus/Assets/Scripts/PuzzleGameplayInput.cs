@@ -18,11 +18,15 @@ public class PuzzleGameplayInput : MonoBehaviour
         specialPressed,
         specialHeld,
         specialReleased,
-        skipMove,
         mergeOrSplit,
         undoPressed,
         resetPressed,
-        cycleCharacter;
+        cycleCharacter,
+        cycleCharacterForward,
+        cycleCharacterBackward,
+        cycleCharacter0,
+        cycleCharacter1,
+        cycleCharacter2;
 
     private void Update()
     {
@@ -45,13 +49,13 @@ public class PuzzleGameplayInput : MonoBehaviour
             specialHeld = gamepad.crossButton.isPressed;
             specialReleased = gamepad.crossButton.wasReleasedThisFrame;
 
-            skipMove = gamepad.triangleButton.wasPressedThisFrame;
             mergeOrSplit = gamepad.squareButton.wasPressedThisFrame;
 
             undoPressed = gamepad.circleButton.wasPressedThisFrame;
             resetPressed = gamepad.leftTrigger.wasPressedThisFrame;
 
-            cycleCharacter = gamepad.rightShoulder.wasPressedThisFrame;
+            cycleCharacterBackward = gamepad.leftShoulder.wasPressedThisFrame;
+            cycleCharacterForward = gamepad.rightShoulder.wasPressedThisFrame;
         }
 
         if (keyboard != null)
@@ -74,20 +78,26 @@ public class PuzzleGameplayInput : MonoBehaviour
             specialHeld = specialHeld || keyboard.leftShiftKey.isPressed;
             specialReleased = specialReleased || keyboard.leftShiftKey.wasReleasedThisFrame;
 
-            skipMove = skipMove || keyboard.enterKey.wasPressedThisFrame;
             mergeOrSplit = mergeOrSplit || keyboard.leftCtrlKey.wasPressedThisFrame;
 
             undoPressed = undoPressed || keyboard.rightShiftKey.wasPressedThisFrame;
             resetPressed = resetPressed || keyboard.rKey.wasPressedThisFrame;
 
-            cycleCharacter = cycleCharacter || keyboard.tabKey.wasPressedThisFrame;
+            cycleCharacterForward = cycleCharacterForward || keyboard.tabKey.wasPressedThisFrame;
+            cycleCharacter0 = cycleCharacter0 || keyboard.digit1Key.wasPressedThisFrame;
+            cycleCharacter1 = cycleCharacter1 || keyboard.digit2Key.wasPressedThisFrame;
+            cycleCharacter2 = cycleCharacter2 || keyboard.digit3Key.wasPressedThisFrame;
         }
+
+        cycleCharacter = cycleCharacter0 || cycleCharacter1 || cycleCharacter2 || cycleCharacterForward ||
+                         cycleCharacterBackward;
     }
 
     public void ClearInput()
     {
-        leftPressed = rightPressed = upPressed = downPressed = leftReleased = rightReleased =
-            upReleased = downReleased = specialPressed = specialHeld = specialReleased =
-                skipMove = mergeOrSplit = undoPressed = resetPressed = cycleCharacter = false;
+        leftPressed = rightPressed = upPressed = downPressed = leftReleased = rightReleased = upReleased =
+            downReleased = specialPressed = specialHeld = specialReleased = mergeOrSplit =
+                undoPressed = resetPressed = cycleCharacter = cycleCharacterForward =
+                    cycleCharacterBackward = cycleCharacter0 = cycleCharacter1 = cycleCharacter2 = false;
     }
 }

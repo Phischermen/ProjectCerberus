@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/InitialScene.unity
+    guid: e1423fdc4745e8c409bf3a516c763e16
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
@@ -35,6 +38,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/JackTutorial.unity
     guid: bf01a71fc2dc10745b43c43eb044f7cd
+  - enabled: 1
+    path: Assets/Scenes/ThreeLanes.unity
+    guid: fa35ba474960fb64fa16c3bcb401f6da
+  - enabled: 1
+    path: Assets/Scenes/ZachsTestLevel.unity
+    guid: d7b0b685d19033146aa9ba448ff7d031
+  - enabled: 1
+    path: Assets/Scenes/MakeABridge.unity
+    guid: 25bff1b8ec91f9543bd546b45719082f
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 90dfd16557c9de34499995dab2adeb9a,
       type: 2}

@@ -3,6 +3,7 @@
  */
 
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace Editor
@@ -41,8 +42,13 @@ namespace Editor
                         var scene = world.levels[j];
                         // Each level has a row of controls. Start building here.
                         GUILayout.BeginHorizontal();
-                        world.levels[j] =
-                            (SceneAsset) EditorGUILayout.ObjectField("", scene, typeof(SceneAsset), false);
+                        var path = EditorBuildSettings.scenes[scene].path;
+                        EditorGUILayout.LabelField(path);
+                        // Add edit button
+                        if (GUILayout.Button("Open"))
+                        {
+                            EditorSceneManager.OpenScene(path);
+                        }
                         // Add move up button
                         if (GUILayout.Button("▲") && j != 0)
                         {
@@ -108,15 +114,16 @@ namespace Editor
             // Initialize generic menu.
             GenericMenu menu = new GenericMenu();
             // Populate generic menu with scene names from EditorBuildSettings.
-            foreach (var scene in EditorBuildSettings.scenes)
+            for (var index = 0; index < EditorBuildSettings.scenes.Length; index++)
             {
+                var scene = EditorBuildSettings.scenes[index];
                 // Get scene path.
                 var name = scene.path;
                 // Extract name from the full path.
                 name = name.Remove(name.LastIndexOf('.'));
                 name = name.Remove(0, name.LastIndexOf('/') + 1);
                 // Add the item to the menu. OnSelectScene is the callback.
-                menu.AddItem(new GUIContent(name), false, OnSelectScene, scene.path);
+                menu.AddItem(new GUIContent(name), false, OnSelectScene, index);
             }
 
             // Show menu.
@@ -127,10 +134,10 @@ namespace Editor
         {
             // Cast objects.
             var levelSequence = (LevelSequence) target;
-            var path = (string) userdata;
+            var index = (int) userdata;
             // Insert the selected scene into the edited field.
             levelSequence.worlds[_editedWorld].levels
-                .Insert(_editedLevel, AssetDatabase.LoadAssetAtPath<SceneAsset>(path));
+                .Insert(_editedLevel, index);
         }
     }
 }
