@@ -93,7 +93,7 @@ public class GameManager : MonoBehaviour, IUndoable
     private PuzzleContainer _puzzleContainer;
     private PuzzleGameplayInput _input;
 
-    public bool joinAndSplitEnabled;
+    [HideInInspector] public bool joinAndSplitEnabled;
     public bool cerberusFormed { get; protected set; }
 
     [HideInInspector] public bool wantsToJoin;

@@ -54,7 +54,10 @@ namespace Editor
             if (GUI.changed)
             {
                 EditorUtility.SetDirty(gameManager);
-                EditorUtility.SetDirty(_bonusStar);
+                if (_bonusStar)
+                {
+                    EditorUtility.SetDirty(_bonusStar);
+                }
             }
         }
     }
