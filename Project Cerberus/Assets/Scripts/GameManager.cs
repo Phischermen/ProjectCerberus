@@ -63,9 +63,8 @@ public class GameManager : MonoBehaviour, IUndoable
         }
     }
 
-    private static LevelSequence _levelSequence;
-    private static int currentWorld = -1;
-    private static int currentLevel = -1;
+    public static LevelSequence levelSequence;
+    public static int currentLevel = -1;
 
     [HideInInspector] public bool infiniteParTime = true;
     [HideInInspector] public float parTime = 1f;
@@ -111,12 +110,11 @@ public class GameManager : MonoBehaviour, IUndoable
         // Create UI
         Instantiate(_uiPrefab);
         // Load Level Sequence and get current world and level
-        if (_levelSequence == null)
+        if (levelSequence == null)
         {
-            _levelSequence = Resources.Load<CustomProjectSettings>(CustomProjectSettings.resourcePath)
+            levelSequence = Resources.Load<CustomProjectSettings>(CustomProjectSettings.resourcePath)
                 .mainLevelSequence;
-            _levelSequence.FindCurrentLevelAndWorld(SceneManager.GetActiveScene().buildIndex, out currentLevel,
-                out currentWorld);
+            currentLevel = levelSequence.FindCurrentLevelSequence(SceneManager.GetActiveScene().buildIndex);
         }
     }
 
@@ -161,6 +159,7 @@ public class GameManager : MonoBehaviour, IUndoable
             // Cerberus Major is inactive by default
             _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(true);
         }
+
         timer = 0;
         _timerRunning = false;
         gameplayEnabled = true;
@@ -215,7 +214,8 @@ public class GameManager : MonoBehaviour, IUndoable
                         _kahuna.SetCollisionsEnabled(false, invokeCallbacks: false);
                         _laguna.SetCollisionsEnabled(false, invokeCallbacks: false);
                         // Check for collision at CerberusMajor
-                        var joinBlocked = _cerberusMajor.CollidesWith(_cerberusMajor.currentCell) && _cerberusMajor.currentCell.GetLandableScore() <= 0;
+                        var joinBlocked = _cerberusMajor.CollidesWith(_cerberusMajor.currentCell) &&
+                                          _cerberusMajor.currentCell.GetLandableScore() <= 0;
 
                         // Reset collisionsEnabled, so that FormCerberusMajor() functions properly.
                         _cerberusMajor.SetCollisionsEnabled(false, invokeCallbacks: false);
@@ -440,23 +440,8 @@ public class GameManager : MonoBehaviour, IUndoable
 
     public void ProceedToNextLevel()
     {
-        // Goto next scene
-        var nextLevel = currentLevel + 1;
-        var nextWorld = currentWorld;
-        if (nextLevel >= _levelSequence.GetNumberOfLevelsInWorld(currentWorld))
-        {
-            nextWorld += 1;
-            if (nextWorld >= _levelSequence.GetNumberOfWorlds())
-            {
-                nextWorld = 0;
-            }
-
-            nextLevel = 0;
-        }
-
-        var nextScene = _levelSequence.GetLevel(nextWorld, nextLevel);
-        currentLevel = nextLevel;
-        currentWorld = nextWorld;
+        currentLevel += 1;
+        var nextScene = levelSequence.GetSceneBuildIndexForLevel(currentLevel);
         SceneManager.LoadScene(nextScene);
     }
 }

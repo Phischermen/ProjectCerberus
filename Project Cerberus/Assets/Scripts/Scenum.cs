@@ -18,5 +18,6 @@ public static class Scenum
 		ThreeLanes,
 		ZachsTestLevel,
 		MakeABridge,
+		MainMenu,
 	}
 }

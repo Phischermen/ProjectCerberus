@@ -1,8 +1,9 @@
 ﻿/*
- * This is a custom asset that specifies the order our levels should be played in. It includes a find function that
- * returns both the level and the world where the scene is located. The active level sequence can be set via the Project
+ * This is a custom asset that specifies the order our levels should be played in. It includes a find function that can
+ * return the level sequence number where the scene is located. The active level sequence can be set via the Project
  * Settings under "Custom Project Settings > Main Sequence".
  */
+
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -25,7 +26,7 @@ public class LevelSequence : ScriptableObject
             levels = new List<int>();
         }
     }
-    
+
     public List<World> worlds;
 
     private void OnEnable()
@@ -45,44 +46,48 @@ public class LevelSequence : ScriptableObject
         {
             worlds = new List<World>();
         }
+
         worlds.Add(world);
     }
 
-    // public void FindCurrentLevelAndWorld(string searchName, out int level, out int world)
-    public void FindCurrentLevelAndWorld(int searchIdx, out int level, out int world)
+    public int FindCurrentLevelSequence(int sceneBuildIndex)
     {
-        // Set to -1 to indicate scene was not found.
-        world = -1;
-        level = -1;
-        // Search through each world's level list for scene via name.
+        var numberOfLevelsInPreviousWorld = 0;
+        // Search through each world's level list for scene via build index.
         for (int i = 0; i < worlds.Count; i++)
         {
-            world = i;
-            level = worlds[i].levels.FindIndex((idx) => idx == searchIdx);
-            // If level found, break.
-            if (level != -1) break;
+            var levelSequence = worlds[i].levels.FindIndex((idx) => idx == sceneBuildIndex);
+            if (levelSequence == -1)
+            {
+                numberOfLevelsInPreviousWorld += worlds.Count;
+            }
+            else
+            {
+                return levelSequence + numberOfLevelsInPreviousWorld;
+            }
         }
+
+        // Level not found.
+        return -1;
     }
 
-    public int GetNumberOfWorlds()
+    public int GetSceneBuildIndexForLevel(int levelSequence)
     {
-        return worlds.Count;
-    }
-
-    public int GetNumberOfLevelsInWorld(int world)
-    {
-        // Bound check. Return -1 to indicate out of bounds.
-        if (world < 0 || world > worlds.Count) return -1;
-        return worlds[world].levels.Count;
-    }
-    
-    // public SceneAsset GetLevel(int world, int level)
-    public int GetLevel(int world, int level)
-    {
-        // Bound check. Return null to indicate out of bounds.
-        if (world < 0 || world > worlds.Count) return -1;
-        if (level < 0 || level > worlds[world].levels.Count) return -1;
-        return worlds[world].levels[level];
+        // Subtract number of levels in each world until levelSequence is less than the number of levels in the current
+        // world. Index that world for the scene build index.
+        for (int i = 0; i < worlds.Count; i++)
+        {
+            var levelsInCurrentWorld = worlds[i].levels;
+            if (levelSequence >= levelsInCurrentWorld.Count)
+            {
+                levelSequence -= levelsInCurrentWorld.Count;
+            }
+            else
+            {
+                return levelsInCurrentWorld[levelSequence];
+            }
+        }
+        // Scene not found.
+        return -1;
     }
 }
-

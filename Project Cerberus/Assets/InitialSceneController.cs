@@ -12,6 +12,6 @@ public class InitialSceneController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SceneManager.LoadScene((int) Scenum.Scene.JackTutorial);
+        SceneManager.LoadScene((int) Scenum.Scene.MainMenu);
     }
 }
