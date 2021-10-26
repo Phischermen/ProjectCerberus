@@ -19,5 +19,6 @@ public static class Scenum
 		ZachsTestLevel,
 		MakeABridge,
 		MainMenu,
+		BlockBlocks,
 	}
 }
