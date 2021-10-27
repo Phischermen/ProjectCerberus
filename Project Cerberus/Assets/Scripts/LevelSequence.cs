@@ -59,7 +59,7 @@ public class LevelSequence : ScriptableObject
             var levelSequence = worlds[i].levels.FindIndex((idx) => idx == sceneBuildIndex);
             if (levelSequence == -1)
             {
-                numberOfLevelsInPreviousWorld += worlds.Count;
+                numberOfLevelsInPreviousWorld += worlds[i].levels.Count;
             }
             else
             {
