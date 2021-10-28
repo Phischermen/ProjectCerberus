@@ -63,13 +63,23 @@ public class GameManager : MonoBehaviour, IUndoable
         }
     }
 
+#if DEBUG
+    private void OnGUI()
+    {
+        if (GUI.Button(new Rect(200, 0, 200, 20), "Skip level"))
+        {
+            ProceedToNextLevel();
+        }
+    }
+#endif
+
     public static LevelSequence levelSequence;
     public static int currentLevel = -1;
 
     [HideInInspector] public bool infiniteParTime = true;
     [HideInInspector] public float parTime = 1f;
 
-    private bool _timerRunning = false;
+    private bool _timerRunning;
 
     public float timer { get; protected set; }
 
