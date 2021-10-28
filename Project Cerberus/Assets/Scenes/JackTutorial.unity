@@ -10817,7 +10817,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66dd589568e0c9e4f91049557f6ee6c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCamera: {fileID: 946494063}
   message: WASD to move.
+  width: 200
 --- !u!4 &1588766472
 Transform:
   m_ObjectHideFlags: 0
@@ -11381,7 +11383,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66dd589568e0c9e4f91049557f6ee6c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCamera: {fileID: 946494063}
   message: Hold shift then press WASD to Super Push.
+  width: 262.24
 --- !u!4 &2124204333
 Transform:
   m_ObjectHideFlags: 0

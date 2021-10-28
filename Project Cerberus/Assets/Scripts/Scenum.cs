@@ -23,5 +23,8 @@ public static class Scenum
 		MultiPushCorridor,
 		PushAndPull,
 		HoldTheDoor,
+		JackSuperPushedOverTheGaps,
+		JackCrossesTheCracks,
+		MultiPushAcrossSpikes,
 	}
 }

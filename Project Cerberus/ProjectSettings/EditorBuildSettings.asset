@@ -62,6 +62,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/HoldTheDoor.unity
     guid: fb56f1cd6a8849747b3ef75ae8b8a522
+  - enabled: 1
+    path: Assets/Scenes/JackSuperPushedOverTheGaps.unity
+    guid: 978d16ca5d56b0043ab6129ac8c08c09
+  - enabled: 1
+    path: Assets/Scenes/JackCrossesTheCracks.unity
+    guid: b06b501ac2663494991736ceac7a478f
+  - enabled: 1
+    path: Assets/Scenes/MultiPushAcrossSpikes.unity
+    guid: e0386d552f17e0e43aa122cbcd662fc4
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 90dfd16557c9de34499995dab2adeb9a,
       type: 2}
