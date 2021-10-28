@@ -129,12 +129,9 @@ public class Jack : Cerberus
             {
                 var firstMove = i == 0;
                 var lastMove = i == distancePushed - 1;
-                if (lastMove)
-                {
-                    // The super pushed object "lands" at the last space it moves.
-                    pushableEntity.isSuperPushed = false;
-                }
-
+                // The super pushed object "lands" at the last space it moves and "lifts off" at the space it
+                // starts.
+                pushableEntity.isSuperPushed = !lastMove && !firstMove;
                 pushableEntity.Move(pushableEntity.position + offset, !lastMove, lastMove && !firstMove);
             }
 
