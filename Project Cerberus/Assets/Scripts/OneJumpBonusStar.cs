@@ -38,20 +38,20 @@ public class OneJumpBonusStar : BonusStar
     {
         if (collected)
         {
-            return "Bonus star collected!\n";
+            return "Bonus star collected!";
         }
 
         if (unavailable)
         {
-            return "Bonus star can no longer be obtained.\n";
+            return "Bonus star can no longer be obtained.";
         }
 
         if (_oneJumpChanceAboutToBeMissed)
         {
-            return "Bonus star must be collected on this turn!\n";
+            return "Bonus star must be collected on this turn!";
         }
 
-        return "Bonus star disappears after you make a move with Cerberus.\n";
+        return "Bonus star disappears after you make a move with Cerberus.";
     }
 
     public override void OnPlayerMadeMove()

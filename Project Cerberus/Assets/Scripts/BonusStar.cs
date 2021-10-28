@@ -1,8 +1,10 @@
 ﻿/*
- * The BonusStar is a bonusStar that rewards the player with a +1 star rating upon finishing the level. Every level should
- * have one. BonusStars can be made unavailable, meaning the player can no longer pick them up and reap their reward.
- * By default, bonus stars will never be made unavailable. Their are derived classes however such as
- * MoveLimitedBonusStar, which becomes unavailable after a set number of moves.
+ * The BonusStar rewards the player with a +1 star rating upon finishing the level. Every level should have one.
+ * BonusStars can be made unavailable, meaning the player can no longer pick them up and reap their reward. By default,
+ * bonus stars will never be made unavailable. They can be made unavailable by using unity events to call
+ * RequestMakeBonusStarUnavailable(). Conversely, they can start unavailable by checking startUnavailable in the
+ * inspector, and then be made available by using unity events to call RequestBonusStarAvailable(). Their are derived
+ * classes however such as MoveLimitedBonusStar, which make the bonus star unavailable after a set number of moves.
  */
 
 using UnityEditor;
@@ -46,6 +48,12 @@ public class BonusStar : PuzzleEntity
     [HideInInspector, ShowInTileInspector] public bool collected;
     [HideInInspector, ShowInTileInspector] public bool unavailable;
 
+    [TextArea] public string customBonusStarMessageAvailable;
+
+    [TextArea] public string customBonusStarMessageUnavailable = "Bonus star can no longer be obtained.";
+
+    public bool startUnavailable;
+
     public BonusStar()
     {
         entityRules = "A bonus bonusStar. Collect this for a surprise reward.";
@@ -56,6 +64,10 @@ public class BonusStar : PuzzleEntity
     {
         base.Awake();
         initialColor = spriteRenderer.color;
+        if (startUnavailable)
+        {
+            SetFieldsToUnavailablePreset();
+        }
     }
 
     public override UndoData GetUndoData()
@@ -69,14 +81,28 @@ public class BonusStar : PuzzleEntity
 #if UNITY_EDITOR
     public virtual void DrawControlsForInspectorGUI()
     {
-        EditorGUILayout.LabelField("No options for bonus star.");
+        EditorGUILayout.LabelField("Custom Message When Available");
+        customBonusStarMessageAvailable = EditorGUILayout.TextArea(customBonusStarMessageAvailable);
+        EditorGUILayout.LabelField("Custom Message When Unavailable");
+        customBonusStarMessageUnavailable = EditorGUILayout.TextArea(customBonusStarMessageUnavailable);
+        startUnavailable = EditorGUILayout.Toggle("Start Unavailable", startUnavailable);
     }
 #endif
 
     // PuzzleUI will display the returned string for the player. 
     public virtual string GetStatusMessageForUI()
     {
-        return "";
+        if (collected)
+        {
+            return "Bonus star collected!";
+        }
+
+        if (unavailable)
+        {
+            return customBonusStarMessageUnavailable;
+        }
+
+        return customBonusStarMessageAvailable;
     }
 
     public override void OnEnterCollisionWithEntity(PuzzleEntity other)
@@ -84,7 +110,6 @@ public class BonusStar : PuzzleEntity
         if (collected || unavailable) return;
         if (other is Cerberus)
         {
-            collected = true;
             manager.collectedStar = true;
             SetFieldsToCollectedPreset();
         }
@@ -109,5 +134,17 @@ public class BonusStar : PuzzleEntity
         spriteRenderer.color = unavailableColor;
         collected = false;
         unavailable = true;
+    }
+
+    public void RequestMakeBonusStarUnavailable()
+    {
+        if (collected || unavailable) return;
+        SetFieldsToUnavailablePreset();
+    }
+
+    public void RequestMakeBonusStarAvailable()
+    {
+        if (collected) return;
+        SetFieldsToUncollectedPreset();
     }
 }

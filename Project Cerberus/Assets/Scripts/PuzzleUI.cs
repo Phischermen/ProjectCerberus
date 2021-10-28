@@ -89,7 +89,7 @@ public class PuzzleUI : MonoBehaviour
         {
             turnCounter.text += _bonusStar.GetStatusMessageForUI();
         }
-        turnCounter.text += $"Move: {_manager.move}\nTimer: {_manager.timer,3:000}";
+        turnCounter.text += $"\nMove: {_manager.move}\nTimer: {_manager.timer,3:000}";
 
         // Hide all dog status initially
         foreach (var dogStatus in dogStatusArray)

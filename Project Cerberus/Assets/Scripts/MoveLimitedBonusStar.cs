@@ -21,15 +21,15 @@ public class MoveLimitedBonusStar : BonusStar
     {
         if (collected)
         {
-            return "Bonus star collected!\n";
+            return "Bonus star collected!";
         }
 
         if (unavailable)
         {
-            return "Bonus star can no longer be obtained.\n";
+            return "Bonus star can no longer be obtained.";
         }
 
-        return $"Bonus star disappears in {movesUntilUnavailable - manager.move} move(s).\n";
+        return $"Bonus star disappears in {movesUntilUnavailable - manager.move} move(s).";
     }
 
     public override void OnPlayerMadeMove()
