@@ -20,5 +20,8 @@ public static class Scenum
 		MakeABridge,
 		MainMenu,
 		BlockBlocks,
+		MultiPushCorridor,
+		PushAndPull,
+		HoldTheDoor,
 	}
 }

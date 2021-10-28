@@ -53,6 +53,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BlockBlocks.unity
     guid: 9684336d6eebafa40a7ea2b3158e15b5
+  - enabled: 1
+    path: Assets/Scenes/MultiPushCorridor.unity
+    guid: 44b1f3f3bdd30b549a8b75fadb755fe1
+  - enabled: 1
+    path: Assets/Scenes/PushAndPull.unity
+    guid: ecd8f8a6ee751da4da62369f6345e1e9
+  - enabled: 1
+    path: Assets/Scenes/HoldTheDoor.unity
+    guid: fb56f1cd6a8849747b3ef75ae8b8a522
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 90dfd16557c9de34499995dab2adeb9a,
       type: 2}
