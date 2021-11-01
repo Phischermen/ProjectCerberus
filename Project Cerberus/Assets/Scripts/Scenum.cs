@@ -26,5 +26,9 @@ public static class Scenum
 		JackSuperPushedOverTheGaps,
 		JackCrossesTheCracks,
 		MultiPushAcrossSpikes,
+		WoodBlockPuzzle,
+		HoldTheDoor2,
+		SawdustToCoverSpikes,
+		FireballIntro,
 	}
 }
