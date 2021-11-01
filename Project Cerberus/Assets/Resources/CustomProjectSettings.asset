@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ee42af7c51fae409d44daa119b5a17, type: 3}
   m_Name: CustomProjectSettings
   m_EditorClassIdentifier: 
-  mainLevelSequence: {fileID: 11400000, guid: 69d0841d38644974eb8633580cef0755, type: 2}
+  mainLevelSequence: {fileID: 11400000, guid: fa43b1fb4badcfd4488ba60570d5130e, type: 2}

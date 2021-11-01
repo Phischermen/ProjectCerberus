@@ -83,6 +83,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FireballIntro.unity
     guid: 1583e477372ec8545af99f1d2f0873f7
+  - enabled: 1
+    path: Assets/Scenes/Zack's Levels/World_0_Tutorials/JackTutorial_Z.unity
+    guid: 52ea4f4ffe0fac4418473be65ee9cbb4
+  - enabled: 1
+    path: Assets/Scenes/Zack's Levels/World_0_Tutorials/KahunaTutorial_Z.unity
+    guid: 5f253dd6411b2e14dac3424fd5f082a8
+  - enabled: 1
+    path: Assets/Scenes/Zack's Levels/World_0_Tutorials/LagunaTutorial_Z.unity
+    guid: d999849128d82254fb8a7349a9c6b17c
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 90dfd16557c9de34499995dab2adeb9a,
       type: 2}
