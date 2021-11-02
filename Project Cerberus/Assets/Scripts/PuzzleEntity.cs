@@ -333,7 +333,8 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             // Cache result
             animationFatalityMap.Add(animationToPlay.GetType(), isFatal);
         }
-
+        // Check that fatal animation is being played with the player.
+        isFatal = isFatal && isPlayer && collisionsEnabled;
         if (isFatal)
         {
             manager.gameOverImminent = true;
