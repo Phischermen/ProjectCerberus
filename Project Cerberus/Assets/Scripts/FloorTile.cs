@@ -9,7 +9,7 @@ public class FloorTile : Tile, IUndoable
 {
     [HideInInspector] public PuzzleContainer puzzle;
     [HideInInspector] public PuzzleContainer.LevelCell currentCell;
-    
+
     public bool needsToBeCloned;
     [ShowInTileInspector] public bool stopsPlayer;
     [ShowInTileInspector] public bool stopsBlock;
@@ -17,7 +17,7 @@ public class FloorTile : Tile, IUndoable
     [ShowInTileInspector] public bool allowsAllSuperPushedEntitiesPassage;
     [ShowInTileInspector] public bool jumpable;
     [ShowInTileInspector] public int landableScore;
-    
+
     public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
     {
         tileData.sprite = sprite;
@@ -43,7 +43,7 @@ public class FloorTile : Tile, IUndoable
     public virtual void OnExitCollisionWithEntity(PuzzleEntity other)
     {
     }
-    
+
     public virtual UndoData GetUndoData()
     {
         return null;

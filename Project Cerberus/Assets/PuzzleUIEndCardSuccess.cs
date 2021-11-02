@@ -5,6 +5,7 @@
  * for clearing the level making fewer moves than the set "move limit." The final star is rewarded for collecting the
  * bonus star, which is hidden in the level somewhere.
  */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,10 +17,28 @@ public class PuzzleUIEndCardSuccess : MonoBehaviour
     private void Awake()
     {
         _gameManager = FindObjectOfType<GameManager>();
+        // Calculate which trophies are earned.
+        var timeTrophyEarned = _gameManager.timer < _gameManager.parTime || _gameManager.infiniteParTime;
+        var moveTrophyEarned = _gameManager.move < _gameManager.maxMovesBeforeStarLoss ||
+                               _gameManager.infinteMovesTilStarLoss;
+        var bonusStarTrophyEarned = _gameManager.collectedStar;
+        var data =
+            $"{(timeTrophyEarned ? 'T' : 't')}{(moveTrophyEarned ? 'M' : 'm')}{(bonusStarTrophyEarned ? 'S' : 's')}";
+        PlayerPrefs.SetString(
+            GameManager.levelSequence.GetSceneBuildIndexForLevel(GameManager.currentLevel).ToString(), data);
+        if (GameManager.currentLevel >= MainMenuController.availableLevels)
+        {
+            PlayerPrefs.SetInt("AvailableLevels", GameManager.currentLevel + 1);
+        }
+
+        // Save data to PlayerPrefs
+        PlayerPrefs.Save();
+        Debug.Log(data);
+
         // Display stars
-        
+
         // Display time
-        
+
         // Display moves
     }
 

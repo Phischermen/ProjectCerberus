@@ -10,16 +10,18 @@ public class Gate : PuzzleEntity
     {
         public Gate gate;
         public bool open;
+        public bool wantsToClose;
 
-
-        public GateUndoData(Gate gate, bool open)
+        public GateUndoData(Gate gate, bool open, bool wantsToClose)
         {
             this.gate = gate;
             this.open = open;
+            this.wantsToClose = wantsToClose;
         }
 
         public override void Load()
         {
+            gate._wantsToClose = wantsToClose;
             if (open)
             {
                 gate.OpenGate();
@@ -31,7 +33,8 @@ public class Gate : PuzzleEntity
         }
 
     }
-    private bool wantsToClose;
+    
+    private bool _wantsToClose;
     [ShowInTileInspector] public bool open;
     [SerializeField] private Sprite openSprite;
     [SerializeField] private Sprite closeSprite;
@@ -40,11 +43,12 @@ public class Gate : PuzzleEntity
     public Gate()
     {
         entityRules = "Can be opened and closed via switches and levers. Jumpable when closed and landable when open.";
+        isStatic = true;
     }
 
     public override UndoData GetUndoData()
     {
-        var undoData = new GateUndoData(this, open);
+        var undoData = new GateUndoData(this, open, _wantsToClose);
         return undoData;
     }
 
@@ -64,7 +68,7 @@ public class Gate : PuzzleEntity
 
     private void Update()
     {
-        if (wantsToClose)
+        if (_wantsToClose)
         {
             // Set collision parameters in preparation for collision check.
             stopsPlayer = true;
@@ -84,19 +88,19 @@ public class Gate : PuzzleEntity
 
     public void OpenGate()
     {
-        wantsToClose = false;
+        _wantsToClose = false;
         _spriteRenderer.sprite = openSprite;
         SetFieldsToOpenPreset();
     }
 
     public void RequestCloseGate()
     {
-        wantsToClose = true;
+        _wantsToClose = true;
     }
 
     private void CloseGate()
     {
-        wantsToClose = false;
+        _wantsToClose = false;
         _spriteRenderer.sprite = closeSprite;
         SetFieldsToClosedPreset();
     }

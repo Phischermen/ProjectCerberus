@@ -9,8 +9,10 @@
  * the transform. In the context of undoing a move, MoveForUndo() must be used to reset the transform.
  */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
@@ -233,41 +235,44 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         return CollidesWith(levelCell.floorTile) || CollidesWithAny(levelCell.puzzleEntities);
     }
 
-    public void SetCollisionsEnabled(bool enable)
+    public void SetCollisionsEnabled(bool enable, bool invokeCallbacks = true)
     {
         // Avoid accidental invocation of callbacks when setting to same value twice.
         if (enable == collisionsEnabled) return;
         collisionsEnabled = enable;
         // Invoke callbacks.
-        if (enable)
+        if (invokeCallbacks)
         {
-            foreach (var entity in currentCell.puzzleEntities)
+            if (enable)
             {
-                if (entity.collisionsEnabled && entity != this)
+                foreach (var entity in currentCell.puzzleEntities)
                 {
-                    OnEnterCollisionWithEntity(entity);
-                    entity.OnEnterCollisionWithEntity(this);
+                    if (entity.collisionsEnabled && entity != this)
+                    {
+                        OnEnterCollisionWithEntity(entity);
+                        entity.OnEnterCollisionWithEntity(this);
+                    }
                 }
-            }
 
-            currentCell.floorTile.OnEnterCollisionWithEntity(this);
-            // Refresh the tile we entered.
-            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
-        }
-        else
-        {
-            foreach (var entity in currentCell.puzzleEntities)
+                currentCell.floorTile.OnEnterCollisionWithEntity(this);
+                // Refresh the tile we entered.
+                puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+            }
+            else
             {
-                if (entity.collisionsEnabled && entity != this)
+                foreach (var entity in currentCell.puzzleEntities)
                 {
-                    OnExitCollisionWithEntity(entity);
-                    entity.OnExitCollisionWithEntity(this);
+                    if (entity.collisionsEnabled && entity != this)
+                    {
+                        OnExitCollisionWithEntity(entity);
+                        entity.OnExitCollisionWithEntity(this);
+                    }
                 }
-            }
 
-            currentCell.floorTile.OnExitCollisionWithEntity(this);
-            // Refresh the tile we exited.
-            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+                currentCell.floorTile.OnExitCollisionWithEntity(this);
+                // Refresh the tile we exited.
+                puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+            }
         }
     }
 
@@ -305,11 +310,43 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     }
 
     // Animations
-    public void PlayAnimation(IEnumerator animationToPlay)
+    private static Dictionary<Type, bool> animationFatalityMap = new Dictionary<Type, bool>();
+
+    public enum PlayAnimationMode
     {
+        playAfterCurrentFinished,
+        finishCurrentAndPlayImmediately
+    }
+
+    public void PlayAnimation(IEnumerator animationToPlay,
+        PlayAnimationMode mode = PlayAnimationMode.finishCurrentAndPlayImmediately)
+    {
+        // Check if the animation about to be played is fatal.
+        if (animationFatalityMap.TryGetValue(animationToPlay.GetType(), out bool isFatal) == false)
+        {
+            // Note: Since I am working with an IEnumerator, I can not use custom attributes to mark certain animations
+            // as fatal. Instead, I prefix animations that are fatal with 'Xx' so I can look it up via name.
+            var fullName = animationToPlay.GetType().FullName;
+            var carret1 = fullName.IndexOf('<');
+            fullName = fullName.Substring(carret1, 3);
+            isFatal = fullName == "<Xx";
+            // Cache result
+            animationFatalityMap.Add(animationToPlay.GetType(), isFatal);
+        }
+        // Check that fatal animation is being played with the player.
+        isFatal = isFatal && isPlayer && collisionsEnabled;
+        if (isFatal)
+        {
+            manager.gameOverImminent = true;
+        }
+
         if (animationIsRunning)
         {
-            animationMustStop = true;
+            if (mode == PlayAnimationMode.finishCurrentAndPlayImmediately)
+            {
+                animationMustStop = true;
+            }
+
             // Queue animation routine for next frame
             queuedAnimation = animationToPlay;
         }
@@ -326,6 +363,10 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         {
             animationMustStop = true;
         }
+    }
+
+    public void FinishAllQueuedAnimations()
+    {
     }
     /*
      * PuzzleEntity animations are procedural. They take the form of coroutines. An animation must follow this pattern:
@@ -345,6 +386,8 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
          animationIsRunning = false;
          animationMustStop = false;
      }
+     
+     If an animation will kill the player and end the game, its name must start with 'Xx'
      */
 
     public IEnumerator SlideToDestination(Vector2Int destination, float speed)
@@ -372,9 +415,23 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         animationMustStop = false;
     }
 
-    public IEnumerator FallIntoPit(float fallDuration, float rotationSpeed, float finalScale)
+    public IEnumerator XxFallIntoPit(float fallDuration, float rotationSpeed, float finalScale)
     {
         animationIsRunning = true;
+        // Determine if the entity that has fallen is the player in split state
+        var playerIsFallingInPitInSplitState = isPlayer && collisionsEnabled;
+        if (playerIsFallingInPitInSplitState)
+        {
+            // Disable gameplay to deter player from killing more dogs.
+            // Note: It is still possible for multiple dogs to die, but it won't break the game.
+            manager.gameplayEnabled = false;
+        }
+        // Cerberus is in its merged state, so prevent player from unmerging. 
+        else
+        {
+            manager.joinAndSplitEnabled = false;
+        }
+
         // Mark this entity as in a hole, for undo.
         inHole = true;
         // Remove from puzzle container so it can't be interacted with.
@@ -394,18 +451,10 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         // Goto final state at end
         transform.localScale = Vector3.one * finalScale;
         spriteRenderer.color = Color.black;
-        if (isPlayer)
+        if (playerIsFallingInPitInSplitState)
         {
             // End game if this entity was in fact the player falling into a pit.
-            if (collisionsEnabled)
-            {
-                manager.EndGameWithFailureStatus();
-            }
-            // Cerberus is in its sigil state, so prevent player from unmerging 
-            else
-            {
-                manager.joinAndSplitEnabled = false;
-            }
+            manager.EndGameWithFailureStatus();
         }
 
         // Set these to false
@@ -413,9 +462,11 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         animationMustStop = false;
     }
 
-    public IEnumerator Spiked(float rotationSpeed, Vector2 fallDelta, float controlPointHeight, float speed)
+    public IEnumerator XxSpiked(float rotationSpeed, Vector2 fallDelta, float controlPointHeight, float speed)
     {
         animationIsRunning = true;
+        // Disable gameplay so player can't kill more dogs.
+        manager.gameplayEnabled = false;
         // Use a bezier curve to model the path
         var A = transform.position; // Start point
         var B = A + Vector3.up * controlPointHeight; // Control point
