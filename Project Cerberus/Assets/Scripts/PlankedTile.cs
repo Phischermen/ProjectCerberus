@@ -44,7 +44,7 @@ public class PlankedTile : FloorTile
         {
             broken = true;
             // Play falling animation.
-            other.PlayAnimation(other.FallIntoPit(AnimationUtility.fallDuration, AnimationUtility.fallRotationSpeed,
+            other.PlayAnimation(other.XxFallIntoPit(AnimationUtility.fallDuration, AnimationUtility.fallRotationSpeed,
                 AnimationUtility.fallFinalScale));
         }
     }

@@ -115,6 +115,9 @@ public class GameManager : MonoBehaviour, IUndoable
 
     [HideInInspector] public bool gameplayEnabled;
 
+    [HideInInspector] public bool gameOverImminent;
+    [HideInInspector] public bool gameOverEndCardDisplayed;
+
     void Awake()
     {
         // Create UI
@@ -334,12 +337,17 @@ public class GameManager : MonoBehaviour, IUndoable
     // Gameover
     public void EndGameWithFailureStatus()
     {
+        gameOverImminent = false;
         // Disable gameplay
         gameplayEnabled = false;
         // Stop timer
         _timerRunning = false;
-        // Display game over end card.
-        Instantiate(_gameOverEndCard);
+        if (!gameOverEndCardDisplayed)
+        {
+            gameOverEndCardDisplayed = true;
+            // Display game over end card.
+            Instantiate(_gameOverEndCard);
+        }
     }
 
     public void EndGameWithSuccessStatus()
