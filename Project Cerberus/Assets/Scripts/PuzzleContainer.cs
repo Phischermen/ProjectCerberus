@@ -85,6 +85,10 @@ public class PuzzleContainer : MonoBehaviour
 
         public int GetLandableScore()
         {
+            if (floorTile == null)
+            {
+                return int.MinValue;
+            }
             var score = floorTile.landableScore;
             foreach (var entity in puzzleEntities)
             {
