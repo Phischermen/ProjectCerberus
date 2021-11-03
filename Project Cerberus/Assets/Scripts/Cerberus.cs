@@ -88,10 +88,12 @@ public class Cerberus : PuzzleEntity
 
         if (input.mergeOrSplit && manager.joinAndSplitEnabled)
         {
-            if (isCerberusMajor)
+            if (this is CerberusMajor cerberusMajor)
             {
                 manager.wantsToSplit = true;
                 DeclareDoneWithMove();
+                cerberusMajor.jumpSpaces.Clear();
+                cerberusMajor.RenderJumpPath();
             }
             else
             {
@@ -109,7 +111,6 @@ public class Cerberus : PuzzleEntity
     public void DeclareDoneWithMove()
     {
         doneWithMove = true;
-        input.ClearInput();
     }
 
     // Common movement methods

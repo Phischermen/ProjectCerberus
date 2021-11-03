@@ -183,6 +183,7 @@ public class GameManager : MonoBehaviour, IUndoable
         // Process movement of currently controlled cerberus if there is still time left and gameplay is enabled.
         if (gameplayEnabled)
         {
+            var nextMoveNeedsToStart = false;
             currentCerberus.ProcessMoveInput();
             // Check if cerberus made their move
             if (currentCerberus.doneWithMove)
@@ -278,16 +279,16 @@ public class GameManager : MonoBehaviour, IUndoable
                 // Command PuzzleContainer to process entities in response to this move
                 _puzzleContainer.ProcessEntitiesInResponseToPlayerMove();
                 // Start the next move with currentCerberus
-                currentCerberus.StartMove();
+                nextMoveNeedsToStart = true;
             }
             // Handle request to undo
-            else if (wantsToUndo)
+            if (wantsToUndo)
             {
                 wantsToUndo = false;
                 _puzzleContainer.UndoLastMove();
             }
             // Handle request to cycle character
-            else if (wantsToCycleCharacter && !cerberusFormed)
+            if (wantsToCycleCharacter && !cerberusFormed)
             {
                 wantsToCycleCharacter = false;
                 // Sort availableCerberus, from north-west most to south-east most.
@@ -322,7 +323,16 @@ public class GameManager : MonoBehaviour, IUndoable
                     // Switch to Cerberus at far south-east.
                     currentCerberus = availableCerberus[2];
                 }
+                else if (_input.clickedCerberus != null)
+                {
+                    currentCerberus = _input.clickedCerberus;
+                }
 
+                nextMoveNeedsToStart = true;
+            }
+
+            if (nextMoveNeedsToStart)
+            {
                 currentCerberus.StartMove();
             }
         }
@@ -408,7 +418,14 @@ public class GameManager : MonoBehaviour, IUndoable
         availableCerberus.Add(_jack);
         availableCerberus.Add(_kahuna);
         availableCerberus.Add(_laguna);
-        currentCerberus = _jack;
+        if (_input.clickedCerberus != null)
+        {
+            currentCerberus = _input.clickedCerberus;
+        }
+        else
+        {
+            currentCerberus = _jack;
+        }
     }
 
     // Available Cerberus Management

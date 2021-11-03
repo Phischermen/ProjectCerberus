@@ -929,6 +929,11 @@ PrefabInstance:
       objectReference: {fileID: 2071571784}
     - target: {fileID: 5783107276903251638, guid: 3abb5905584588d4faf663b3b5687375,
         type: 3}
+      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5783107276903251638, guid: 3abb5905584588d4faf663b3b5687375,
+        type: 3}
       propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
       value: 2
       objectReference: {fileID: 0}
@@ -941,6 +946,11 @@ PrefabInstance:
         type: 3}
       propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
       value: IncrementCounter
+      objectReference: {fileID: 0}
+    - target: {fileID: 5783107276903251638, guid: 3abb5905584588d4faf663b3b5687375,
+        type: 3}
+      propertyPath: onReleased.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5783107276903251638, guid: 3abb5905584588d4faf663b3b5687375,
         type: 3}
@@ -1010,7 +1020,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66dd589568e0c9e4f91049557f6ee6c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCamera: {fileID: 44698705}
   message: Laguna can pull blocks by holding SHIFT.
+  width: 200
 --- !u!4 &1180277364
 Transform:
   m_ObjectHideFlags: 0
@@ -4462,8 +4474,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2715384113343177923, guid: eef179ac3b38ba642b88743486b798b3,
         type: 3}
+      propertyPath: maxMovesBeforeStarLoss
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 2715384113343177923, guid: eef179ac3b38ba642b88743486b798b3,
+        type: 3}
       propertyPath: infinteMovesTilStarLoss
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796204304794197701, guid: eef179ac3b38ba642b88743486b798b3,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eef179ac3b38ba642b88743486b798b3, type: 3}

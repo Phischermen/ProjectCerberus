@@ -17,46 +17,50 @@ public class Jack : Cerberus
     public override void ProcessMoveInput()
     {
         base.ProcessMoveInput();
-        if (input.specialHeld)
+        if (input.specialHeld || input.rightClicked)
         {
-            if (input.upPressed)
+            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y))
             {
                 SuperPushMove(Vector2Int.up);
             }
 
-            else if (input.downPressed)
+            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y))
             {
                 SuperPushMove(Vector2Int.down);
             }
 
-            else if (input.rightPressed)
+            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x))
             {
                 SuperPushMove(Vector2Int.right);
             }
 
-            else if (input.leftPressed)
+            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x))
             {
                 SuperPushMove(Vector2Int.left);
             }
         }
         else
         {
-            if (input.upPressed)
+            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y &&
+                                    input.leftClicked))
             {
                 BasicMove(Vector2Int.up);
             }
 
-            else if (input.downPressed)
+            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y &&
+                                           input.leftClicked))
             {
                 BasicMove(Vector2Int.down);
             }
 
-            else if (input.rightPressed)
+            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x &&
+                                            input.leftClicked))
             {
                 BasicMove(Vector2Int.right);
             }
 
-            else if (input.leftPressed)
+            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x &&
+                                           input.leftClicked))
             {
                 BasicMove(Vector2Int.left);
             }

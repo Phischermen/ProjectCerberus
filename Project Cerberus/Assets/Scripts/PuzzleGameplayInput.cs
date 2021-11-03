@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿/*
+ * PuzzleGameplayInput is responsible for gathering input from the player every frame. It supports keyboard, gamepad,
+ * and mouse.
+ */
+
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 public class PuzzleGameplayInput : MonoBehaviour
 {
@@ -26,17 +27,21 @@ public class PuzzleGameplayInput : MonoBehaviour
         cycleCharacterBackward,
         cycleCharacter0,
         cycleCharacter1,
-        cycleCharacter2;
+        cycleCharacter2,
+        leftClicked,
+        rightClicked;
 
-    public Vector2 clickedCell;
-    public bool wasLeftClick;
-    
+    [HideInInspector] public Vector2Int clickedCell;
+    [HideInInspector] public Cerberus clickedCerberus;
+
     private PuzzleContainer _puzzleContainer;
+    private Cerberus[] allCerberus;
     private Camera mainCamera;
 
     private void Awake()
     {
         _puzzleContainer = FindObjectOfType<PuzzleContainer>();
+        allCerberus = FindObjectsOfType<Cerberus>();
         mainCamera = Camera.main;
     }
 
@@ -106,26 +111,51 @@ public class PuzzleGameplayInput : MonoBehaviour
         {
             ProcessMouse(mouse);
         }
-        cycleCharacter = cycleCharacter0 || cycleCharacter1 || cycleCharacter2 || cycleCharacterForward ||
-                         cycleCharacterBackward;
+
+        cycleCharacter = cycleCharacter || cycleCharacter0 || cycleCharacter1 || cycleCharacter2 ||
+                         cycleCharacterForward || cycleCharacterBackward;
     }
 
     private void ProcessMouse(Mouse mouse)
     {
         var mousePosition = mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-        var mouseCoord = new Vector2Int((int) mousePosition.x, (int) mousePosition.y);
-        // TODO get levelCell coordinate that was clicked. Also get what mouse button was clicked.
-        //_puzzleContainer.tilemap.layoutGrid.WorldToCell(,, 0f);
-        // Convert mouse position to grid cell.
-        var inBounds = _puzzleContainer.InBounds(mouseCoord);
+        leftClicked = mouse.leftButton.wasPressedThisFrame;
+        rightClicked = mouse.rightButton.wasPressedThisFrame;
+        if (leftClicked || rightClicked)
+        {
+            // Convert mouse position to grid cell.
+            var clickedCellV3 =
+                _puzzleContainer.tilemap.layoutGrid.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0f));
+            clickedCell = new Vector2Int(clickedCellV3.x, clickedCellV3.y);
+        }
+        // Check if a cerberus was clicked.
+        if (leftClicked)
+        {
+            foreach (var cerberus in allCerberus)
+            {
+                if (Vector2.Distance(cerberus.transform.position, mousePosition) < 0.25f)
+                {
+                    clickedCerberus = cerberus;
+                    cycleCharacter = true;
+                    if (cerberus.collisionsEnabled == false)
+                    {
+                        mergeOrSplit = true;
+                    }
+                    // Prevent cerberus from moving or using ability.
+                    leftClicked = false;
+                    rightClicked = false;
+                }
+            }
+        }
     }
 
     public void ClearInput()
     {
-        // TODO Reset mouse click
+        clickedCell = Vector2Int.zero;
+        clickedCerberus = null;
         leftPressed = rightPressed = upPressed = downPressed = leftReleased = rightReleased = upReleased =
             downReleased = specialPressed = specialHeld = specialReleased = mergeOrSplit =
-                undoPressed = resetPressed = cycleCharacter = cycleCharacterForward =
+                undoPressed = resetPressed = leftClicked = rightClicked = cycleCharacter = cycleCharacterForward =
                     cycleCharacterBackward = cycleCharacter0 = cycleCharacter1 = cycleCharacter2 = false;
     }
 }
