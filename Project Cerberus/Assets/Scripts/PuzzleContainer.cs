@@ -85,6 +85,10 @@ public class PuzzleContainer : MonoBehaviour
 
         public int GetLandableScore()
         {
+            if (floorTile == null)
+            {
+                return int.MinValue;
+            }
             var score = floorTile.landableScore;
             foreach (var entity in puzzleEntities)
             {
@@ -243,6 +247,8 @@ public class PuzzleContainer : MonoBehaviour
     private List<IUndoable> _undoables;
 
     private SimplePriorityQueue<PuzzleEntity> _entitiesToProcessWhenPlayerMakesMove;
+    private GameManager _manager;
+
     void Awake()
     {
         // Get components
@@ -264,9 +270,10 @@ public class PuzzleContainer : MonoBehaviour
 
         // Initialize _entitiesToProcessWhenPlayerMakesMove collection
         _entitiesToProcessWhenPlayerMakesMove = new SimplePriorityQueue<PuzzleEntity>();
-        
+
         // Add Counters and GameManager to undoables.
-        _undoables.Add(FindObjectOfType<GameManager>());
+        _manager = FindObjectOfType<GameManager>();
+        _undoables.Add(_manager);
         foreach (var counter in FindObjectsOfType<Counter>())
         {
             _undoables.Add(counter);
@@ -292,6 +299,7 @@ public class PuzzleContainer : MonoBehaviour
             {
                 _undoables.Add(entity);
             }
+
             // Add entity to _entitiesToProcessWhenPlayerMakesMove if virtual method OnPlayerMadeMove is overridden
             var methodInfo = entity.GetType().GetMethod(nameof(PuzzleEntity.OnPlayerMadeMove));
             if (methodInfo.DeclaringType != typeof(PuzzleEntity))
@@ -315,7 +323,7 @@ public class PuzzleContainer : MonoBehaviour
                 else if (floorTile != null)
                 {
                     var levelCell = levelMap[i, j];
-                    
+
                     if (!floorTile.needsToBeCloned)
                     {
                         // Initialize floorTile
@@ -353,6 +361,7 @@ public class PuzzleContainer : MonoBehaviour
             entity.OnPlayerMadeMove();
         }
     }
+
     // Level Map management
     public void AddEntityToCell(PuzzleEntity entity, Vector2Int cell)
     {
@@ -394,15 +403,18 @@ public class PuzzleContainer : MonoBehaviour
     // Undo system
     public void PushToUndoStack()
     {
-        // Get undo data from every undoable, so board state can be recreated.
-        var undoList = new List<UndoData>();
-        foreach (var undoable in _undoables)
+        if (!_manager.gameOverImminent)
         {
-            var data = undoable.GetUndoData();
-            undoList.Add(data);
-        }
+            // Get undo data from every undoable, so board state can be recreated.
+            var undoList = new List<UndoData>();
+            foreach (var undoable in _undoables)
+            {
+                var data = undoable.GetUndoData();
+                undoList.Add(data);
+            }
 
-        _undoStack.Push(undoList);
+            _undoStack.Push(undoList);
+        }
     }
 
     public void UndoLastMove()

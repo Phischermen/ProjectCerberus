@@ -34,68 +34,72 @@ public class Kahuna : Cerberus
             _specialActive = true;
         }
 
-        if (input.specialReleased && _specialActive)
+        if ((input.specialReleased && _specialActive) || input.rightClicked)
         {
             _specialActive = false;
             wantsToFire = true;
         }
 
-        if (_specialActive)
+        if (_specialActive || input.rightClicked)
         {
             fireArrow.SetActive(aim != Vector2Int.zero);
-            if (input.upPressed)
+            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y))
             {
                 fireArrow.transform.eulerAngles = new Vector3(0, 0, 90);
                 aim = Vector2Int.up;
             }
 
-            else if (input.downPressed)
+            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y))
             {
                 fireArrow.transform.eulerAngles = new Vector3(0, 0, 270);
                 aim = Vector2Int.down;
             }
 
-            else if (input.rightPressed)
+            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x))
             {
                 fireArrow.transform.eulerAngles = new Vector3(0, 0, 0);
                 aim = Vector2Int.right;
             }
 
-            else if (input.leftPressed)
+            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x))
             {
                 fireArrow.transform.eulerAngles = new Vector3(0, 0, 180);
                 aim = Vector2Int.left;
             }
         }
-        else if (wantsToFire)
+        else
+        {
+            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y &&
+                                    input.leftClicked))
+            {
+                BasicMove(Vector2Int.up);
+            }
+
+            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y &&
+                                           input.leftClicked))
+            {
+                BasicMove(Vector2Int.down);
+            }
+
+            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x &&
+                                            input.leftClicked))
+            {
+                BasicMove(Vector2Int.right);
+            }
+
+            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x &&
+                                           input.leftClicked))
+            {
+                BasicMove(Vector2Int.left);
+            }
+        }
+        if (wantsToFire)
         {
             if (aim != Vector2Int.zero)
             {
                 FireBall(aim);
             }
             aim = Vector2Int.zero;
-        }
-        else
-        {
-            if (input.upPressed)
-            {
-                BasicMove(Vector2Int.up);
-            }
-
-            else if (input.downPressed)
-            {
-                BasicMove(Vector2Int.down);
-            }
-
-            else if (input.rightPressed)
-            {
-                BasicMove(Vector2Int.right);
-            }
-
-            else if (input.leftPressed)
-            {
-                BasicMove(Vector2Int.left);
-            }
         }
 
         if (input.cycleCharacter)
