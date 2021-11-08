@@ -64,7 +64,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -4250258013409081305, guid: f517efbb0e7cff84798d8ddd4641d42b,
+  m_Sprite: {fileID: -8905143328491057913, guid: c5476e890800e6249aeb2aea7df539bc,
     type: 3}
   m_Type: 0
   m_PreserveAspect: 0
@@ -289,7 +289,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelIdx: 0
+  sceneIdx: 0
   settings: 
+  timeTrophyImage: {fileID: 5812678744634568574}
+  moveTrophyImage: {fileID: 5812678742825035567}
+  bonusStarTrophyImage: {fileID: 5812678744082540988}
+  timeTrophyData: {fileID: 11400000, guid: bf03b789eb22b454d9606ac31c88ac37, type: 2}
+  moveTrophyData: {fileID: 11400000, guid: e3f26c5d94df88846925fa9abd8a8a68, type: 2}
+  bonusStarTrophyData: {fileID: 11400000, guid: 3855bad0768e56245aebef8f815929cd,
+    type: 2}
 --- !u!1 &5812678744082540978
 GameObject:
   m_ObjectHideFlags: 0
@@ -354,7 +362,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -4250258013409081305, guid: f517efbb0e7cff84798d8ddd4641d42b,
+  m_Sprite: {fileID: 5054460056846121780, guid: c5476e890800e6249aeb2aea7df539bc,
     type: 3}
   m_Type: 0
   m_PreserveAspect: 0
@@ -429,7 +437,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -4250258013409081305, guid: f517efbb0e7cff84798d8ddd4641d42b,
+  m_Sprite: {fileID: 5263127203614864813, guid: c5476e890800e6249aeb2aea7df539bc,
     type: 3}
   m_Type: 0
   m_PreserveAspect: 0

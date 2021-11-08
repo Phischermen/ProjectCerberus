@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef4301ae4c5bf694b9250af291225025, type: 3}
+  m_Name: BonusStarTrophyData
+  m_EditorClassIdentifier: 
+  gold: {fileID: -3818846372542741327, guid: c5476e890800e6249aeb2aea7df539bc, type: 3}
+  silver: {fileID: -5190611364021737821, guid: c5476e890800e6249aeb2aea7df539bc, type: 3}
+  bronze: {fileID: 4058009491159772841, guid: c5476e890800e6249aeb2aea7df539bc, type: 3}
+  nope: {fileID: 5054460056846121780, guid: c5476e890800e6249aeb2aea7df539bc, type: 3}
