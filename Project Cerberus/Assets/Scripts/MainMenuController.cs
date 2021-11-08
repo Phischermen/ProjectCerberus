@@ -2,6 +2,7 @@
  * MainMenuController contains actions to be executed when buttons from the main menu are pressed. It is also
  * responsible for instantiating the level select screen and populating it with instances of LevelChoice.
  */
+
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -18,7 +19,7 @@ public class MainMenuController : MonoBehaviour
 
     public int displayedWorld = 0;
     public int maxWorld = 0;
-    
+
     private List<GameObject> worldContainers;
     public Button nextWorldButton;
     public Button prevWorldButton;
@@ -52,13 +53,14 @@ public class MainMenuController : MonoBehaviour
         {
             container.SetActive(false);
         }
+
         worldContainers[0].SetActive(true);
         // Initialize remaining UI components.
         prevWorldButton.interactable = false;
         nextWorldButton.interactable = true;
         levelChoicePanel.SetActive(false);
     }
-    
+
     private void InitializeLevelSelectPanel()
     {
         var idx = 0;
@@ -82,6 +84,8 @@ public class MainMenuController : MonoBehaviour
                 // Set fields for LevelChoice.
                 choice.levelIdx = idx;
                 choice.sceneIdx = level;
+                choice.settings = PlayerPrefs.GetString(level.ToString(), TrophyData.initialTrophyCode);
+                choice.ApplySettings();
                 choice.GetComponentInChildren<Text>().text = (idx).ToString();
                 // Increment current level index.
                 idx += 1;
@@ -90,10 +94,10 @@ public class MainMenuController : MonoBehaviour
 
         maxWorld = levelSequence.worlds.Count - 1;
     }
-    
+
     // Menu actions
     // Main
-    
+
     public void PlayPressed()
     {
         mainPanel.SetActive(false);
@@ -109,6 +113,7 @@ public class MainMenuController : MonoBehaviour
             displayedWorld += 1;
             worldContainers[displayedWorld].SetActive(true);
         }
+
         if (displayedWorld == maxWorld)
         {
             nextWorldButton.interactable = false;
@@ -125,6 +130,7 @@ public class MainMenuController : MonoBehaviour
             displayedWorld -= 1;
             worldContainers[displayedWorld].SetActive(true);
         }
+
         if (displayedWorld == 0)
         {
             prevWorldButton.interactable = false;
