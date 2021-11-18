@@ -27,6 +27,7 @@ public class StickySwitch : Switch
 
     [ShowInTileInspector, HideInInspector] public int movesElapsedSinceExit;
     public int movesSwitchStaysStuck = 1;
+    private bool entityHasExited;
 
     protected StickySwitch()
     {
@@ -37,16 +38,17 @@ public class StickySwitch : Switch
     {
         base.OnEnterCollisionWithEntity(other);
         movesElapsedSinceExit = 0;
+        entityHasExited = false;
     }
 
     public override void OnExitCollisionWithEntity(PuzzleEntity other)
     {
-        // Deliberately empty
+        entityHasExited = true;
     }
 
     public override void OnPlayerMadeMove()
     {
-        if (isPressed)
+        if (isPressed && entityHasExited)
         {
             movesElapsedSinceExit += 1;
             if (movesElapsedSinceExit > movesSwitchStaysStuck)
