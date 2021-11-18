@@ -30,5 +30,6 @@ public static class Scenum
 		HoldTheDoor2,
 		SawdustToCoverSpikes,
 		FireballIntro,
+		StickySwitchIntro,
 	}
 }
