@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Editor
 {
-    [CustomEditor(typeof(Switch))]
+    [CustomEditor(typeof(Switch), true)]
     public class SwitchEditor : PuzzleEntityEditor
     {
         public override void OnInspectorGUI()
