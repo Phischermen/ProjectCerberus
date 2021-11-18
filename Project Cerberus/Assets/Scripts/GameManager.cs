@@ -114,8 +114,7 @@ public class GameManager : MonoBehaviour, IUndoable
     [HideInInspector] public bool collectedStar;
 
     [HideInInspector] public bool gameplayEnabled;
-
-    [HideInInspector] public bool gameOverImminent;
+    
     [HideInInspector] public bool gameOverEndCardDisplayed;
 
     void Awake()
@@ -347,7 +346,6 @@ public class GameManager : MonoBehaviour, IUndoable
     // Gameover
     public void EndGameWithFailureStatus()
     {
-        gameOverImminent = false;
         // Disable gameplay
         gameplayEnabled = false;
         // Stop timer

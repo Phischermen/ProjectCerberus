@@ -333,11 +333,13 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             // Cache result
             animationFatalityMap.Add(animationToPlay.GetType(), isFatal);
         }
+
         // Check that fatal animation is being played with the player.
         isFatal = isFatal && isPlayer && collisionsEnabled;
         if (isFatal)
         {
-            manager.gameOverImminent = true;
+            // Deter player from killing more dogs.
+            manager.gameplayEnabled = false;
         }
 
         if (animationIsRunning)
@@ -418,17 +420,13 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     public IEnumerator XxFallIntoPit(float fallDuration, float rotationSpeed, float finalScale)
     {
         animationIsRunning = true;
-        // Determine if the entity that has fallen is the player in split state
+        // Determine if the entity that has fallen is the player in merged state.
+        var playerIsFallingInPitInMergedState = isPlayer && !collisionsEnabled;
         var playerIsFallingInPitInSplitState = isPlayer && collisionsEnabled;
-        if (playerIsFallingInPitInSplitState)
+        if (playerIsFallingInPitInMergedState)
         {
-            // Disable gameplay to deter player from killing more dogs.
-            // Note: It is still possible for multiple dogs to die, but it won't break the game.
-            manager.gameplayEnabled = false;
-        }
-        // Cerberus is in its merged state, so prevent player from unmerging. 
-        else
-        {
+            // Cerberus is in its merged state, and the entity currently falling into a pit is a sigill, so prevent
+            // player from splitting. 
             manager.joinAndSplitEnabled = false;
         }
 
@@ -465,8 +463,6 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     public IEnumerator XxSpiked(float rotationSpeed, Vector2 fallDelta, float controlPointHeight, float speed)
     {
         animationIsRunning = true;
-        // Disable gameplay so player can't kill more dogs.
-        manager.gameplayEnabled = false;
         // Use a bezier curve to model the path
         var A = transform.position; // Start point
         var B = A + Vector3.up * controlPointHeight; // Control point

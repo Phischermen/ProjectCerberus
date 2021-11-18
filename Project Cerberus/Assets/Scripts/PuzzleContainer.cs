@@ -403,7 +403,7 @@ public class PuzzleContainer : MonoBehaviour
     // Undo system
     public void PushToUndoStack()
     {
-        if (!_manager.gameOverImminent)
+        if (_manager.gameplayEnabled)
         {
             // Get undo data from every undoable, so board state can be recreated.
             var undoList = new List<UndoData>();
