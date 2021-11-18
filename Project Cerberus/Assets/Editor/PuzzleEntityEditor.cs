@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace Editor
 {
-    [CustomEditor(typeof(PuzzleEntity), true)]
+    [CustomEditor(typeof(PuzzleEntity), true), CanEditMultipleObjects]
     public class PuzzleEntityEditor : UnityEditor.Editor
     {
         private SerializedProperty onStandardPushed;
