@@ -13,6 +13,8 @@ public class CerberusMajor : Cerberus
     {
         public Vector2Int position;
         public float rotation;
+        public PuzzleContainer.LevelCell jumpedOverCell;
+        public PuzzleContainer.LevelCell landedUponCell;
 
         public override bool Equals(object obj)
         {
@@ -29,10 +31,13 @@ public class CerberusMajor : Cerberus
             return base.GetHashCode();
         }
 
-        public JumpInfo(Vector2Int position, float rotation)
+        public JumpInfo(Vector2Int position, float rotation, PuzzleContainer.LevelCell jumpedOverCell,
+            PuzzleContainer.LevelCell landedUponCell)
         {
             this.position = position;
             this.rotation = rotation;
+            this.jumpedOverCell = jumpedOverCell;
+            this.landedUponCell = landedUponCell;
         }
     }
 
@@ -70,22 +75,26 @@ public class CerberusMajor : Cerberus
         var lastJumpSpacePosition = (jumpSpaces.Count > 0) ? jumpSpaces[jumpSpaces.Count - 1].position : position;
         if (input.specialHeld || (input.rightClicked && input.clickedCell != lastJumpSpacePosition))
         {
-            if (input.upPressed || (input.clickedCell.x == lastJumpSpacePosition.x && input.clickedCell.y > lastJumpSpacePosition.y))
+            if (input.upPressed || (input.clickedCell.x == lastJumpSpacePosition.x &&
+                                    input.clickedCell.y > lastJumpSpacePosition.y))
             {
                 AddJumpSpace(Vector2Int.up, 90);
             }
 
-            else if (input.downPressed || (input.clickedCell.x == lastJumpSpacePosition.x && input.clickedCell.y < lastJumpSpacePosition.y))
+            else if (input.downPressed || (input.clickedCell.x == lastJumpSpacePosition.x &&
+                                           input.clickedCell.y < lastJumpSpacePosition.y))
             {
                 AddJumpSpace(Vector2Int.down, 270);
             }
 
-            else if (input.rightPressed || (input.clickedCell.y == lastJumpSpacePosition.y && input.clickedCell.x > lastJumpSpacePosition.x))
+            else if (input.rightPressed || (input.clickedCell.y == lastJumpSpacePosition.y &&
+                                            input.clickedCell.x > lastJumpSpacePosition.x))
             {
                 AddJumpSpace(Vector2Int.right, 0);
             }
 
-            else if (input.leftPressed || (input.clickedCell.y == lastJumpSpacePosition.y && input.clickedCell.x < lastJumpSpacePosition.x))
+            else if (input.leftPressed || (input.clickedCell.y == lastJumpSpacePosition.y &&
+                                           input.clickedCell.x < lastJumpSpacePosition.x))
             {
                 AddJumpSpace(Vector2Int.left, 180);
             }
@@ -95,16 +104,28 @@ public class CerberusMajor : Cerberus
             if (jumpSpaces.Count > 0)
             {
                 puzzle.PushToUndoStack();
-                
-                JumpInfo[] jumpInfoCopy = new JumpInfo[jumpSpaces.Count];
-                jumpSpaces.CopyTo(jumpInfoCopy);
-                PlayAnimation(JumpAlongPath(jumpInfoCopy, AnimationUtility.jumpSpeed));
-                
+
+
                 // Travel across jump spaces
+                var numberOfSuccessfullJumps = 0;
                 foreach (var jumpInfo in jumpSpaces)
                 {
+                    // Verify that jump is still possible.
+                    VerifyJumpAndLand(jumpInfo.jumpedOverCell, jumpInfo.landedUponCell,
+                        out bool canJump, out bool canLand);
+                    if (!canJump || !canLand)
+                    {
+                        break;
+                    }
+
                     Move(jumpInfo.position);
+                    numberOfSuccessfullJumps += 1;
                 }
+
+                JumpInfo[] jumpInfoCopy = new JumpInfo[numberOfSuccessfullJumps];
+                jumpSpaces.CopyTo(0, jumpInfoCopy, 0, numberOfSuccessfullJumps);
+                PlayAnimation(JumpAlongPath(jumpInfoCopy, AnimationUtility.jumpSpeed));
+
                 jumpSpaces.Clear();
                 RenderJumpPath();
 
@@ -167,15 +188,22 @@ public class CerberusMajor : Cerberus
         }
     }
 
+    private void VerifyJumpAndLand(PuzzleContainer.LevelCell jumpedOverCell, PuzzleContainer.LevelCell landedUponCell,
+        out bool canJump, out bool canLand)
+    {
+        canJump = (jumpedOverCell.GetJumpableEntity() || jumpedOverCell.floorTile.jumpable);
+        canLand = landedUponCell.floorTile != null && (landedUponCell.GetLandableScore() >= 0);
+    }
+
     private void AddJumpSpace(Vector2Int offset, float rotation)
     {
         var lastJumpPosition = (jumpSpaces.Count > 0) ? jumpSpaces[jumpSpaces.Count - 1].position : position;
         var jumpedOverSpace = lastJumpPosition + offset;
         var jumpedOverCell = puzzle.GetCell(jumpedOverSpace);
-        var newJumpSpace = jumpedOverSpace + offset;
-        var newJumpCell = puzzle.GetCell(newJumpSpace);
+        var landedUponSpace = jumpedOverSpace + offset;
+        var landedUponCell = puzzle.GetCell(landedUponSpace);
         // Check if user is "backing out"
-        if (newJumpSpace == position)
+        if (landedUponSpace == position)
         {
             jumpSpaces.Clear();
             RenderJumpPath();
@@ -184,39 +212,32 @@ public class CerberusMajor : Cerberus
             return;
         }
 
-        // Check for entity to jump over.
-        var canJump = (jumpedOverCell.GetJumpableEntity() || jumpedOverCell.floorTile.jumpable);
-        if (canJump)
+        VerifyJumpAndLand(jumpedOverCell, landedUponCell, out bool canJump, out bool canLand);
+        if (canJump && canLand)
         {
-            // Check for collision and if landable.
-            var landableEntities = newJumpCell.GetLandableEntities();
-            var newJumpCellLandableScore = newJumpCell.GetLandableScore();
-            var canLand = newJumpCell.floorTile != null && (newJumpCellLandableScore >= 0);
-            if (canLand)
+            var landableEntities = landedUponCell.GetLandableEntities();
+            var newJumpInfo = new JumpInfo(landedUponSpace, rotation, jumpedOverCell, landedUponCell);
+            // Check if space is already in collection
+            if (jumpSpaces.Contains(newJumpInfo))
             {
-                var newJumpInfo = new JumpInfo(newJumpSpace, rotation);
-                // Check if space is already in collection
-                if (jumpSpaces.Contains(newJumpInfo))
+                // Erase part of jump space path
+                var idxOfSpaceToRemove = jumpSpaces.IndexOf(newJumpInfo) + 1;
+                jumpSpaces.RemoveRange(idxOfSpaceToRemove, jumpSpaces.Count - idxOfSpaceToRemove);
+                RenderJumpPath();
+                // Cerberus cannot possibly have goal in jump path.
+                goalIsOnJumpPath = false;
+            }
+            else if (!goalIsOnJumpPath)
+            {
+                // Add space to path if goal is not in path
+                jumpSpaces.Add(newJumpInfo);
+                RenderJumpPath();
+                // Check if cell being landed on has goal
+                foreach (var entity in landableEntities)
                 {
-                    // Erase part of jump space path
-                    var idxOfSpaceToRemove = jumpSpaces.IndexOf(newJumpInfo) + 1;
-                    jumpSpaces.RemoveRange(idxOfSpaceToRemove, jumpSpaces.Count - idxOfSpaceToRemove);
-                    RenderJumpPath();
-                    // Cerberus cannot possibly have goal in jump path.
-                    goalIsOnJumpPath = false;
-                }
-                else if(!goalIsOnJumpPath)
-                {
-                    // Add space to path if goal is not in path
-                    jumpSpaces.Add(newJumpInfo);
-                    RenderJumpPath();
-                    // Check if cell being landed on has goal
-                    foreach (var entity in landableEntities)
+                    if (entity is Finish)
                     {
-                        if (entity is Finish)
-                        {
-                            goalIsOnJumpPath = true;
-                        }
+                        goalIsOnJumpPath = true;
                     }
                 }
             }
