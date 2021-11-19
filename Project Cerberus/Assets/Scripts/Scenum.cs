@@ -31,5 +31,7 @@ public static class Scenum
 		SawdustToCoverSpikes,
 		FireballIntro,
 		StickySwitchIntro,
+		BigStickySwitchPuzzle,
+		TinyStickySwitchPuzzle,
 	}
 }
