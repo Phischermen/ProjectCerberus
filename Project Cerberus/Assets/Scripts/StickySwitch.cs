@@ -50,7 +50,10 @@ public class StickySwitch : Switch
     {
         if (isPressed && entityHasExited)
         {
+            var popup = TextPopup.Create((movesSwitchStaysStuck - movesElapsedSinceExit).ToString(), Color.green);
             movesElapsedSinceExit += 1;
+            popup.transform.position = transform.position;
+            popup.PlayRiseAndFadeAnimation();
             if (movesElapsedSinceExit > movesSwitchStaysStuck)
             {
                 Debug.Log("Switching off");

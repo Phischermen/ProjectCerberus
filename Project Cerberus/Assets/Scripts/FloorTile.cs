@@ -8,6 +8,7 @@ using UnityEngine.Tilemaps;
 public class FloorTile : Tile, IUndoable
 {
     [HideInInspector] public PuzzleContainer puzzle;
+    [HideInInspector] public Vector3 position;
     [HideInInspector] public PuzzleContainer.LevelCell currentCell;
 
     public bool needsToBeCloned;

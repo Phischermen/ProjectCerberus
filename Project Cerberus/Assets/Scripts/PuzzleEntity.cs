@@ -116,7 +116,8 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     {
     }
 
-    public void Move(Vector2Int toCell, bool doNotTriggerOnEnter = false, bool doNotTriggerOnExit = false)
+    public void Move(Vector2Int toCell, bool doNotTriggerOnEnter = false, bool doNotTriggerOnExit = false,
+        bool doNotRefreshTiles = false)
     {
         // Get cell we're moving to.
         var newCell = puzzle.GetCell(toCell);
@@ -138,8 +139,11 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
 
             // Invoke exit collision callback for the floorTile we left behind.
             currentCell.floorTile.OnExitCollisionWithEntity(this);
-            // Refresh the tile we left in case its state has changed from its callback.
-            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+            if (!doNotRefreshTiles)
+            {
+                // Refresh the tile we left in case its state has changed from its callback.
+                puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+            }
         }
 
         // Update our position.
@@ -159,8 +163,11 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
 
             // Invoke enter collision callback for all the new floorTile we are meeting in our new cell.
             newCell.floorTile.OnEnterCollisionWithEntity(this);
-            // Refresh the tile we entered in case its state has changed from its callback.
-            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+            if (!doNotRefreshTiles)
+            {
+                // Refresh the tile we entered in case its state has changed from its callback.
+                puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+            }
         }
 
         // Register that this entity belongs to the new cell.

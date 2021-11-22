@@ -118,7 +118,8 @@ public class CerberusMajor : Cerberus
                         break;
                     }
 
-                    Move(jumpInfo.position);
+                    // Move but do not refresh floor tiles; that will be done via JumpAlongPath animation.
+                    Move(jumpInfo.position, doNotRefreshTiles: true);
                     numberOfSuccessfullJumps += 1;
                 }
 
@@ -293,6 +294,8 @@ public class CerberusMajor : Cerberus
                 yield return new WaitForFixedUpdate();
             }
 
+            // Refresh the tile when CerberusMajor lands on it visually
+            puzzle.tilemap.RefreshTile(new Vector3Int(point.position.x, point.position.y, 0));
             transform.position = D;
             PuzzleCameraController.AddShake(0.1f);
         }
