@@ -5,6 +5,17 @@ public static class AnimationUtility
     public static float superPushAnimationSpeed = 16f;
     public static float basicMoveAndPushSpeed = 8f;
     public static float jumpSpeed = 8f;
+    public static float spikedSpeed = 16f;
+    public static float spikedRotationSpeed = 180f;
+    public static Vector2 spikedEndPosition = new Vector2(10f, -25f);
+    public static float spikedControlPointHeight = 10f;
+    
+    public static int bezierCurveLengthEstimationSegments = 5;
+    public static float lengthEstimationDelta = 1f / bezierCurveLengthEstimationSegments;
+
+    public static float fallDuration = 1f;
+    public static float fallRotationSpeed = 90f;
+    public static float fallFinalScale = 0f;
 
     public static float initialFireballSpeed = 8f;
     public static float fireBallAcceleration = 32f;
@@ -32,4 +43,22 @@ public static class AnimationUtility
 
         return U;
     }
+    
+    // Calculate approximate distance to travel
+    public static float ApproximateLengthOfBezierCurve(Vector3 A, Vector3 B, Vector3 C, Vector3 D)
+    {
+        var approximateLength = 0f;
+        var beginningOfSegment = A;
+        var interpolation = lengthEstimationDelta;
+        for (int i = 0; i < bezierCurveLengthEstimationSegments; i++)
+        {
+            var endOfSegment = DeCasteljausAlgorithm(A, B, C, D, interpolation);
+            approximateLength += Vector3.Distance(beginningOfSegment, endOfSegment);
+            beginningOfSegment = endOfSegment;
+            interpolation += lengthEstimationDelta;
+        }
+
+        return approximateLength;
+    }
+    
 }

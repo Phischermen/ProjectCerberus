@@ -8,16 +8,23 @@ public class BasicBlock : PuzzleEntity
     {
         public BasicBlock block;
         public Vector2Int position;
+        public bool inHole;
 
-        public BasicBlockUndoData(BasicBlock block, Vector2Int position)
+        public BasicBlockUndoData(BasicBlock block, Vector2Int position, bool inHole)
         {
             this.block = block;
             this.position = position;
+            this.inHole = inHole;
         }
 
         public override void Load()
         {
-            block.MoveForUndo(position);
+            block.inHole = inHole;
+            if (!inHole)
+            {
+                block.MoveForUndo(position);
+                block.ResetTransformAndSpriteRendererForUndo();
+            }
         }
     }
 
@@ -32,12 +39,13 @@ public class BasicBlock : PuzzleEntity
         pushableByStandardMove = true;
         pushableByJacksMultiPush = true;
         pushableByJacksSuperPush = true;
+        landableScore = -1;
         jumpable = true;
     }
 
     public override UndoData GetUndoData()
     {
-        var undoData = new BasicBlockUndoData(this, position);
+        var undoData = new BasicBlockUndoData(this, position, inHole);
         return undoData;
     }
 }

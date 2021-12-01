@@ -8,7 +8,7 @@ public class Finish : PuzzleEntity
     public Finish()
     {
         entityRules = "Every Cerberus must stand on a goal tile to win the level.";
-        landable = true;
+        landableScore = 0;
     }
 
     public override void OnEnterCollisionWithEntity(PuzzleEntity other)

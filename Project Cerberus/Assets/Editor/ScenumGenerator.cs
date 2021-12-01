@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -22,6 +24,7 @@ namespace Editor
                 var name = scene.path;
                 name = name.Remove(name.LastIndexOf('.'));
                 name = name.Remove(0, name.LastIndexOf('/') + 1);
+                name = String.Concat(name.Where(c => !Char.IsWhiteSpace(c)));
                 fileContents.Add($"\t\t{name},");
             }
 

@@ -1,0 +1,35 @@
+﻿/*
+* Description of #SCRIPTNAME#
+*/
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class #SCRIPTNAME# : PuzzleEntity
+{
+    public class #SCRIPTNAME#UndoData : UndoData
+    {
+        public #SCRIPTNAME# #SCRIPTNAME_LOWER#;
+
+        public #SCRIPTNAME#UndoData(#SCRIPTNAME# #SCRIPTNAME_LOWER#)
+        {
+            this.#SCRIPTNAME_LOWER# = #SCRIPTNAME_LOWER#;
+        }
+
+        public override void Load()
+        {
+            #NOTRIM#
+        }
+    }
+
+    protected #SCRIPTNAME#()
+    {
+        // Set properties here
+    }
+
+    public override UndoData GetUndoData()
+    {
+        var undoData = new #SCRIPTNAME#UndoData(this);
+        return undoData;
+    }
+}

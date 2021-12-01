@@ -17,46 +17,50 @@ public class Jack : Cerberus
     public override void ProcessMoveInput()
     {
         base.ProcessMoveInput();
-        if (input.specialHeld)
+        if (input.specialHeld || input.rightClicked)
         {
-            if (input.upPressed)
+            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y))
             {
                 SuperPushMove(Vector2Int.up);
             }
 
-            else if (input.downPressed)
+            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y))
             {
                 SuperPushMove(Vector2Int.down);
             }
 
-            else if (input.rightPressed)
+            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x))
             {
                 SuperPushMove(Vector2Int.right);
             }
 
-            else if (input.leftPressed)
+            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x))
             {
                 SuperPushMove(Vector2Int.left);
             }
         }
         else
         {
-            if (input.upPressed)
+            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y &&
+                                    input.leftClicked))
             {
                 BasicMove(Vector2Int.up);
             }
 
-            else if (input.downPressed)
+            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y &&
+                                           input.leftClicked))
             {
                 BasicMove(Vector2Int.down);
             }
 
-            else if (input.rightPressed)
+            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x &&
+                                            input.leftClicked))
             {
                 BasicMove(Vector2Int.right);
             }
 
-            else if (input.leftPressed)
+            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x &&
+                                           input.leftClicked))
             {
                 BasicMove(Vector2Int.left);
             }
@@ -83,9 +87,9 @@ public class Jack : Cerberus
         if (!blocked && entitiesToPush.Count == 0)
         {
             puzzle.PushToUndoStack();
-            Move(coord);
             PlaySfxPitchShift(walkSFX, 0.9f, 1.1f);
             PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
+            Move(coord);
             DeclareDoneWithMove();
         }
         else if (entitiesToPush.Count == 1)
@@ -115,19 +119,26 @@ public class Jack : Cerberus
                 range -= 1;
             }
 
-            pushableEntity.isSuperPushed = false;
-
             // Move across searched tiles.
             puzzle.PushToUndoStack();
-            for (int i = 0; i < distancePushed; i++)
-            {
-                pushableEntity.Move(pushableEntity.position + offset);
-            }
+
+            pushableEntity.onSuperPushed.Invoke();
 
             PlaySfx(_superPushSFX);
             pushableEntity.PlayAnimation(
                 pushableEntity.SlideToDestination(searchPosition, AnimationUtility.superPushAnimationSpeed));
             pushableEntity.PlaySfx(pushableEntity.superPushedSfx);
+
+            for (int i = 0; i < distancePushed; i++)
+            {
+                var firstMove = i == 0;
+                var lastMove = i == distancePushed - 1;
+                // The super pushed object "lands" at the last space it moves and "lifts off" at the space it
+                // starts.
+                pushableEntity.isSuperPushed = !lastMove && !firstMove;
+                pushableEntity.Move(pushableEntity.position + offset, !lastMove, lastMove && !firstMove);
+            }
+
             DeclareDoneWithMove();
         }
         else if (!blocked)
@@ -146,10 +157,14 @@ public class Jack : Cerberus
                 {
                     var entity = entitiesToPush[i];
                     var entityPushCoord = entity.position + offset;
-                    entity.Move(entityPushCoord);
+
+                    entity.onMultiPushed.Invoke();
+
                     entity.PlayAnimation(entity.SlideToDestination(entityPushCoord,
                         AnimationUtility.basicMoveAndPushSpeed));
                     entity.PlaySfx(entity.superPushedSfx);
+
+                    entity.Move(entityPushCoord);
                 }
 
                 Move(coord);

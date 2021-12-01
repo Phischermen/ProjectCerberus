@@ -16,12 +16,6 @@ public class PuzzleUI : MonoBehaviour
         public RectTransform rectTransform;
         public Text text;
 
-        // UI Methods
-        public void SetUIToMovedPreset()
-        {
-            text.color = Color.gray;
-        }
-
         public void SetUIToCurrentlyControlledPreset()
         {
             text.color = Color.red;
@@ -31,6 +25,7 @@ public class PuzzleUI : MonoBehaviour
         {
             text.color = Color.white;
         }
+
         public void HideUI()
         {
             text.gameObject.SetActive(false);
@@ -47,6 +42,9 @@ public class PuzzleUI : MonoBehaviour
     public Text firstDog;
     public Text secondDog;
     public Text thirdDog;
+    public Text mergeButton;
+    private string toMerge = "Merge";
+    private string toSplit = "Split";
 
 
     [SerializeField] private DogStatus[] dogStatusArray;
@@ -54,10 +52,12 @@ public class PuzzleUI : MonoBehaviour
     private Vector3[] _positionCache;
 
     private GameManager _manager;
+    private BonusStar _bonusStar;
 
     void Awake()
     {
         _manager = FindObjectOfType<GameManager>();
+        _bonusStar = FindObjectOfType<BonusStar>();
         // Check length of dogStatusArray
         if (dogStatusArray.Length != 3)
         {
@@ -71,22 +71,26 @@ public class PuzzleUI : MonoBehaviour
         _dogStatusMap.Add(typeof(Laguna), dogStatusArray[2]);
         _dogStatusMap.Add(typeof(CerberusMajor), dogStatusArray[0]);
 
-        // Cache initial positions of UI elements
+        // Cache initial local positions of UI elements
         _positionCache = new Vector3[3];
         for (var i = 0; i < 3; i++)
         {
             var dogStatus = dogStatusArray[i];
-            _positionCache[i] = dogStatus.rectTransform.position;
+            _positionCache[i] = dogStatus.rectTransform.localPosition;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        // TODO Kevin: Move this out of Update loop into new UpdateUI method
         // Update turn counter
-        turnCounter.text = $"Turns left:\n{_manager.maxTurns - _manager.turn}";
-        
+        turnCounter.text = "";
+        if (_bonusStar != null)
+        {
+            turnCounter.text += _bonusStar.GetStatusMessageForUI();
+        }
+        turnCounter.text += $"\nMove: {_manager.move}\nTimer: {_manager.timer,3:000}";
+
         // Hide all dog status initially
         foreach (var dogStatus in dogStatusArray)
         {
@@ -94,22 +98,23 @@ public class PuzzleUI : MonoBehaviour
         }
 
         // Iterate over moveOrder to update dogStatus
-        for (int i = 0; i < _manager.moveOrder.Count; i++)
+        for (int i = 0; i < _manager.availableCerberus.Count; i++)
         {
-            var cerberus = _manager.moveOrder[i];
+            var cerberus = _manager.availableCerberus[i];
             if (i == 0)
             {
-                dogStatusArray[0].text.text = cerberus.isCerberusMajor ? "Cerberus" : "Jack";
+                // Set text based on merged status
+
+                mergeButton.text = $"Left Ctrl: {(cerberus.isCerberusMajor ? toSplit : toMerge)}";
             }
-            // Get dogStatus from map
+
+            // Get dogStatus from map.
             var dogStatus = _dogStatusMap[cerberus.GetType()];
             dogStatus.ShowUI();
-            // Set preset
-            if (i < _manager.currentMove)
-            {
-                dogStatus.SetUIToMovedPreset();
-            }
-            else if (i == _manager.currentMove)
+            // Set text.
+            dogStatus.text.text = cerberus.name;
+            // Set preset.
+            if (cerberus == _manager.currentCerberus)
             {
                 dogStatus.SetUIToCurrentlyControlledPreset();
             }
@@ -119,7 +124,7 @@ public class PuzzleUI : MonoBehaviour
             }
 
             // Set transform
-            dogStatus.rectTransform.position = _positionCache[i];
+            dogStatus.rectTransform.localPosition = _positionCache[i];
         }
     }
 }

@@ -7,14 +7,18 @@ using UnityEngine.Tilemaps;
 [CreateAssetMenu(menuName = "FloorTile/Basic"), GetUndoDataReturnsNull]
 public class FloorTile : Tile, IUndoable
 {
-    [HideInInspector] public bool needsToBeCloned;
+    [HideInInspector] public PuzzleContainer puzzle;
+    [HideInInspector] public Vector3 position;
+    [HideInInspector] public PuzzleContainer.LevelCell currentCell;
+
+    public bool needsToBeCloned;
     [ShowInTileInspector] public bool stopsPlayer;
     [ShowInTileInspector] public bool stopsBlock;
     [ShowInTileInspector] public bool stopsFireball;
     [ShowInTileInspector] public bool allowsAllSuperPushedEntitiesPassage;
     [ShowInTileInspector] public bool jumpable;
-    [ShowInTileInspector] public bool landable;
-    
+    [ShowInTileInspector] public int landableScore;
+
     public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
     {
         tileData.sprite = sprite;
@@ -40,7 +44,7 @@ public class FloorTile : Tile, IUndoable
     public virtual void OnExitCollisionWithEntity(PuzzleEntity other)
     {
     }
-    
+
     public virtual UndoData GetUndoData()
     {
         return null;

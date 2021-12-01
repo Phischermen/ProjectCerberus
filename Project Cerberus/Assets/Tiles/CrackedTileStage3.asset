@@ -35,7 +35,7 @@ MonoBehaviour:
   m_Flags: 1
   m_ColliderType: 1
   needsToBeCloned: 1
-  stopsPlayer: 1
+  stopsPlayer: 0
   stopsBlock: 0
   stopsFireball: 0
   allowsAllSuperPushedEntitiesPassage: 1

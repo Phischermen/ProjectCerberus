@@ -4,6 +4,7 @@ public static class Scenum
 {
 	public enum Scene
 	{
+		InitialScene,
 		SampleScene,
 		TestLevel,
 		BasicPushTutorial,
@@ -14,5 +15,23 @@ public static class Scenum
 		JackAndLaguna,
 		TrapSpikePuzzle,
 		JackTutorial,
+		ThreeLanes,
+		ZachsTestLevel,
+		MakeABridge,
+		MainMenu,
+		BlockBlocks,
+		MultiPushCorridor,
+		PushAndPull,
+		HoldTheDoor,
+		JackSuperPushedOverTheGaps,
+		JackCrossesTheCracks,
+		MultiPushAcrossSpikes,
+		WoodBlockPuzzle,
+		HoldTheDoor2,
+		SawdustToCoverSpikes,
+		FireballIntro,
+		StickySwitchIntro,
+		BigStickySwitchPuzzle,
+		TinyStickySwitchPuzzle,
 	}
 }

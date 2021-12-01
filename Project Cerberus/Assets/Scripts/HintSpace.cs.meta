@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 4d2698f184daafd489f60f5d2b86d562
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - pushedSfx: {instanceID: 0}
+  - superPushedSfx: {instanceID: 0}
+  - pushedByFireballSfx: {instanceID: 0}
+  - hintPrefab: {fileID: 1898279008498015851, guid: 2ef10424909b42f4d9949652f17aee00,
+      type: 3}
+  - hint: {instanceID: 0}
+  - visitedSprite: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

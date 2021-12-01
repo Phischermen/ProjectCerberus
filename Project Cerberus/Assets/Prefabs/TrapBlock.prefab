@@ -352,6 +352,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   position: {x: 0, y: 0}
+  inHole: 0
+  processPriority: 0
+  showOptionalSfx: 0
   pushedSfx: {fileID: 7159779433444882987}
   superPushedSfx: {fileID: 4872424505250611615}
   pushedByFireballSfx: {fileID: 0}
+  showOptionalEvents: 0
+  onStandardPushed:
+    m_PersistentCalls:
+      m_Calls: []
+  onSuperPushed:
+    m_PersistentCalls:
+      m_Calls: []
+  onMultiPushed:
+    m_PersistentCalls:
+      m_Calls: []
+  onHitByFireball:
+    m_PersistentCalls:
+      m_Calls: []
+  onPulled:
+    m_PersistentCalls:
+      m_Calls: []
