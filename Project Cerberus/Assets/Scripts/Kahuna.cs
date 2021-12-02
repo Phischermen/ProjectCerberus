@@ -7,6 +7,9 @@ public class Kahuna : Cerberus
 {
     [SerializeField] private GameObject fireArrow;
     [SerializeField] private GameObject fireBall;
+    [SerializeField] private GameObject explosion;
+    [SerializeField] private ParticleSystem fireBallParticleSystem;
+    [SerializeField] private ParticleSystem explosionParticleSystem;
     [SerializeField] private AudioSource fireballSFX;
 
     Vector2Int aim = Vector2Int.zero;
@@ -22,6 +25,14 @@ public class Kahuna : Cerberus
     {
         base.Awake();
         fireArrow.SetActive(false);
+        // Instantiate fireball prefab for VFX. Setup emitter.
+        fireBall = Instantiate(fireBall);
+        fireBallParticleSystem = fireBall.GetComponentInChildren<ParticleSystem>();
+        fireBallParticleSystem.Stop(true);
+        // Instantiate fireball prefab for VFX. Setup emitter.
+        explosion = Instantiate(explosion);
+        explosionParticleSystem = explosion.GetComponentInChildren<ParticleSystem>();
+        explosionParticleSystem.Stop(true);
     }
 
     public override void ProcessMoveInput()
@@ -211,6 +222,8 @@ public class Kahuna : Cerberus
         var speed = initialSpeed;
 
         fireBall.transform.position = startingPosition;
+        // TODO Make fireball face direction it was fired in.
+        fireBallParticleSystem.Play(true);
         while (distanceTraveled < distanceToTravel && animationMustStop == false)
         {
             // Increment speed
@@ -225,6 +238,9 @@ public class Kahuna : Cerberus
         }
 
         fireBall.transform.position = destinationPosition;
+        fireBallParticleSystem.Stop(true);
+        explosion.transform.position = destinationPosition;
+        explosionParticleSystem.Play(true);
         animationIsRunning = false;
         animationMustStop = false;
     }

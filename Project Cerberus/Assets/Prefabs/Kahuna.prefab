@@ -471,6 +471,12 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   fireArrow: {fileID: 6824530358841447831}
+  fireBall: {fileID: 5057770535885787932, guid: 609aaa0fdaa6e0345b2f3a6c3a873b16,
+    type: 3}
+  explosion: {fileID: 8642686796960774519, guid: 7c2a682d274fa4b42b66393e2226462a,
+    type: 3}
+  fireBallParticleSystem: {fileID: 0}
+  explosionParticleSystem: {fileID: 0}
   fireballSFX: {fileID: 7982099143372272266}
 --- !u!1 &9105411547274003689
 GameObject:
