@@ -82,11 +82,12 @@ public class LevelSequence : ScriptableObject
             {
                 levelSequence -= levelsInCurrentWorld.Count;
             }
-            else
+            else if (levelSequence > 0)
             {
                 return levelsInCurrentWorld[levelSequence];
             }
         }
+
         // Scene not found.
         return -1;
     }

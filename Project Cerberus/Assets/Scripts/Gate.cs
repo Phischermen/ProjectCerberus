@@ -105,7 +105,7 @@ public class Gate : PuzzleEntity
         SetFieldsToClosedPreset();
     }
 
-    private void SetFieldsToOpenPreset()
+    protected virtual void SetFieldsToOpenPreset()
     {
         open = true;
         stopsBlock = false;
@@ -114,7 +114,7 @@ public class Gate : PuzzleEntity
         jumpable = false;
     }
 
-    private void SetFieldsToClosedPreset()
+    protected virtual void SetFieldsToClosedPreset()
     {
         open = false;
         stopsBlock = true;

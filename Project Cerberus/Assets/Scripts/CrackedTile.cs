@@ -67,6 +67,9 @@ public class CrackedTile : FloorTile
         if (!other.isSuperPushed)
         {
             stage += 1;
+            var popup = TextPopup.Create((3 - stage).ToString(), Color.yellow);
+            popup.transform.position = position;
+            popup.PlayRiseAndFadeAnimation();
         }
 
         if (stage < 3)
@@ -77,10 +80,12 @@ public class CrackedTile : FloorTile
         {
             SetFieldsToFinalStatePreset();
             // Make every entity on top this cell fall into a pit.
-            // Note: Calling XxFallIntoPit removes entity from currentCell.puzzleEntities.
-            while (currentCell.puzzleEntities.Count > 0)
+            // Note: Calling XxFallIntoPit removes entity from currentCell.puzzleEntities. This is why it's necessary to
+            // make a copy puzzleEntities to iterate over.
+            var copyOfPuzzleEntities = new PuzzleEntity[currentCell.puzzleEntities.Count];
+            currentCell.puzzleEntities.CopyTo(copyOfPuzzleEntities);
+            foreach (var entity in copyOfPuzzleEntities)
             {
-                var entity = currentCell.puzzleEntities[0];
                 // Play falling animation.
                 entity.PlayAnimation(entity.XxFallIntoPit(1f, 90f, 0f),
                     PuzzleEntity.PlayAnimationMode.playAfterCurrentFinished);

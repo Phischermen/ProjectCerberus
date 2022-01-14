@@ -2,6 +2,7 @@
  * OnScreenText is designed for putting placeholder text on screen. I'm using it to implement basic tutorials as well as
  * personal notes and TODOs for levels. They can be hidden in game by clicking them.
  */
+
 using UnityEngine;
 
 [ExecuteAlways]
@@ -16,6 +17,7 @@ public class OnScreenText : MonoBehaviour
     public float width = 200f;
     private bool _hidden;
 
+#if !UNITY_WEBGL
     public void OnGUI()
     {
         VerifyStyleAndContent();
@@ -29,7 +31,7 @@ public class OnScreenText : MonoBehaviour
             _hidden = !_hidden;
         }
     }
-
+#endif
     private void Start()
     {
         mainCamera = Camera.main;

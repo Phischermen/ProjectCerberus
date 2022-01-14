@@ -6,6 +6,10 @@ using Random = UnityEngine.Random;
 public class Kahuna : Cerberus
 {
     [SerializeField] private GameObject fireArrow;
+    [SerializeField] private GameObject fireBall;
+    [SerializeField] private GameObject explosion;
+    [SerializeField] private ParticleSystem fireBallParticleSystem;
+    [SerializeField] private ParticleSystem explosionParticleSystem;
     [SerializeField] private AudioSource fireballSFX;
 
     Vector2Int aim = Vector2Int.zero;
@@ -21,6 +25,14 @@ public class Kahuna : Cerberus
     {
         base.Awake();
         fireArrow.SetActive(false);
+        // Instantiate fireball prefab for VFX. Setup emitter.
+        fireBall = Instantiate(fireBall);
+        fireBallParticleSystem = fireBall.GetComponentInChildren<ParticleSystem>();
+        fireBallParticleSystem.Stop(true);
+        // Instantiate fireball prefab for VFX. Setup emitter.
+        explosion = Instantiate(explosion);
+        explosionParticleSystem = explosion.GetComponentInChildren<ParticleSystem>();
+        explosionParticleSystem.Stop(true);
     }
 
     public override void ProcessMoveInput()
@@ -93,6 +105,7 @@ public class Kahuna : Cerberus
                 BasicMove(Vector2Int.left);
             }
         }
+
         if (wantsToFire)
         {
             if (aim != Vector2Int.zero)
@@ -158,6 +171,15 @@ public class Kahuna : Cerberus
             // Push or interact with entity
             if (entityToPushOrInteractWith.interactsWithFireball)
             {
+                // Get distance time to reach target
+                var destinationPosition = puzzle.GetCellCenterWorld(searchCoord - offset);
+                GetDistanceAndTimeToHitTarget(AnimationUtility.initialFireballSpeed,
+                    AnimationUtility.fireBallAcceleration, destinationPosition, out float distanceToTravel,
+                    out float time);
+                // Play animations
+                entityToPushOrInteractWith.PlayAnimation(entityToPushOrInteractWith.InteractWithFireball(time));
+                PlayAnimation(LaunchFireball(destinationPosition, AnimationUtility.initialFireballSpeed,
+                    AnimationUtility.fireBallAcceleration, distanceToTravel));
                 // Interact with entity
                 entityToPushOrInteractWith.OnShotByKahuna();
                 DeclareDoneWithMove();
@@ -172,10 +194,17 @@ public class Kahuna : Cerberus
                 if (!pushBlocked)
                 {
                     entityToPushOrInteractWith.PlaySfx(entityToPushOrInteractWith.pushedByFireballSfx);
+                    // Get distance time to reach target
+                    var destinationPosition = puzzle.GetCellCenterWorld(searchCoord - offset);
+                    GetDistanceAndTimeToHitTarget(AnimationUtility.initialFireballSpeed,
+                        AnimationUtility.fireBallAcceleration, destinationPosition, out float distanceToTravel,
+                        out float time);
+                    // Play animations
                     entityToPushOrInteractWith.PlayAnimation(
                         entityToPushOrInteractWith.SlideToDestination(pushCoord,
-                            AnimationUtility.basicMoveAndPushSpeed));
-                    
+                            AnimationUtility.basicMoveAndPushSpeed, time));
+                    PlayAnimation(LaunchFireball(destinationPosition, AnimationUtility.initialFireballSpeed,
+                        AnimationUtility.fireBallAcceleration, distanceToTravel));
                     entityToPushOrInteractWith.Move(pushCoord);
                     DeclareDoneWithMove();
                 }
@@ -183,5 +212,51 @@ public class Kahuna : Cerberus
 
             entityToPushOrInteractWith.onHitByFireball.Invoke();
         }
+    }
+
+    // Animation helper
+    void GetDistanceAndTimeToHitTarget(float initialSpeed, float acceleration, Vector3 destinationPosition,
+        out float distance, out float time)
+    {
+        distance = Vector3.Distance(transform.position, destinationPosition);
+        // 𝅘𝅥𝅯 Negative b plus or minus radical! b squared minus 4ac. All over 2a! 𝅘𝅥𝅯
+        time = (-initialSpeed + Mathf.Sqrt((initialSpeed * initialSpeed) + (2f * acceleration * distance))) /
+               (acceleration);
+    }
+
+    // Animation
+
+    public IEnumerator LaunchFireball(Vector3 destinationPosition, float initialSpeed, float acceleration,
+        float distanceToTravel)
+    {
+        var startingPosition = transform.position;
+        var distanceTraveled = 0f;
+        var speed = initialSpeed;
+
+        fireBall.transform.position = startingPosition;
+        // TODO Make fireball face direction it was fired in.
+        fireBallParticleSystem.Play(true);
+        fireBallParticleSystem.transform.rotation = fireArrow.transform.rotation;
+        while (distanceTraveled < distanceToTravel && animationMustStop == false)
+        {
+            // Increment speed
+            speed += acceleration * Time.deltaTime;
+            // Increment distance travelled
+            var delta = speed * Time.deltaTime;
+            distanceTraveled += delta;
+            // Set position
+            var interpolation = distanceTraveled / distanceToTravel;
+            fireBall.transform.position = Vector3.Lerp(startingPosition, destinationPosition, interpolation);
+            yield return new WaitForFixedUpdate();
+        }
+
+        fireBall.transform.position = destinationPosition;
+        // Stop the fireball particle system emission, but only clear the fireball and not the sparks. 
+        fireBallParticleSystem.Clear(false);
+        fireBallParticleSystem.Stop(true);
+        explosion.transform.position = destinationPosition;
+        explosionParticleSystem.Play(true);
+        animationIsRunning = false;
+        animationMustStop = false;
     }
 }

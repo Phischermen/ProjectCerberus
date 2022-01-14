@@ -19,12 +19,14 @@ public class WoodBlock : BasicBlock
         {
             base.Load();
             wood.SetFieldsToShotPreset(burned);
+            wood._spriteRenderer.sprite = burned ? wood.destroyedSprite : wood.wholeSprite;
         }
     }
 
     [SerializeField] private Sprite wholeSprite;
     [SerializeField] private Sprite destroyedSprite;
     private SpriteRenderer _spriteRenderer;
+    public AudioSource woodHitSfx;
 
     protected WoodBlock()
     {
@@ -44,11 +46,16 @@ public class WoodBlock : BasicBlock
         SetFieldsToShotPreset(true);
     }
 
+    public override void OnShotByKahunaVisually()
+    {
+        spriteRenderer.sprite = destroyedSprite;
+        woodHitSfx.Play();
+    }
+
     public void SetFieldsToShotPreset(bool shot)
     {
         if (shot)
         {
-            _spriteRenderer.sprite = destroyedSprite;
             stopsPlayer = false;
             stopsBlock = false;
             isBlock = false;
@@ -61,7 +68,6 @@ public class WoodBlock : BasicBlock
         }
         else
         {
-            _spriteRenderer.sprite = wholeSprite;
             stopsPlayer = true;
             stopsBlock = true;
             isBlock = true;

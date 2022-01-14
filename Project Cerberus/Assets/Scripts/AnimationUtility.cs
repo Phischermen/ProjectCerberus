@@ -17,6 +17,9 @@ public static class AnimationUtility
     public static float fallRotationSpeed = 90f;
     public static float fallFinalScale = 0f;
 
+    public static float initialFireballSpeed = 8f;
+    public static float fireBallAcceleration = 32f;
+
     //The De Casteljau's Algorithm
     public static Vector3 DeCasteljausAlgorithm(Vector3 A, Vector3 B, Vector3 C, Vector3 D, float t)
     {

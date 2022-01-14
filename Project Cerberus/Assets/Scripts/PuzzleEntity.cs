@@ -112,11 +112,19 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     {
     }
 
+    // The following two methods are related to entities that react to being hit by Kahuna's fireball.
+    // This method should be used to update entity data.
     public virtual void OnShotByKahuna()
     {
     }
+    
+    // This method should be used to update the sprites and launch effects.
+    public virtual void OnShotByKahunaVisually()
+    {
+    }
 
-    public void Move(Vector2Int toCell, bool doNotTriggerOnEnter = false, bool doNotTriggerOnExit = false)
+    public void Move(Vector2Int toCell, bool doNotTriggerOnEnter = false, bool doNotTriggerOnExit = false,
+        bool doNotRefreshTiles = false)
     {
         // Get cell we're moving to.
         var newCell = puzzle.GetCell(toCell);
@@ -138,8 +146,11 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
 
             // Invoke exit collision callback for the floorTile we left behind.
             currentCell.floorTile.OnExitCollisionWithEntity(this);
-            // Refresh the tile we left in case its state has changed from its callback.
-            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+            if (!doNotRefreshTiles)
+            {
+                // Refresh the tile we left in case its state has changed from its callback.
+                puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+            }
         }
 
         // Update our position.
@@ -159,8 +170,11 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
 
             // Invoke enter collision callback for all the new floorTile we are meeting in our new cell.
             newCell.floorTile.OnEnterCollisionWithEntity(this);
-            // Refresh the tile we entered in case its state has changed from its callback.
-            puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+            if (!doNotRefreshTiles)
+            {
+                // Refresh the tile we entered in case its state has changed from its callback.
+                puzzle.tilemap.RefreshTile(new Vector3Int(position.x, position.y, 0));
+            }
         }
 
         // Register that this entity belongs to the new cell.
@@ -333,11 +347,13 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             // Cache result
             animationFatalityMap.Add(animationToPlay.GetType(), isFatal);
         }
+
         // Check that fatal animation is being played with the player.
         isFatal = isFatal && isPlayer && collisionsEnabled;
         if (isFatal)
         {
-            manager.gameOverImminent = true;
+            // Deter player from killing more dogs.
+            manager.gameplayEnabled = false;
         }
 
         if (animationIsRunning)
@@ -390,8 +406,9 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
      If an animation will kill the player and end the game, its name must start with 'Xx'
      */
 
-    public IEnumerator SlideToDestination(Vector2Int destination, float speed)
+    public IEnumerator SlideToDestination(Vector2Int destination, float speed, float delay = 0f)
     {
+        yield return new WaitForSeconds(delay);
         animationIsRunning = true;
         var startingPosition = transform.position;
         var destinationPosition = puzzle.GetCellCenterWorld(destination);
@@ -418,17 +435,13 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     public IEnumerator XxFallIntoPit(float fallDuration, float rotationSpeed, float finalScale)
     {
         animationIsRunning = true;
-        // Determine if the entity that has fallen is the player in split state
+        // Determine if the entity that has fallen is the player in merged state.
+        var playerIsFallingInPitInMergedState = isPlayer && !collisionsEnabled;
         var playerIsFallingInPitInSplitState = isPlayer && collisionsEnabled;
-        if (playerIsFallingInPitInSplitState)
+        if (playerIsFallingInPitInMergedState)
         {
-            // Disable gameplay to deter player from killing more dogs.
-            // Note: It is still possible for multiple dogs to die, but it won't break the game.
-            manager.gameplayEnabled = false;
-        }
-        // Cerberus is in its merged state, so prevent player from unmerging. 
-        else
-        {
+            // Cerberus is in its merged state, and the entity currently falling into a pit is a sigill, so prevent
+            // player from splitting. 
             manager.joinAndSplitEnabled = false;
         }
 
@@ -465,8 +478,6 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     public IEnumerator XxSpiked(float rotationSpeed, Vector2 fallDelta, float controlPointHeight, float speed)
     {
         animationIsRunning = true;
-        // Disable gameplay so player can't kill more dogs.
-        manager.gameplayEnabled = false;
         // Use a bezier curve to model the path
         var A = transform.position; // Start point
         var B = A + Vector3.up * controlPointHeight; // Control point
@@ -496,6 +507,23 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
 
         manager.EndGameWithFailureStatus();
 
+        // Set these to false
+        animationIsRunning = false;
+        animationMustStop = false;
+    }
+    
+    public IEnumerator InteractWithFireball(float time)
+    {
+        animationIsRunning = true;
+        var timePassed = 0f;
+
+        while(timePassed < time && animationMustStop == false)
+        {
+            timePassed += Time.deltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+        // Make entity react to being hit by fireball.
+        OnShotByKahunaVisually();
         // Set these to false
         animationIsRunning = false;
         animationMustStop = false;

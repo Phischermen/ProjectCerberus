@@ -1,0 +1,4 @@
+main with sub-emitter burst
+travels at a constant speed
+
+arrow glow

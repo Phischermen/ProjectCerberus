@@ -83,6 +83,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FireballIntro.unity
     guid: 1583e477372ec8545af99f1d2f0873f7
+  - enabled: 1
+    path: Assets/Scenes/StickySwitchIntro.unity
+    guid: e62852a3faa100e4b8fc83721c789b4c
+  - enabled: 1
+    path: Assets/Scenes/BigStickySwitchPuzzle.unity
+    guid: 00f9dd790f7b5e34ca4d86161838672f
+  - enabled: 1
+    path: Assets/Scenes/TinyStickySwitchPuzzle.unity
+    guid: a0ae7d0168fc3b64e95a11cd141aafb6
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 90dfd16557c9de34499995dab2adeb9a,
       type: 2}

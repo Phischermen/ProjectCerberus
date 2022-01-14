@@ -328,7 +328,6 @@ public class PuzzleContainer : MonoBehaviour
                     {
                         // Initialize floorTile
                         floorTile.puzzle = this;
-                        floorTile.currentCell = levelCell;
                         // Set floor tile in levelCell
                         levelCell.floorTile = floorTile;
                     }
@@ -340,6 +339,7 @@ public class PuzzleContainer : MonoBehaviour
                         // Initialize floorTileClone
                         floorTileClone.puzzle = this;
                         floorTileClone.currentCell = levelCell;
+                        floorTileClone.position = tilemap.GetCellCenterWorld(new Vector3Int(i, j, 0));
                         levelCell.floorTile = floorTileClone;
                         tilemap.SetTile(new Vector3Int(i, j, 0), floorTileClone);
                         // Add floorTileClone to undoables. We only do this with clones because data in non-clones is
@@ -403,7 +403,7 @@ public class PuzzleContainer : MonoBehaviour
     // Undo system
     public void PushToUndoStack()
     {
-        if (!_manager.gameOverImminent)
+        if (_manager.gameplayEnabled)
         {
             // Get undo data from every undoable, so board state can be recreated.
             var undoList = new List<UndoData>();

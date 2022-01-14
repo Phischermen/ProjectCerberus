@@ -47,19 +47,26 @@ namespace Editor
                         // Add edit button
                         if (GUILayout.Button("Open"))
                         {
-                            EditorSceneManager.OpenScene(path);
+                            if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                            {
+                                EditorSceneManager.OpenScene(path);
+                            }
                         }
                         // Add move up button
                         if (GUILayout.Button("▲") && j != 0)
                         {
+                            // Make move up undoable.
+                            UnityEditor.Undo.RecordObject(levelSequence, "Move Up");
                             // Move the scene "up" the list.
                             world.levels.RemoveAt(j);
                             world.levels.Insert(j - 1, scene);
                         }
 
                         // Add move down button.
-                        if (GUILayout.Button("▼") && j != world.levels.Count)
+                        if (GUILayout.Button("▼") && j != world.levels.Count - 1)
                         {
+                            // Make move down undoable.
+                            UnityEditor.Undo.RecordObject(levelSequence, "Move Down");
                             // Move the scene "down" the list.
                             world.levels.RemoveAt(j);
                             world.levels.Insert(j + 1, scene);
@@ -67,6 +74,8 @@ namespace Editor
                         // Add insert button.
                         if (GUILayout.Button("Ins"))
                         {
+                            // Make insert undoable.
+                            UnityEditor.Undo.RecordObject(levelSequence, "Insert Scene");
                             // Display select menu, and insert the scene at the current index.
                             _editedWorld = i;
                             _editedLevel = j;
@@ -87,6 +96,8 @@ namespace Editor
                 // Add add scene button.
                 if (GUILayout.Button("Add Scene"))
                 {
+                    // Make add scene undoable.
+                    UnityEditor.Undo.RecordObject(levelSequence, "Add Scene");
                     // Display select menu, and append the scene to the bottom of the list.
                     _editedWorld = i;
                     _editedLevel = world.levels.Count;
@@ -98,6 +109,8 @@ namespace Editor
             // Add add world button
             if (GUILayout.Button("Add World"))
             {
+                // Make add world undoable.
+                UnityEditor.Undo.RecordObject(levelSequence, "Add World");
                 // Add the world.
                 levelSequence.AddWorld();
             }
