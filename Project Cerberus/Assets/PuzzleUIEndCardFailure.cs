@@ -5,10 +5,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PuzzleUIEndCardFailure : MonoBehaviour
 {
     private GameManager _gameManager;
+    [SerializeField] private Image _failureTextures;
+    [SerializeField] private Text _failureMessages;
 
     public enum DeathPresetName
     {
@@ -21,7 +24,7 @@ public class PuzzleUIEndCardFailure : MonoBehaviour
     public class DeathPreset
     {
         public string title;
-        public Texture image;
+        public Sprite image;
     }
 
     public DeathPreset[] deathPresets;
@@ -53,5 +56,11 @@ public class PuzzleUIEndCardFailure : MonoBehaviour
     {
         //TODO Get refrences to text and image components so that this can be implemented.
         // Set UI fields to deathPreset.
+        int deathIndex = (int)(deathPresetName);
+        DeathPreset typeOfDeath = deathPresets[deathIndex];
+
+        // Set fields for images.
+        _failureTextures.sprite = typeOfDeath.image;
+        _failureMessages.text = typeOfDeath.title;
     }
 }
