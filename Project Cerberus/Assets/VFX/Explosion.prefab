@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8642686796960774519}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -1.2042557, y: -0.44856954, z: 0.0983549}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1041,12 +1041,12 @@ ParticleSystem:
         - serializedVersion: 3
           time: 0
           value: 0
-          inSlope: -1.1944015
-          outSlope: -1.1944015
+          inSlope: 4.6667295
+          outSlope: 4.6667295
           tangentMode: 0
           weightedMode: 0
           inWeight: 0.33333334
-          outWeight: 0.26022306
+          outWeight: 0.034398034
         - serializedVersion: 3
           time: 1
           value: 1
@@ -1420,7 +1420,7 @@ ParticleSystem:
   UVModule:
     serializedVersion: 2
     enabled: 1
-    mode: 1
+    mode: 0
     timeMode: 0
     fps: 30
     frameOverTime:
@@ -1530,8 +1530,8 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     speedRange: {x: 0, y: 5}
-    tilesX: 10
-    tilesY: 10
+    tilesX: 8
+    tilesY: 11
     animationType: 0
     rowIndex: 0
     cycles: 1

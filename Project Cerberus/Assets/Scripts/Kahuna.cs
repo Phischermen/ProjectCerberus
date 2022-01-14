@@ -105,6 +105,7 @@ public class Kahuna : Cerberus
                 BasicMove(Vector2Int.left);
             }
         }
+
         if (wantsToFire)
         {
             if (aim != Vector2Int.zero)
@@ -170,6 +171,15 @@ public class Kahuna : Cerberus
             // Push or interact with entity
             if (entityToPushOrInteractWith.interactsWithFireball)
             {
+                // Get distance time to reach target
+                var destinationPosition = puzzle.GetCellCenterWorld(searchCoord - offset);
+                GetDistanceAndTimeToHitTarget(AnimationUtility.initialFireballSpeed,
+                    AnimationUtility.fireBallAcceleration, destinationPosition, out float distanceToTravel,
+                    out float time);
+                // Play animations
+                entityToPushOrInteractWith.PlayAnimation(entityToPushOrInteractWith.InteractWithFireball(time));
+                PlayAnimation(LaunchFireball(destinationPosition, AnimationUtility.initialFireballSpeed,
+                    AnimationUtility.fireBallAcceleration, distanceToTravel));
                 // Interact with entity
                 entityToPushOrInteractWith.OnShotByKahuna();
                 DeclareDoneWithMove();
@@ -184,12 +194,12 @@ public class Kahuna : Cerberus
                 if (!pushBlocked)
                 {
                     entityToPushOrInteractWith.PlaySfx(entityToPushOrInteractWith.pushedByFireballSfx);
-                    // Get time to reach target
-                    var startingPosition = transform.position;
+                    // Get distance time to reach target
                     var destinationPosition = puzzle.GetCellCenterWorld(searchCoord - offset);
-                    var distanceToTravel = Vector3.Distance(startingPosition, destinationPosition);
-                    var time = GetTimeToHitTarget(AnimationUtility.initialFireballSpeed,
-                        AnimationUtility.fireBallAcceleration, distanceToTravel);
+                    GetDistanceAndTimeToHitTarget(AnimationUtility.initialFireballSpeed,
+                        AnimationUtility.fireBallAcceleration, destinationPosition, out float distanceToTravel,
+                        out float time);
+                    // Play animations
                     entityToPushOrInteractWith.PlayAnimation(
                         entityToPushOrInteractWith.SlideToDestination(pushCoord,
                             AnimationUtility.basicMoveAndPushSpeed, time));
@@ -205,10 +215,12 @@ public class Kahuna : Cerberus
     }
 
     // Animation helper
-    float GetTimeToHitTarget(float initialSpeed, float acceleration, float distance)
+    void GetDistanceAndTimeToHitTarget(float initialSpeed, float acceleration, Vector3 destinationPosition,
+        out float distance, out float time)
     {
+        distance = Vector3.Distance(transform.position, destinationPosition);
         // 𝅘𝅥𝅯 Negative b plus or minus radical! b squared minus 4ac. All over 2a! 𝅘𝅥𝅯
-        return (-initialSpeed + Mathf.Sqrt((initialSpeed * initialSpeed) + (2f * acceleration * distance))) /
+        time = (-initialSpeed + Mathf.Sqrt((initialSpeed * initialSpeed) + (2f * acceleration * distance))) /
                (acceleration);
     }
 
@@ -224,6 +236,7 @@ public class Kahuna : Cerberus
         fireBall.transform.position = startingPosition;
         // TODO Make fireball face direction it was fired in.
         fireBallParticleSystem.Play(true);
+        fireBallParticleSystem.transform.rotation = fireArrow.transform.rotation;
         while (distanceTraveled < distanceToTravel && animationMustStop == false)
         {
             // Increment speed
@@ -238,6 +251,8 @@ public class Kahuna : Cerberus
         }
 
         fireBall.transform.position = destinationPosition;
+        // Stop the fireball particle system emission, but only clear the fireball and not the sparks. 
+        fireBallParticleSystem.Clear(false);
         fireBallParticleSystem.Stop(true);
         explosion.transform.position = destinationPosition;
         explosionParticleSystem.Play(true);

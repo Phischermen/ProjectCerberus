@@ -112,7 +112,14 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     {
     }
 
+    // The following two methods are related to entities that react to being hit by Kahuna's fireball.
+    // This method should be used to update entity data.
     public virtual void OnShotByKahuna()
+    {
+    }
+    
+    // This method should be used to update the sprites and launch effects.
+    public virtual void OnShotByKahunaVisually()
     {
     }
 
@@ -500,6 +507,23 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
 
         manager.EndGameWithFailureStatus();
 
+        // Set these to false
+        animationIsRunning = false;
+        animationMustStop = false;
+    }
+    
+    public IEnumerator InteractWithFireball(float time)
+    {
+        animationIsRunning = true;
+        var timePassed = 0f;
+
+        while(timePassed < time && animationMustStop == false)
+        {
+            timePassed += Time.deltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+        // Make entity react to being hit by fireball.
+        OnShotByKahunaVisually();
         // Set these to false
         animationIsRunning = false;
         animationMustStop = false;
