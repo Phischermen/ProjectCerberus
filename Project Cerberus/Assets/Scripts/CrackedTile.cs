@@ -77,12 +77,13 @@ public class CrackedTile : FloorTile
         {
             SetFieldsToFinalStatePreset();
             // Make every entity on top this cell fall into a pit.
-            // Note: Calling FallIntoPit removes entity from currentCell.puzzleEntities.
+            // Note: Calling XxFallIntoPit removes entity from currentCell.puzzleEntities.
             while (currentCell.puzzleEntities.Count > 0)
             {
                 var entity = currentCell.puzzleEntities[0];
                 // Play falling animation.
-                entity.PlayAnimation(entity.FallIntoPit(1f, 90f, 0f));
+                entity.PlayAnimation(entity.XxFallIntoPit(1f, 90f, 0f),
+                    PuzzleEntity.PlayAnimationMode.playAfterCurrentFinished);
             }
         }
     }
@@ -93,8 +94,8 @@ public class CrackedTile : FloorTile
         if (stage == 3 && !other.isSuperPushed)
         {
             // Play falling animation.
-            other.PlayAnimation(other.FallIntoPit(AnimationUtility.fallDuration, AnimationUtility.fallRotationSpeed,
-                AnimationUtility.fallFinalScale));
+            other.PlayAnimation(other.XxFallIntoPit(AnimationUtility.fallDuration, AnimationUtility.fallRotationSpeed,
+                AnimationUtility.fallFinalScale), PuzzleEntity.PlayAnimationMode.playAfterCurrentFinished);
         }
     }
 

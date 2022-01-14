@@ -20,8 +20,8 @@ public class SpikedTile : FloorTile
         if (other.isPlayer && !other.isSuperPushed && currentCell.GetLandableScore() < 0)
         {
             // Play spiked animation.
-            other.PlayAnimation(other.Spiked(AnimationUtility.spikedRotationSpeed, AnimationUtility.spikedEndPosition,
-                AnimationUtility.spikedControlPointHeight, AnimationUtility.spikedSpeed));
+            other.PlayAnimation(other.XxSpiked(AnimationUtility.spikedRotationSpeed, AnimationUtility.spikedEndPosition,
+                AnimationUtility.spikedControlPointHeight, AnimationUtility.spikedSpeed), PuzzleEntity.PlayAnimationMode.playAfterCurrentFinished);
         }
     }
 }

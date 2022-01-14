@@ -352,6 +352,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   position: {x: 0, y: 0}
+  inHole: 0
+  processPriority: 0
   showOptionalSfx: 0
   pushedSfx: {fileID: 7988637188370152927}
   superPushedSfx: {fileID: 5629400587339105899}

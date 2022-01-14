@@ -1,9 +1,6 @@
 ﻿/*
  * PuzzleUIEndCardFailure controls what is displayed on the failure end card, and has a button to reset the level.
  */
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,6 +33,11 @@ public class PuzzleUIEndCardFailure : MonoBehaviour
         {
             NZ.NotifyZach("Death Presets is too long!");
         }
+    }
+
+    private void OnDestroy()
+    {
+        _gameManager.gameOverEndCardDisplayed = false;
     }
 
     // Button actions

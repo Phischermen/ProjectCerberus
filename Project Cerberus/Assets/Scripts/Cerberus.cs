@@ -13,24 +13,31 @@ public class Cerberus : PuzzleEntity
     {
         public Cerberus cerberus;
         public Vector2Int position;
+        public bool inHole;
         public bool onTopOfGoal;
         public bool collisionDisabledAndPentagramDisplayed;
 
-        public override void Load()
-        {
-            cerberus.MoveForUndo(position);
-            cerberus.ResetTransformAndSpriteRendererForUndo();
-            cerberus.onTopOfGoal = onTopOfGoal;
-            cerberus.SetDisableCollsionAndShowPentagramMarker(collisionDisabledAndPentagramDisplayed);
-        }
-
-        public CerberusUndoData(Cerberus cerberus, Vector2Int position, bool collisionDisabledAndPentagramDisplayed,
+        public CerberusUndoData(Cerberus cerberus, Vector2Int position, bool inHole,
+            bool collisionDisabledAndPentagramDisplayed,
             bool onTopOfGoal)
         {
             this.cerberus = cerberus;
             this.position = position;
             this.onTopOfGoal = onTopOfGoal;
+            this.inHole = inHole;
             this.collisionDisabledAndPentagramDisplayed = collisionDisabledAndPentagramDisplayed;
+        }
+
+        public override void Load()
+        {
+            cerberus.inHole = inHole;
+            if (!inHole)
+            {
+                cerberus.MoveForUndo(position);
+                cerberus.ResetTransformAndSpriteRendererForUndo();
+            }
+            cerberus.onTopOfGoal = onTopOfGoal;
+            cerberus.SetDisableCollsionAndShowPentagramMarker(collisionDisabledAndPentagramDisplayed, false);
         }
     }
 
@@ -67,7 +74,7 @@ public class Cerberus : PuzzleEntity
 
     public override UndoData GetUndoData()
     {
-        var undoData = new CerberusUndoData(this, position,
+        var undoData = new CerberusUndoData(this, position, inHole,
             collisionDisabledAndPentagramDisplayed: manager.cerberusFormed != isCerberusMajor, onTopOfGoal);
         return undoData;
     }
@@ -81,10 +88,12 @@ public class Cerberus : PuzzleEntity
 
         if (input.mergeOrSplit && manager.joinAndSplitEnabled)
         {
-            if (isCerberusMajor)
+            if (this is CerberusMajor cerberusMajor)
             {
                 manager.wantsToSplit = true;
                 DeclareDoneWithMove();
+                cerberusMajor.jumpSpaces.Clear();
+                cerberusMajor.RenderJumpPath();
             }
             else
             {
@@ -102,7 +111,6 @@ public class Cerberus : PuzzleEntity
     public void DeclareDoneWithMove()
     {
         doneWithMove = true;
-        input.ClearInput();
     }
 
     // Common movement methods
@@ -152,9 +160,9 @@ public class Cerberus : PuzzleEntity
         }
     }
 
-    public void SetDisableCollsionAndShowPentagramMarker(bool disableAndShowPentagram)
+    public void SetDisableCollsionAndShowPentagramMarker(bool disableAndShowPentagram, bool invokeCallbacks = true)
     {
-        SetCollisionsEnabled(!disableAndShowPentagram);
+        SetCollisionsEnabled(!disableAndShowPentagram, invokeCallbacks);
         pushableByStandardMove = !disableAndShowPentagram;
         pushableByFireball = !disableAndShowPentagram;
         pushableByJacksMultiPush = !disableAndShowPentagram;
@@ -188,6 +196,4 @@ public class Cerberus : PuzzleEntity
         animationMustStop = false;
         animationIsRunning = false;
     }
-
-    
 }

@@ -410,7 +410,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_Sprite: {fileID: -7017386196248503706, guid: eaabf613e482f914c9b13987c3070621,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -436,15 +436,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   position: {x: 0, y: 0}
+  inHole: 0
+  processPriority: 0
+  showOptionalSfx: 0
   pushedSfx: {fileID: 4748974585625845022}
   superPushedSfx: {fileID: 0}
   pushedByFireballSfx: {fileID: 0}
+  showOptionalEvents: 0
+  onStandardPushed:
+    m_PersistentCalls:
+      m_Calls: []
+  onSuperPushed:
+    m_PersistentCalls:
+      m_Calls: []
+  onMultiPushed:
+    m_PersistentCalls:
+      m_Calls: []
+  onHitByFireball:
+    m_PersistentCalls:
+      m_Calls: []
+  onPulled:
+    m_PersistentCalls:
+      m_Calls: []
   doneWithMove: 0
   onTopOfGoal: 0
   isCerberusMajor: 0
   pentagramMarker: {fileID: -1768482875118672931, guid: f517efbb0e7cff84798d8ddd4641d42b,
     type: 3}
-  _walkSFX: {fileID: 1109043834303915764}
+  walkSFX: {fileID: 1109043834303915764}
+  talkAnimationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   fireArrow: {fileID: 6824530358841447831}
   fireballSFX: {fileID: 7982099143372272266}
 --- !u!1 &9105411547274003689

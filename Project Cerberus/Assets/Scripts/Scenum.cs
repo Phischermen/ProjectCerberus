@@ -18,5 +18,17 @@ public static class Scenum
 		ThreeLanes,
 		ZachsTestLevel,
 		MakeABridge,
+		MainMenu,
+		BlockBlocks,
+		MultiPushCorridor,
+		PushAndPull,
+		HoldTheDoor,
+		JackSuperPushedOverTheGaps,
+		JackCrossesTheCracks,
+		MultiPushAcrossSpikes,
+		WoodBlockPuzzle,
+		HoldTheDoor2,
+		SawdustToCoverSpikes,
+		FireballIntro,
 	}
 }

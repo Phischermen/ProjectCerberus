@@ -36,7 +36,7 @@ public class CerberusMajor : Cerberus
         }
     }
 
-    private List<JumpInfo> _jumpSpaces;
+    public List<JumpInfo> jumpSpaces;
     private static int _maxJumpArrows = 32;
 
     public AudioSource jumpSfx;
@@ -48,7 +48,7 @@ public class CerberusMajor : Cerberus
 
     private void Start()
     {
-        _jumpSpaces = new List<JumpInfo>();
+        jumpSpaces = new List<JumpInfo>();
         _jumpArrows = new GameObject[_maxJumpArrows];
         for (int i = 0; i < _maxJumpArrows; i++)
         {
@@ -67,44 +67,45 @@ public class CerberusMajor : Cerberus
     public override void ProcessMoveInput()
     {
         base.ProcessMoveInput();
-        if (input.specialHeld)
+        var lastJumpSpacePosition = (jumpSpaces.Count > 0) ? jumpSpaces[jumpSpaces.Count - 1].position : position;
+        if (input.specialHeld || (input.rightClicked && input.clickedCell != lastJumpSpacePosition))
         {
-            if (input.upPressed)
+            if (input.upPressed || (input.clickedCell.x == lastJumpSpacePosition.x && input.clickedCell.y > lastJumpSpacePosition.y))
             {
                 AddJumpSpace(Vector2Int.up, 90);
             }
 
-            else if (input.downPressed)
+            else if (input.downPressed || (input.clickedCell.x == lastJumpSpacePosition.x && input.clickedCell.y < lastJumpSpacePosition.y))
             {
                 AddJumpSpace(Vector2Int.down, 270);
             }
 
-            else if (input.rightPressed)
+            else if (input.rightPressed || (input.clickedCell.y == lastJumpSpacePosition.y && input.clickedCell.x > lastJumpSpacePosition.x))
             {
                 AddJumpSpace(Vector2Int.right, 0);
             }
 
-            else if (input.leftPressed)
+            else if (input.leftPressed || (input.clickedCell.y == lastJumpSpacePosition.y && input.clickedCell.x < lastJumpSpacePosition.x))
             {
                 AddJumpSpace(Vector2Int.left, 180);
             }
         }
-        else if (input.specialReleased)
+        else if (input.specialReleased || (input.rightClicked && input.clickedCell == lastJumpSpacePosition))
         {
-            if (_jumpSpaces.Count > 0)
+            if (jumpSpaces.Count > 0)
             {
                 puzzle.PushToUndoStack();
                 
-                JumpInfo[] jumpInfoCopy = new JumpInfo[_jumpSpaces.Count];
-                _jumpSpaces.CopyTo(jumpInfoCopy);
+                JumpInfo[] jumpInfoCopy = new JumpInfo[jumpSpaces.Count];
+                jumpSpaces.CopyTo(jumpInfoCopy);
                 PlayAnimation(JumpAlongPath(jumpInfoCopy, AnimationUtility.jumpSpeed));
                 
                 // Travel across jump spaces
-                foreach (var jumpInfo in _jumpSpaces)
+                foreach (var jumpInfo in jumpSpaces)
                 {
                     Move(jumpInfo.position);
                 }
-                _jumpSpaces.Clear();
+                jumpSpaces.Clear();
                 RenderJumpPath();
 
                 DeclareDoneWithMove();
@@ -112,32 +113,44 @@ public class CerberusMajor : Cerberus
         }
         else
         {
-            if (input.upPressed)
+            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y &&
+                                    input.leftClicked))
             {
                 BasicMove(Vector2Int.up);
+                jumpSpaces.Clear();
+                RenderJumpPath();
             }
 
-            else if (input.downPressed)
+            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y &&
+                                           input.leftClicked))
             {
                 BasicMove(Vector2Int.down);
+                jumpSpaces.Clear();
+                RenderJumpPath();
             }
 
-            else if (input.rightPressed)
+            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x &&
+                                            input.leftClicked))
             {
                 BasicMove(Vector2Int.right);
+                jumpSpaces.Clear();
+                RenderJumpPath();
             }
 
-            else if (input.leftPressed)
+            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x &&
+                                           input.leftClicked))
             {
                 BasicMove(Vector2Int.left);
+                jumpSpaces.Clear();
+                RenderJumpPath();
             }
         }
 
         if (input.undoPressed)
         {
-            if (_jumpSpaces.Count > 0)
+            if (jumpSpaces.Count > 0)
             {
-                _jumpSpaces.Clear();
+                jumpSpaces.Clear();
                 RenderJumpPath();
             }
             else
@@ -148,7 +161,7 @@ public class CerberusMajor : Cerberus
 
         if (input.cycleCharacter)
         {
-            _jumpSpaces.Clear();
+            jumpSpaces.Clear();
             RenderJumpPath();
             manager.wantsToCycleCharacter = true;
         }
@@ -156,7 +169,7 @@ public class CerberusMajor : Cerberus
 
     private void AddJumpSpace(Vector2Int offset, float rotation)
     {
-        var lastJumpPosition = (_jumpSpaces.Count > 0) ? _jumpSpaces[_jumpSpaces.Count - 1].position : position;
+        var lastJumpPosition = (jumpSpaces.Count > 0) ? jumpSpaces[jumpSpaces.Count - 1].position : position;
         var jumpedOverSpace = lastJumpPosition + offset;
         var jumpedOverCell = puzzle.GetCell(jumpedOverSpace);
         var newJumpSpace = jumpedOverSpace + offset;
@@ -164,7 +177,7 @@ public class CerberusMajor : Cerberus
         // Check if user is "backing out"
         if (newJumpSpace == position)
         {
-            _jumpSpaces.Clear();
+            jumpSpaces.Clear();
             RenderJumpPath();
             // Cerberus cannot possibly have goal in jump path.
             goalIsOnJumpPath = false;
@@ -183,11 +196,11 @@ public class CerberusMajor : Cerberus
             {
                 var newJumpInfo = new JumpInfo(newJumpSpace, rotation);
                 // Check if space is already in collection
-                if (_jumpSpaces.Contains(newJumpInfo))
+                if (jumpSpaces.Contains(newJumpInfo))
                 {
                     // Erase part of jump space path
-                    var idxOfSpaceToRemove = _jumpSpaces.IndexOf(newJumpInfo) + 1;
-                    _jumpSpaces.RemoveRange(idxOfSpaceToRemove, _jumpSpaces.Count - idxOfSpaceToRemove);
+                    var idxOfSpaceToRemove = jumpSpaces.IndexOf(newJumpInfo) + 1;
+                    jumpSpaces.RemoveRange(idxOfSpaceToRemove, jumpSpaces.Count - idxOfSpaceToRemove);
                     RenderJumpPath();
                     // Cerberus cannot possibly have goal in jump path.
                     goalIsOnJumpPath = false;
@@ -195,7 +208,7 @@ public class CerberusMajor : Cerberus
                 else if(!goalIsOnJumpPath)
                 {
                     // Add space to path if goal is not in path
-                    _jumpSpaces.Add(newJumpInfo);
+                    jumpSpaces.Add(newJumpInfo);
                     RenderJumpPath();
                     // Check if cell being landed on has goal
                     foreach (var entity in landableEntities)
@@ -210,20 +223,20 @@ public class CerberusMajor : Cerberus
         }
     }
 
-    private void RenderJumpPath()
+    public void RenderJumpPath()
     {
         for (int i = 0; i < _jumpArrows.Length; i++)
         {
             var arrow = _jumpArrows[i];
-            if (i >= _jumpSpaces.Count)
+            if (i >= jumpSpaces.Count)
             {
                 arrow.SetActive(false);
             }
             else
             {
                 arrow.SetActive(true);
-                arrow.transform.position = puzzle.GetCellCenterWorld(_jumpSpaces[i].position);
-                arrow.transform.eulerAngles = new Vector3(0, 0, _jumpSpaces[i].rotation);
+                arrow.transform.position = puzzle.GetCellCenterWorld(jumpSpaces[i].position);
+                arrow.transform.eulerAngles = new Vector3(0, 0, jumpSpaces[i].rotation);
             }
         }
     }

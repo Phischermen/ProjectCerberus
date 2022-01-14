@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿/*
+ * PuzzleGameplayInput is responsible for gathering input from the player every frame. It supports keyboard, gamepad,
+ * and mouse.
+ */
+
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 public class PuzzleGameplayInput : MonoBehaviour
 {
@@ -26,12 +27,29 @@ public class PuzzleGameplayInput : MonoBehaviour
         cycleCharacterBackward,
         cycleCharacter0,
         cycleCharacter1,
-        cycleCharacter2;
+        cycleCharacter2,
+        leftClicked,
+        rightClicked;
+
+    [HideInInspector] public Vector2Int clickedCell;
+    [HideInInspector] public Cerberus clickedCerberus;
+
+    private PuzzleContainer _puzzleContainer;
+    private Cerberus[] allCerberus;
+    private Camera mainCamera;
+
+    private void Awake()
+    {
+        _puzzleContainer = FindObjectOfType<PuzzleContainer>();
+        allCerberus = FindObjectsOfType<Cerberus>();
+        mainCamera = Camera.main;
+    }
 
     private void Update()
     {
         Gamepad gamepad = Gamepad.current;
         Keyboard keyboard = Keyboard.current;
+        Mouse mouse = Mouse.current;
         ClearInput();
         if (gamepad != null)
         {
@@ -89,15 +107,55 @@ public class PuzzleGameplayInput : MonoBehaviour
             cycleCharacter2 = cycleCharacter2 || keyboard.digit3Key.wasPressedThisFrame;
         }
 
-        cycleCharacter = cycleCharacter0 || cycleCharacter1 || cycleCharacter2 || cycleCharacterForward ||
-                         cycleCharacterBackward;
+        if (mouse != null)
+        {
+            ProcessMouse(mouse);
+        }
+
+        cycleCharacter = cycleCharacter || cycleCharacter0 || cycleCharacter1 || cycleCharacter2 ||
+                         cycleCharacterForward || cycleCharacterBackward;
+    }
+
+    private void ProcessMouse(Mouse mouse)
+    {
+        var mousePosition = mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        leftClicked = mouse.leftButton.wasPressedThisFrame;
+        rightClicked = mouse.rightButton.wasPressedThisFrame;
+        if (leftClicked || rightClicked)
+        {
+            // Convert mouse position to grid cell.
+            var clickedCellV3 =
+                _puzzleContainer.tilemap.layoutGrid.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0f));
+            clickedCell = new Vector2Int(clickedCellV3.x, clickedCellV3.y);
+        }
+        // Check if a cerberus was clicked.
+        if (leftClicked)
+        {
+            foreach (var cerberus in allCerberus)
+            {
+                if (Vector2.Distance(cerberus.transform.position, mousePosition) < 0.25f)
+                {
+                    clickedCerberus = cerberus;
+                    cycleCharacter = true;
+                    if (cerberus.collisionsEnabled == false)
+                    {
+                        mergeOrSplit = true;
+                    }
+                    // Prevent cerberus from moving or using ability.
+                    leftClicked = false;
+                    rightClicked = false;
+                }
+            }
+        }
     }
 
     public void ClearInput()
     {
+        clickedCell = Vector2Int.zero;
+        clickedCerberus = null;
         leftPressed = rightPressed = upPressed = downPressed = leftReleased = rightReleased = upReleased =
             downReleased = specialPressed = specialHeld = specialReleased = mergeOrSplit =
-                undoPressed = resetPressed = cycleCharacter = cycleCharacterForward =
+                undoPressed = resetPressed = leftClicked = rightClicked = cycleCharacter = cycleCharacterForward =
                     cycleCharacterBackward = cycleCharacter0 = cycleCharacter1 = cycleCharacter2 = false;
     }
 }

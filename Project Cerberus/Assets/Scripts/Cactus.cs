@@ -7,5 +7,7 @@ public class Cactus : WoodBlock
     protected Cactus()
     {
         entityRules = "A thorny but fragile obstacle. Cannot be pushed directly";
+        pushableByStandardMove = false;
+        pushableByJacksSuperPush = false;
     }
 }
