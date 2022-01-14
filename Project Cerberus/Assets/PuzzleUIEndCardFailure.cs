@@ -1,6 +1,8 @@
 ﻿/*
  * PuzzleUIEndCardFailure controls what is displayed on the failure end card, and has a button to reset the level.
  */
+
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 

@@ -281,12 +281,14 @@ public class GameManager : MonoBehaviour, IUndoable
                 // Start the next move with currentCerberus
                 nextMoveNeedsToStart = true;
             }
+
             // Handle request to undo
             if (wantsToUndo)
             {
                 wantsToUndo = false;
                 _puzzleContainer.UndoLastMove();
             }
+
             // Handle request to cycle character
             if (wantsToCycleCharacter && !cerberusFormed)
             {
@@ -356,7 +358,8 @@ public class GameManager : MonoBehaviour, IUndoable
         {
             gameOverEndCardDisplayed = true;
             // Display game over end card.
-            Instantiate(_gameOverEndCard);
+            Instantiate(_gameOverEndCard).GetComponent<PuzzleUIEndCardFailure>()
+                .SetFieldsToDeathPreset(PuzzleUIEndCardFailure.DeathPresetName.spiked);
         }
     }
 
