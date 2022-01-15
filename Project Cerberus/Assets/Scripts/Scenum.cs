@@ -33,5 +33,10 @@ public static class Scenum
 		StickySwitchIntro,
 		BigStickySwitchPuzzle,
 		TinyStickySwitchPuzzle,
+		JackTutorial_Z,
+		KahunaTutorial_Z,
+		LagunaTutorial_Z,
+		HadesMansion,
+		HadesFrontLawn,
 	}
 }

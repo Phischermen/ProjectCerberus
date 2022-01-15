@@ -251,6 +251,12 @@ public class PuzzleContainer : MonoBehaviour
 
     void Awake()
     {
+        //Verify transform is zeroed.
+        if (transform.position != Vector3.zero)
+        {
+            NZ.NotifyZach("You got to zero the puzzle container's transform!");
+            transform.position = Vector3.zero;
+        }
         // Get components
         tilemap = GetComponentInChildren<Tilemap>();
 

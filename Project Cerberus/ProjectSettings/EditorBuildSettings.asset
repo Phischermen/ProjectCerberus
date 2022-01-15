@@ -101,6 +101,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Zack's Levels/World_0_Tutorials/LagunaTutorial_Z.unity
     guid: d999849128d82254fb8a7349a9c6b17c
+  - enabled: 1
+    path: Assets/Scenes/HadesMansion.unity
+    guid: 4a278fd76f48c8349b0049b786758dc4
+  - enabled: 1
+    path: Assets/Scenes/HadesFrontLawn.unity
+    guid: 4b5023dbc827e2546ba171eba1a78019
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 90dfd16557c9de34499995dab2adeb9a,
       type: 2}

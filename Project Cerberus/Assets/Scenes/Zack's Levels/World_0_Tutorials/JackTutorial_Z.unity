@@ -725,7 +725,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1648705472}
-  m_RootOrder: 16
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &885153538
 MonoBehaviour:
@@ -4429,12 +4429,12 @@ PrefabInstance:
     - target: {fileID: 2715384113237483522, guid: eef179ac3b38ba642b88743486b798b3,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -8.98
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2715384113237483522, guid: eef179ac3b38ba642b88743486b798b3,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5.14
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2715384113237483522, guid: eef179ac3b38ba642b88743486b798b3,
         type: 3}
@@ -4480,6 +4480,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PuzzleContainer
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796204304794197701, guid: eef179ac3b38ba642b88743486b798b3,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 16
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eef179ac3b38ba642b88743486b798b3, type: 3}

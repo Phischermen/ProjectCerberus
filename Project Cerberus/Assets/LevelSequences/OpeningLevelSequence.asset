@@ -9,7 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31ee42af7c51fae409d44daa119b5a17, type: 3}
-  m_Name: CustomProjectSettings
+  m_Script: {fileID: 11500000, guid: e9a255d5fea778548af13f5d1a64fbd8, type: 3}
+  m_Name: OpeningLevelSequence
   m_EditorClassIdentifier: 
-  mainLevelSequence: {fileID: 11400000, guid: 0109a593f0f5d4b44af9e688bd280475, type: 2}
+  worlds:
+  - levels: 1d0000001e0000001f000000210000002100000020000000
+    expandedInInspector: 1
