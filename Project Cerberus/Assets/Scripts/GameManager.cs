@@ -89,6 +89,8 @@ public class GameManager : MonoBehaviour, IUndoable
     [FormerlySerializedAs("maxMovesUntilStarLoss")] [HideInInspector]
     public int maxMovesBeforeStarLoss;
 
+    public bool startInFixedCameraMode = true;
+
     [SerializeField] private GameObject _uiPrefab;
     [SerializeField] private GameObject _gameOverEndCard;
     [SerializeField] private GameObject _victoryEndCard;
@@ -101,6 +103,7 @@ public class GameManager : MonoBehaviour, IUndoable
     [HideInInspector] public Cerberus currentCerberus;
     private PuzzleContainer _puzzleContainer;
     private PuzzleGameplayInput _input;
+    private PuzzleCameraController _cameraController;
 
     [HideInInspector] public bool joinAndSplitEnabled;
     public bool cerberusFormed { get; protected set; }
@@ -114,7 +117,7 @@ public class GameManager : MonoBehaviour, IUndoable
     [HideInInspector] public bool collectedStar;
 
     [HideInInspector] public bool gameplayEnabled;
-    
+
     [HideInInspector] public bool gameOverEndCardDisplayed;
 
     void Awake()
@@ -135,6 +138,20 @@ public class GameManager : MonoBehaviour, IUndoable
         // Get objects
         _puzzleContainer = FindObjectOfType<PuzzleContainer>();
         _input = FindObjectOfType<PuzzleGameplayInput>();
+        _cameraController = FindObjectOfType<PuzzleCameraController>();
+        if (_cameraController == null)
+        {
+            _cameraController = GameObject.FindGameObjectWithTag("MainCamera").AddComponent<PuzzleCameraController>();
+        }
+        else
+        {
+            NZ.NotifyZach("Main Camera has a redundant CameraController component. Remove it NOW or you're fired.");
+        }
+
+        _cameraController.SetCameraMode(startInFixedCameraMode
+            ? PuzzleCameraController.CameraMode.FixedPointMode
+            : PuzzleCameraController.CameraMode.ScrollingMode);
+        _cameraController.GotoDesiredPositionAndSize();
 
         _jack = FindObjectOfType<Jack>();
         _kahuna = FindObjectOfType<Kahuna>();
@@ -179,7 +196,7 @@ public class GameManager : MonoBehaviour, IUndoable
 
     void Update()
     {
-        // Process movement of currently controlled cerberus if there is still time left and gameplay is enabled.
+        // Process movement of currently controlled cerberus if gameplay is enabled.
         if (gameplayEnabled)
         {
             var nextMoveNeedsToStart = false;
@@ -280,12 +297,14 @@ public class GameManager : MonoBehaviour, IUndoable
                 // Start the next move with currentCerberus
                 nextMoveNeedsToStart = true;
             }
+
             // Handle request to undo
             if (wantsToUndo)
             {
                 wantsToUndo = false;
                 _puzzleContainer.UndoLastMove();
             }
+
             // Handle request to cycle character
             if (wantsToCycleCharacter && !cerberusFormed)
             {
@@ -328,6 +347,12 @@ public class GameManager : MonoBehaviour, IUndoable
                 }
 
                 nextMoveNeedsToStart = true;
+            }
+
+            // Handle request for switching camera mode
+            if (_input.toggleFixedCameraMode)
+            {
+                _cameraController.ToggleCameraMode();
             }
 
             if (nextMoveNeedsToStart)

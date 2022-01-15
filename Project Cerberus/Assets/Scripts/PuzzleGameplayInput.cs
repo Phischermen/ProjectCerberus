@@ -22,6 +22,7 @@ public class PuzzleGameplayInput : MonoBehaviour
         mergeOrSplit,
         undoPressed,
         resetPressed,
+        toggleFixedCameraMode,
         cycleCharacter,
         cycleCharacterForward,
         cycleCharacterBackward,
@@ -72,6 +73,8 @@ public class PuzzleGameplayInput : MonoBehaviour
             undoPressed = gamepad.circleButton.wasPressedThisFrame;
             resetPressed = gamepad.leftTrigger.wasPressedThisFrame;
 
+            toggleFixedCameraMode = gamepad.triangleButton.wasPressedThisFrame;
+
             cycleCharacterBackward = gamepad.leftShoulder.wasPressedThisFrame;
             cycleCharacterForward = gamepad.rightShoulder.wasPressedThisFrame;
         }
@@ -101,6 +104,8 @@ public class PuzzleGameplayInput : MonoBehaviour
             undoPressed = undoPressed || keyboard.rightShiftKey.wasPressedThisFrame;
             resetPressed = resetPressed || keyboard.rKey.wasPressedThisFrame;
 
+            toggleFixedCameraMode = toggleFixedCameraMode || keyboard.spaceKey.wasPressedThisFrame;
+
             cycleCharacterForward = cycleCharacterForward || keyboard.tabKey.wasPressedThisFrame;
             cycleCharacter0 = cycleCharacter0 || keyboard.digit1Key.wasPressedThisFrame;
             cycleCharacter1 = cycleCharacter1 || keyboard.digit2Key.wasPressedThisFrame;
@@ -128,6 +133,7 @@ public class PuzzleGameplayInput : MonoBehaviour
                 _puzzleContainer.tilemap.layoutGrid.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0f));
             clickedCell = new Vector2Int(clickedCellV3.x, clickedCellV3.y);
         }
+
         // Check if a cerberus was clicked.
         if (leftClicked)
         {
@@ -141,6 +147,7 @@ public class PuzzleGameplayInput : MonoBehaviour
                     {
                         mergeOrSplit = true;
                     }
+
                     // Prevent cerberus from moving or using ability.
                     leftClicked = false;
                     rightClicked = false;
@@ -155,7 +162,8 @@ public class PuzzleGameplayInput : MonoBehaviour
         clickedCerberus = null;
         leftPressed = rightPressed = upPressed = downPressed = leftReleased = rightReleased = upReleased =
             downReleased = specialPressed = specialHeld = specialReleased = mergeOrSplit =
-                undoPressed = resetPressed = leftClicked = rightClicked = cycleCharacter = cycleCharacterForward =
-                    cycleCharacterBackward = cycleCharacter0 = cycleCharacter1 = cycleCharacter2 = false;
+                undoPressed = resetPressed = toggleFixedCameraMode = leftClicked = rightClicked = cycleCharacter =
+                    cycleCharacterForward = cycleCharacterBackward = cycleCharacter0 = cycleCharacter1 =
+                        cycleCharacter2 = false;
     }
 }
