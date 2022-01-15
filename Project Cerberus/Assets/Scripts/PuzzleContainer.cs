@@ -24,8 +24,12 @@ public class PuzzleContainer : MonoBehaviour
          * be static. LevelCell also has helper methods to find entities with specific attributes or get other data
          * about the cell as necessary.
          */
+        public Vector2Int position;
         public FloorTile floorTile;
         public List<PuzzleEntity> puzzleEntities = new List<PuzzleEntity>();
+        public int spacesAwayFromChaseTarget; // Used by Hades for pathfinding.
+        public int searchId;
+        public static int numberOfSearches;
 
         public PuzzleEntity GetPullableEntity()
         {
@@ -89,6 +93,7 @@ public class PuzzleContainer : MonoBehaviour
             {
                 return int.MinValue;
             }
+
             var score = floorTile.landableScore;
             foreach (var entity in puzzleEntities)
             {
@@ -166,6 +171,7 @@ public class PuzzleContainer : MonoBehaviour
                 var cell = GetCell(mouseCoord);
                 if (cell != null)
                 {
+                    inspectorContentText.Add($"Spaces away from chase target: {cell.spacesAwayFromChaseTarget}");
                     // Read fields and properties exposed to tile inspector.
                     // Read floor tile.
                     if (cell.floorTile != null)
@@ -238,8 +244,8 @@ public class PuzzleContainer : MonoBehaviour
 
 #endif
 
-    public static int maxLevelWidth = 32;
-    public static int maxLevelHeight = 32;
+    public static int maxLevelWidth = 33;
+    public static int maxLevelHeight = 33;
     public LevelCell[,] levelMap { get; protected set; }
     public Tilemap tilemap { get; protected set; }
 
@@ -266,7 +272,9 @@ public class PuzzleContainer : MonoBehaviour
         {
             for (int j = 0; j < maxLevelHeight; j++)
             {
-                levelMap[i, j] = new LevelCell();
+                var levelCell = new LevelCell();
+                levelCell.position = new Vector2Int(i, j);
+                levelMap[i, j] = levelCell;
             }
         }
 
@@ -289,7 +297,7 @@ public class PuzzleContainer : MonoBehaviour
         tilemap.CompressBounds();
         // Verify size is right.
         var bounds = tilemap.cellBounds;
-        if (tilemap.size.x > maxLevelWidth || tilemap.size.y > maxLevelHeight)
+        if (tilemap.size.x >= maxLevelWidth || tilemap.size.y >= maxLevelHeight)
         {
             NZ.NotifyZach($"Level is too big; level must be {maxLevelWidth} x {maxLevelHeight}");
         }
