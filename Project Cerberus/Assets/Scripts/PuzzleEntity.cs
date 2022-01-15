@@ -29,8 +29,10 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     [ShowInTileInspector] public bool collisionsEnabled { get; protected set; } = true;
     [ShowInTileInspector] public bool isStatic { get; protected set; }
     [ShowInTileInspector] public bool isPlayer { get; protected set; }
+    [ShowInTileInspector] public bool isHades { get; protected set; }
     [ShowInTileInspector] public bool isBlock { get; protected set; }
     [ShowInTileInspector] public bool stopsPlayer { get; protected set; }
+    [ShowInTileInspector] public bool stopsHades { get; protected set; }
     [ShowInTileInspector] public bool stopsBlock { get; protected set; }
     [ShowInTileInspector, HideInInspector] public bool inHole;
     [ShowInTileInspector] public bool pullable { get; protected set; }
@@ -89,7 +91,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         currentCell.floorTile.OnEnterCollisionWithEntity(this);
     }
 
-    private void Update()
+    protected void Update()
     {
         // Check for queued animation. Play it if there's not another animation already running.
         if (queuedAnimation != null && !animationIsRunning)
@@ -223,6 +225,8 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         return collisionsEnabled && entity.collisionsEnabled && (
             (isPlayer && entity.stopsPlayer) ||
             (stopsPlayer && entity.isPlayer) ||
+            (isHades && entity.stopsHades) ||
+            (stopsHades && entity.isHades) ||
             (isBlock && entity.stopsBlock) ||
             (stopsBlock && entity.isBlock));
     }

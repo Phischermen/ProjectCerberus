@@ -13,6 +13,7 @@ public class FloorTile : Tile, IUndoable
 
     public bool needsToBeCloned;
     [ShowInTileInspector] public bool stopsPlayer;
+    [ShowInTileInspector] public bool stopsHades;
     [ShowInTileInspector] public bool stopsBlock;
     [ShowInTileInspector] public bool stopsFireball;
     [ShowInTileInspector] public bool allowsAllSuperPushedEntitiesPassage;
@@ -26,8 +27,8 @@ public class FloorTile : Tile, IUndoable
         tileData.transform = transform;
         tileData.colliderType = colliderType;
         tileData.gameObject = gameObject;
-        if (position.x < 1 || position.y < 1 || position.x > PuzzleContainer.maxLevelWidth ||
-            position.y > PuzzleContainer.maxLevelHeight)
+        if (position.x < 1 || position.y < 1 || position.x >= PuzzleContainer.maxLevelWidth ||
+            position.y >= PuzzleContainer.maxLevelHeight)
         {
             tileData.color = Color.red;
         }

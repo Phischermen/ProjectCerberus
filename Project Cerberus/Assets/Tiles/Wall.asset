@@ -36,8 +36,10 @@ MonoBehaviour:
   m_Flags: 1
   m_ColliderType: 1
   puzzle: {fileID: 0}
+  position: {x: 0, y: 0, z: 0}
   needsToBeCloned: 0
   stopsPlayer: 1
+  stopsHades: 1
   stopsBlock: 1
   stopsFireball: 1
   allowsAllSuperPushedEntitiesPassage: 0
