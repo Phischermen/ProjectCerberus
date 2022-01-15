@@ -42,7 +42,7 @@ public class PuzzleContainer : MonoBehaviour
         {
             foreach (var entity in puzzleEntities)
             {
-                if (entity.pushableByStandardMove)
+                if (entity.pushableByStandardMove && !entity.inHole)
                     return entity;
             }
 
@@ -53,7 +53,7 @@ public class PuzzleContainer : MonoBehaviour
         {
             foreach (var entity in puzzleEntities)
             {
-                if (entity.pushableByJacksMultiPush)
+                if (entity.pushableByJacksMultiPush && !entity.inHole)
                     return entity;
             }
 
@@ -64,7 +64,7 @@ public class PuzzleContainer : MonoBehaviour
         {
             foreach (var entity in puzzleEntities)
             {
-                if (entity.pushableByJacksSuperPush)
+                if (entity.pushableByJacksSuperPush && !entity.inHole)
                     return entity;
             }
 

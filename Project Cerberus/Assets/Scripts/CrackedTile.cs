@@ -87,6 +87,8 @@ public class CrackedTile : FloorTile
             foreach (var entity in copyOfPuzzleEntities)
             {
                 // Play falling animation.
+                // Mark this entity as in a hole, for undo.
+                entity.inHole = true;
                 entity.PlayAnimation(entity.XxFallIntoPit(1f, 90f, 0f),
                     PuzzleEntity.PlayAnimationMode.playAfterCurrentFinished);
             }
@@ -99,6 +101,8 @@ public class CrackedTile : FloorTile
         if (stage == 3 && !other.isSuperPushed)
         {
             // Play falling animation.
+            // Mark this entity as in a hole, for undo.
+            other.inHole = true;
             other.PlayAnimation(other.XxFallIntoPit(AnimationUtility.fallDuration, AnimationUtility.fallRotationSpeed,
                 AnimationUtility.fallFinalScale), PuzzleEntity.PlayAnimationMode.playAfterCurrentFinished);
         }

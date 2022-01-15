@@ -404,12 +404,19 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
      }
      
      If an animation will kill the player and end the game, its name must start with 'Xx'
+     Animations must NEVER yield for multiple frames.
      */
 
     public IEnumerator SlideToDestination(Vector2Int destination, float speed, float delay = 0f)
     {
-        yield return new WaitForSeconds(delay);
         animationIsRunning = true;
+        var timePassed = 0f;
+
+        while(timePassed < delay && animationMustStop == false)
+        {
+            timePassed += Time.deltaTime;
+            yield return new WaitForFixedUpdate();
+        }
         var startingPosition = transform.position;
         var destinationPosition = puzzle.GetCellCenterWorld(destination);
         var distanceToTravel = Vector3.Distance(startingPosition, destinationPosition);
@@ -445,8 +452,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             manager.joinAndSplitEnabled = false;
         }
 
-        // Mark this entity as in a hole, for undo.
-        inHole = true;
+        
         // Remove from puzzle container so it can't be interacted with.
         // Note: MoveForUndo() will put entity back into puzzle container.
         puzzle.RemoveEntityFromCell(this, position);
@@ -512,12 +518,12 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         animationMustStop = false;
     }
     
-    public IEnumerator InteractWithFireball(float time)
+    public IEnumerator InteractWithFireball(float delay)
     {
         animationIsRunning = true;
         var timePassed = 0f;
 
-        while(timePassed < time && animationMustStop == false)
+        while(timePassed < delay && animationMustStop == false)
         {
             timePassed += Time.deltaTime;
             yield return new WaitForFixedUpdate();
