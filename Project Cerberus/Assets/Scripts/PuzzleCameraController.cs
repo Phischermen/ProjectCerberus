@@ -53,9 +53,7 @@ public class PuzzleCameraController : MonoBehaviour
             case CameraMode.CinematicMode:
                 return;
             case CameraMode.ScrollingMode:
-                var currentCerberusPosition = _gameManager.currentCerberus.transform.position;
-                desiredPosition = new Vector3(currentCerberusPosition.x, currentCerberusPosition.y, -10f);
-                desiredSize = 5f;
+                SetDesiredSizeAndPositionForScrollingMode();
                 break;
             case CameraMode.FixedPointMode:
                 // Do Nothing
@@ -87,7 +85,12 @@ public class PuzzleCameraController : MonoBehaviour
         {
             SetDesiredSizeAndPositionForFixedPointMode();
         }
+        else if (mode == CameraMode.ScrollingMode)
+        {
+            SetDesiredSizeAndPositionForScrollingMode();
+        }
     }
+
     public void ToggleCameraMode()
     {
         if (currentCameraMode == CameraMode.CinematicMode) return;
@@ -100,6 +103,13 @@ public class PuzzleCameraController : MonoBehaviour
             currentCameraMode = CameraMode.FixedPointMode;
             SetDesiredSizeAndPositionForFixedPointMode();
         }
+    }
+
+    public void SetDesiredSizeAndPositionForScrollingMode()
+    {
+        var currentCerberusPosition = _gameManager.currentCerberus.transform.position;
+        desiredPosition = new Vector3(currentCerberusPosition.x, currentCerberusPosition.y, -10f);
+        desiredSize = 5f;
     }
 
     public void SetDesiredSizeAndPositionForFixedPointMode()

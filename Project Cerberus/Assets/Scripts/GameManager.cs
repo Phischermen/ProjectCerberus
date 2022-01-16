@@ -148,11 +148,6 @@ public class GameManager : MonoBehaviour, IUndoable
             NZ.NotifyZach("Main Camera has a redundant CameraController component. Remove it NOW or you're fired.");
         }
 
-        _cameraController.SetCameraMode(startInFixedCameraMode
-            ? PuzzleCameraController.CameraMode.FixedPointMode
-            : PuzzleCameraController.CameraMode.ScrollingMode);
-        _cameraController.GotoDesiredPositionAndSize();
-
         _jack = FindObjectOfType<Jack>();
         _kahuna = FindObjectOfType<Kahuna>();
         _laguna = FindObjectOfType<Laguna>();
@@ -179,6 +174,12 @@ public class GameManager : MonoBehaviour, IUndoable
         }
 
         currentCerberus = availableCerberus[0];
+        
+        // Setup camera.
+        _cameraController.SetCameraMode(startInFixedCameraMode
+            ? PuzzleCameraController.CameraMode.FixedPointMode
+            : PuzzleCameraController.CameraMode.ScrollingMode);
+        _cameraController.GotoDesiredPositionAndSize();
 
         // Set initial gameplay variables
         if (_cerberusMajor)
