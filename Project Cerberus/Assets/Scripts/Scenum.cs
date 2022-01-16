@@ -38,5 +38,6 @@ public static class Scenum
 		LagunaTutorial_Z,
 		HadesMansion,
 		HadesFrontLawn,
+		GateToTheUnderworld,
 	}
 }
