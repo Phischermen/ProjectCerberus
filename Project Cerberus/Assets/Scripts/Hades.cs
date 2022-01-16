@@ -50,7 +50,7 @@ public class Hades : PuzzleEntity
     {
         base.Update();
         // Check if time has come to move another square.
-        if ((Time.time - _lastTimeChased) > chaseFrequency)
+        if ((Time.time - _lastTimeChased) > chaseFrequency && inHole == false)
         {
             _lastTimeChased = Time.time;
             var manhattanDistance = Mathf.Abs(position.x - entityToChase.position.x) +
