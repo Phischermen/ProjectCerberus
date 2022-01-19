@@ -36,6 +36,7 @@ public class Cerberus : PuzzleEntity
                 cerberus.MoveForUndo(position);
                 cerberus.ResetTransformAndSpriteRendererForUndo();
             }
+
             cerberus.onTopOfGoal = onTopOfGoal;
             cerberus.SetDisableCollsionAndShowPentagramMarker(collisionDisabledAndPentagramDisplayed, false);
         }
@@ -62,7 +63,8 @@ public class Cerberus : PuzzleEntity
 
     private Sprite _cerberusSprite;
     public Sprite pentagramMarker;
-    [FormerlySerializedAs("_walkSFX")] public AudioSource walkSFX;
+    public AudioSource walkSFX;
+    public AudioSource pushFailSFX;
     public AnimationCurve talkAnimationCurve;
 
     protected override void Awake()
@@ -119,9 +121,13 @@ public class Cerberus : PuzzleEntity
     {
         var coord = position + offset;
         var newCell = puzzle.GetCell(coord);
-        var blocked = CollidesWith(newCell.floorTile) ||
-                      CollidesWithAny(newCell.GetEntitesThatCannotBePushedByStandardMove());
-        if (!blocked)
+        var collidesWithAndCannotPushEntity = CollidesWithAny(newCell.GetEntitesThatCannotBePushedByStandardMove());
+        var blocked = CollidesWith(newCell.floorTile) || collidesWithAndCannotPushEntity;
+        if (collidesWithAndCannotPushEntity)
+        {
+            PlaySfxIfNotPlaying(pushFailSFX);
+        }
+        else if (!blocked)
         {
             var pushableEntity = newCell.GetEntityPushableByStandardMove();
             if (!pushableEntity)
@@ -155,6 +161,11 @@ public class Cerberus : PuzzleEntity
                     pushableEntity.Move(pushCoord);
                     Move(coord);
                     DeclareDoneWithMove();
+                }
+                else
+                {
+                    PlaySfxIfNotPlaying(pushFailSFX);
+                    // TODO Make a little bump animation.
                 }
             }
         }

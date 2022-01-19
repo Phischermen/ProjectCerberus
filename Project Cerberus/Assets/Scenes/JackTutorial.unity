@@ -494,16 +494,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5783107276903251638, guid: 3abb5905584588d4faf663b3b5687375,
         type: 3}
-      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5783107276903251638, guid: 3abb5905584588d4faf663b3b5687375,
-        type: 3}
-      propertyPath: onReleased.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5783107276903251638, guid: 3abb5905584588d4faf663b3b5687375,
-        type: 3}
       propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1553863744}
@@ -512,26 +502,6 @@ PrefabInstance:
       propertyPath: onReleased.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1553863744}
-    - target: {fileID: 5783107276903251638, guid: 3abb5905584588d4faf663b3b5687375,
-        type: 3}
-      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5783107276903251638, guid: 3abb5905584588d4faf663b3b5687375,
-        type: 3}
-      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OpenGate
-      objectReference: {fileID: 0}
-    - target: {fileID: 5783107276903251638, guid: 3abb5905584588d4faf663b3b5687375,
-        type: 3}
-      propertyPath: onReleased.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5783107276903251638, guid: 3abb5905584588d4faf663b3b5687375,
-        type: 3}
-      propertyPath: onReleased.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: RequestCloseGate
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3abb5905584588d4faf663b3b5687375, type: 3}
 --- !u!1001 &397508948
@@ -1102,6 +1072,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c679a5cc0770bc4499b3adee026ae9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  desiredPosition: {x: 0, y: 0, z: 0}
+  desiredSize: 0
+  currentCameraMode: 0
 --- !u!1 &1122415713
 GameObject:
   m_ObjectHideFlags: 0
@@ -10767,6 +10740,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 6436307546358880796, guid: eef179ac3b38ba642b88743486b798b3,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 22
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eef179ac3b38ba642b88743486b798b3, type: 3}

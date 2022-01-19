@@ -166,11 +166,11 @@ public class Kahuna : Cerberus
         AfterWhile:
         if (entityToPushOrInteractWith != null)
         {
-            puzzle.PushToUndoStack();
-            PlaySfxPitchShift(fireballSFX, 0.9f, 1.1f);
             // Push or interact with entity
             if (entityToPushOrInteractWith.interactsWithFireball)
             {
+                puzzle.PushToUndoStack();
+                PlaySfxPitchShift(fireballSFX, 0.9f, 1.1f);
                 // Get distance time to reach target
                 var destinationPosition = puzzle.GetCellCenterWorld(searchCoord - offset);
                 GetDistanceAndTimeToHitTarget(AnimationUtility.initialFireballSpeed,
@@ -193,6 +193,9 @@ public class Kahuna : Cerberus
                                   entityToPushOrInteractWith.CollidesWithAny(pushEntityNewCell.puzzleEntities);
                 if (!pushBlocked)
                 {
+                    puzzle.PushToUndoStack();
+                    PlaySfxPitchShift(fireballSFX, 0.9f, 1.1f);
+                    // TODO delay this sound so it plays when fireball hits target.
                     entityToPushOrInteractWith.PlaySfx(entityToPushOrInteractWith.pushedByFireballSfx);
                     // Get distance time to reach target
                     var destinationPosition = puzzle.GetCellCenterWorld(searchCoord - offset);
@@ -208,9 +211,17 @@ public class Kahuna : Cerberus
                     entityToPushOrInteractWith.Move(pushCoord);
                     DeclareDoneWithMove();
                 }
+                else
+                {
+                    PlaySfxIfNotPlaying(pushFailSFX);
+                }
             }
 
             entityToPushOrInteractWith.onHitByFireball.Invoke();
+        }
+        else
+        {
+            PlaySfxIfNotPlaying(pushFailSFX);
         }
     }
 
@@ -232,9 +243,7 @@ public class Kahuna : Cerberus
         var startingPosition = transform.position;
         var distanceTraveled = 0f;
         var speed = initialSpeed;
-
         fireBall.transform.position = startingPosition;
-        // TODO Make fireball face direction it was fired in.
         fireBallParticleSystem.Play(true);
         fireBallParticleSystem.transform.rotation = fireArrow.transform.rotation;
         while (distanceTraveled < distanceToTravel && animationMustStop == false)

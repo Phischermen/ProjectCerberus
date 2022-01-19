@@ -412,6 +412,8 @@ public class GameManager : MonoBehaviour, IUndoable
     public void FormCerberusMajor()
     {
         cerberusFormed = true;
+        // Play sound effects
+        _cerberusMajor.PlaySfx(_cerberusMajor.mergeSfx);
         // Stop animations for JKL
         _jack.FinishCurrentAnimation();
         _kahuna.FinishCurrentAnimation();
@@ -430,6 +432,8 @@ public class GameManager : MonoBehaviour, IUndoable
     public void SplitCerberusMajor()
     {
         cerberusFormed = false;
+        // Play sound effects
+        _cerberusMajor.PlaySfx(_cerberusMajor.splitSfx);
         // Stop animation for Cerberus Major
         _cerberusMajor.FinishCurrentAnimation();
         // Activate JKL and deactivate Cerberus Major

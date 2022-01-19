@@ -36,10 +36,13 @@ public class Gate : PuzzleEntity
     
     private bool _wantsToClose;
     [ShowInTileInspector] public bool open;
+    private bool _lastOpen;
     [SerializeField] private Sprite openSprite;
     [SerializeField] private Sprite closeSprite;
     private SpriteRenderer _spriteRenderer;
 
+    public AudioSource openAudioSource;
+    public AudioSource closeAudioSource;
     public Gate()
     {
         entityRules = "Can be opened and closed via switches and levers. Jumpable when closed and landable when open.";
@@ -84,6 +87,23 @@ public class Gate : PuzzleEntity
                 stopsPlayer = false;
             }
         }
+    }
+
+    private void LateUpdate()
+    {
+        if (_lastOpen != open)
+        {
+            if (open)
+            {
+                PlaySfx(openAudioSource);
+            }
+            else
+            {
+                PlaySfx(closeAudioSource);
+            }
+        }
+
+        _lastOpen = open;
     }
 
     public void OpenGate()

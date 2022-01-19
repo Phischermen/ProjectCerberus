@@ -1323,6 +1323,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1599716127}
     m_Modifications:
+    - target: {fileID: 8890049998783526768, guid: faed9009b4827d0409d1efe61338cb59,
+        type: 3}
+      propertyPath: showOptionalSfx
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8890049998783526768, guid: faed9009b4827d0409d1efe61338cb59,
+        type: 3}
+      propertyPath: showOptionalEvents
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8890049998783526774, guid: faed9009b4827d0409d1efe61338cb59,
         type: 3}
       propertyPath: m_Name
@@ -1392,6 +1402,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1599716127}
     m_Modifications:
+    - target: {fileID: 6824530360540081774, guid: 411b62b86db45ec45b90a46f93267373,
+        type: 3}
+      propertyPath: showOptionalSfx
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6824530360540081775, guid: 411b62b86db45ec45b90a46f93267373,
         type: 3}
       propertyPath: m_RootOrder
@@ -1532,22 +1547,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4675846134901825165, guid: 1175c6890461d464ab9f72f7967c229a,
         type: 3}
-      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4675846134901825165, guid: 1175c6890461d464ab9f72f7967c229a,
-        type: 3}
-      propertyPath: onReleased.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4675846134901825165, guid: 1175c6890461d464ab9f72f7967c229a,
-        type: 3}
       propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 196810020}
-    - target: {fileID: 4675846134901825165, guid: 1175c6890461d464ab9f72f7967c229a,
-        type: 3}
-      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
       objectReference: {fileID: 196810020}
     - target: {fileID: 4675846134901825165, guid: 1175c6890461d464ab9f72f7967c229a,
@@ -1555,51 +1555,6 @@ PrefabInstance:
       propertyPath: onReleased.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 196810020}
-    - target: {fileID: 4675846134901825165, guid: 1175c6890461d464ab9f72f7967c229a,
-        type: 3}
-      propertyPath: onReleased.m_PersistentCalls.m_Calls.Array.data[1].m_Target
-      value: 
-      objectReference: {fileID: 196810020}
-    - target: {fileID: 4675846134901825165, guid: 1175c6890461d464ab9f72f7967c229a,
-        type: 3}
-      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4675846134901825165, guid: 1175c6890461d464ab9f72f7967c229a,
-        type: 3}
-      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4675846134901825165, guid: 1175c6890461d464ab9f72f7967c229a,
-        type: 3}
-      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: IncrementCounter
-      objectReference: {fileID: 0}
-    - target: {fileID: 4675846134901825165, guid: 1175c6890461d464ab9f72f7967c229a,
-        type: 3}
-      propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: IncrementCounter
-      objectReference: {fileID: 0}
-    - target: {fileID: 4675846134901825165, guid: 1175c6890461d464ab9f72f7967c229a,
-        type: 3}
-      propertyPath: onReleased.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4675846134901825165, guid: 1175c6890461d464ab9f72f7967c229a,
-        type: 3}
-      propertyPath: onReleased.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4675846134901825165, guid: 1175c6890461d464ab9f72f7967c229a,
-        type: 3}
-      propertyPath: onReleased.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: DecrementCounter
-      objectReference: {fileID: 0}
-    - target: {fileID: 4675846134901825165, guid: 1175c6890461d464ab9f72f7967c229a,
-        type: 3}
-      propertyPath: onReleased.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: DecrementCounter
-      objectReference: {fileID: 0}
     - target: {fileID: 4675846134901825170, guid: 1175c6890461d464ab9f72f7967c229a,
         type: 3}
       propertyPath: m_Name

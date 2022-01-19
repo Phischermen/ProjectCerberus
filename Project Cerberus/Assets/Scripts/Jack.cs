@@ -81,10 +81,14 @@ public class Jack : Cerberus
     {
         var coord = position + offset;
         var newCell = puzzle.GetCell(coord);
-        var blocked = CollidesWith(newCell.floorTile) ||
-                      CollidesWithAny(newCell.GetEntitesThatCannotBePushedByStandardMove());
+        var collidesWithAndCannotPushEntity = CollidesWithAny(newCell.GetEntitesThatCannotBePushedByStandardMove());
+        var blocked = CollidesWith(newCell.floorTile) || collidesWithAndCannotPushEntity;
         var entitiesToPush = GetEntitiesToPush(offset);
-        if (!blocked && entitiesToPush.Count == 0)
+        if (collidesWithAndCannotPushEntity)
+        {
+            PlaySfxIfNotPlaying(pushFailSFX);
+        }
+        else if (!blocked && entitiesToPush.Count == 0)
         {
             puzzle.PushToUndoStack();
             PlaySfxPitchShift(walkSFX, 0.9f, 1.1f);

@@ -309,6 +309,14 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             source.Play();
         }
     }
+    
+    public void PlaySfxIfNotPlaying(AudioSource source)
+    {
+        if (source && !source.isPlaying)
+        {
+            source.Play();
+        }
+    }
 
     public void StopSfx(AudioSource source)
     {

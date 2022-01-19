@@ -78,9 +78,13 @@ public class Laguna : Cerberus
         var pullCoord = position - offset;
         var newCell = puzzle.GetCell(coord);
         var pullCell = puzzle.GetCell(pullCoord);
-        var blocked = CollidesWith(newCell.floorTile) ||
-                      CollidesWithAny(newCell.GetEntitesThatCannotBePushedByStandardMove());
-        if (!blocked)
+        var collidesWithAndCannotPushEntity = CollidesWithAny(newCell.GetEntitesThatCannotBePushedByStandardMove());
+        var blocked = CollidesWith(newCell.floorTile) || collidesWithAndCannotPushEntity;
+        if (collidesWithAndCannotPushEntity)
+        {
+            PlaySfxIfNotPlaying(pushFailSFX);
+        }
+        else if (!blocked)
         {
             var pushableEntity = newCell.GetEntityPushableByStandardMove();
             var entityToPull = pullCell.GetPullableEntity();
@@ -99,7 +103,7 @@ public class Laguna : Cerberus
                         AnimationUtility.basicMoveAndPushSpeed));
                     PlaySfx(walkSFX);
                     PlaySfx(entityToPull.pushedSfx);
-                    
+
                     Move(coord);
                     entityToPull.Move(p);
                     DeclareDoneWithMove();
@@ -127,11 +131,15 @@ public class Laguna : Cerberus
                         PlaySfx(walkSFX);
                         PlaySfx(pushableEntity.pushedSfx);
                         PlaySfx(entityToPull.pushedSfx);
-                        
+
                         pushableEntity.Move(pushCoord);
                         Move(coord);
                         entityToPull.Move(p);
                         DeclareDoneWithMove();
+                    }
+                    else
+                    {
+                        PlaySfxIfNotPlaying(pushFailSFX);
                     }
                 }
             }

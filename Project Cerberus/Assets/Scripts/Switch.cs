@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 
 public class Switch : PuzzleEntity
@@ -20,16 +21,19 @@ public class Switch : PuzzleEntity
             lever.SwitchOnVisually(flipped);
         }
     }
-
+    
     public UnityEvent onPressed;
     public UnityEvent onReleased;
 
     [HideInInspector, ShowInTileInspector] public bool isPressed;
+    private bool _lastIsPressed;
     [SerializeField] private Sprite depressedSprite;
     [SerializeField] private Sprite raisedSprite;
     private SpriteRenderer _spriteRenderer;
     private LineRenderer _lineRenderer;
-
+    
+    public AudioSource pressedAudioSource;
+    public AudioSource releasedAudioSource;
     protected Switch()
     {
         entityRules = "Switches control other objects. A switch must be held down with an object.";
@@ -51,6 +55,23 @@ public class Switch : PuzzleEntity
 
         _lineRenderer.startColor = Color.red;
         _lineRenderer.endColor = Color.red;
+    }
+
+    private void LateUpdate()
+    {
+        if (_lastIsPressed != isPressed)
+        {
+            if (isPressed)
+            {
+                PlaySfx(pressedAudioSource);
+            }
+            else
+            {
+                PlaySfx(releasedAudioSource);
+            }
+        }
+
+        _lastIsPressed = isPressed;
     }
 
     public override void OnEnterCollisionWithEntity(PuzzleEntity other)

@@ -45,6 +45,8 @@ public class CerberusMajor : Cerberus
     private static int _maxJumpArrows = 32;
 
     public AudioSource jumpSfx;
+    public AudioSource mergeSfx;
+    public AudioSource splitSfx;
 
     CerberusMajor()
     {
