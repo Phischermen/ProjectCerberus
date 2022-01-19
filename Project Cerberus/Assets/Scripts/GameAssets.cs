@@ -8,6 +8,7 @@ using UnityEngine;
 public class GameAssets : ScriptableObject
 {
     public GameObject textPopupPrefab;
+    public DialogueDatabaseAsset dialogueDatabaseAsset;
 
     private static GameAssets _i;
 

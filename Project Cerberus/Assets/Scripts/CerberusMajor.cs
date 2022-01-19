@@ -299,7 +299,7 @@ public class CerberusMajor : Cerberus
             // Refresh the tile when CerberusMajor lands on it visually
             puzzle.tilemap.RefreshTile(new Vector3Int(point.position.x, point.position.y, 0));
             transform.position = D;
-            PuzzleCameraController.AddShake(0.1f);
+            PuzzleCameraController.i.AddShake(0.1f);
         }
 
         animationMustStop = false;

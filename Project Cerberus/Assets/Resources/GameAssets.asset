@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textPopupPrefab: {fileID: 239128594509278235, guid: db77149be618b8441b66d25d990374ff,
     type: 3}
+  dialogueDatabaseAsset: {fileID: 11400000, guid: c0122f1b3171ba94d8ae77ea3677a176,
+    type: 2}

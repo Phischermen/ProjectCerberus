@@ -13,9 +13,11 @@ using Random = UnityEngine.Random;
 
 public class PuzzleCameraController : MonoBehaviour
 {
-    private static Vector3 _position;
-    private static float _shake = 0f;
-    private static float _maxShake = 1f;
+    public static PuzzleCameraController i;
+
+    private Vector3 _position;
+    private float _shake = 0f;
+    private float _maxShake = 1f;
 
     private Camera _camera;
     private PuzzleContainer _puzzleContainer;
@@ -43,6 +45,7 @@ public class PuzzleCameraController : MonoBehaviour
 
     private void Start()
     {
+        i = this;
         SetDesiredSizeAndPositionForFixedPointMode();
     }
 
@@ -51,29 +54,33 @@ public class PuzzleCameraController : MonoBehaviour
         switch (currentCameraMode)
         {
             case CameraMode.CinematicMode:
-                return;
+                break;
             case CameraMode.ScrollingMode:
                 SetDesiredSizeAndPositionForScrollingMode();
-                break;
+                goto case CameraMode.FixedPointMode; //Fall through
             case CameraMode.FixedPointMode:
-                // Do Nothing
+                _position = Vector3.Lerp(_position, desiredPosition, 0.05f);
+                _camera.orthographicSize = Mathf.Lerp(_camera.orthographicSize, desiredSize, 0.1f);
                 break;
             default:
                 break;
         }
 
-        _position = Vector3.Lerp(_position, desiredPosition, 0.1f);
-        _camera.orthographicSize = Mathf.Lerp(_camera.orthographicSize, desiredSize, 0.1f);
         transform.position = _position + new Vector3(Random.Range(-_shake, _shake), Random.Range(-_shake, _shake));
         _shake = Mathf.Max(0f, _shake - Time.deltaTime);
     }
 
-    public static void AddShake(float shake)
+    public void AddShake(float shake)
     {
         _shake = Mathf.Min(_shake + shake, _maxShake);
     }
 
-    public static void SetPosition(Vector3 position)
+    public Vector3 GetPosition()
+    {
+        return _position;
+    }
+
+    public void SetPosition(Vector3 position)
     {
         _position = position;
     }
@@ -107,8 +114,11 @@ public class PuzzleCameraController : MonoBehaviour
 
     public void SetDesiredSizeAndPositionForScrollingMode()
     {
-        var currentCerberusPosition = _gameManager.currentCerberus.transform.position;
-        desiredPosition = new Vector3(currentCerberusPosition.x, currentCerberusPosition.y, -10f);
+        var currentCerberusCell = _gameManager.currentCerberus.position;
+        var positionOfCell =
+            _puzzleContainer.tilemap.layoutGrid.CellToWorld(new Vector3Int(currentCerberusCell.x, currentCerberusCell.y,
+                0));
+        desiredPosition = new Vector3(positionOfCell.x, positionOfCell.y, -10f);
         desiredSize = 5f;
     }
 

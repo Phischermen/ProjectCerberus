@@ -30,7 +30,8 @@ public class PuzzleGameplayInput : MonoBehaviour
         cycleCharacter1,
         cycleCharacter2,
         leftClicked,
-        rightClicked;
+        rightClicked,
+        dialogueDismissed;
 
     [HideInInspector] public Vector2Int clickedCell;
     [HideInInspector] public Cerberus clickedCerberus;
@@ -119,6 +120,7 @@ public class PuzzleGameplayInput : MonoBehaviour
 
         cycleCharacter = cycleCharacter || cycleCharacter0 || cycleCharacter1 || cycleCharacter2 ||
                          cycleCharacterForward || cycleCharacterBackward;
+        dialogueDismissed = specialPressed || undoPressed || mergeOrSplit;
     }
 
     private void ProcessMouse(Mouse mouse)
@@ -164,6 +166,6 @@ public class PuzzleGameplayInput : MonoBehaviour
             downReleased = specialPressed = specialHeld = specialReleased = mergeOrSplit =
                 undoPressed = resetPressed = toggleFixedCameraMode = leftClicked = rightClicked = cycleCharacter =
                     cycleCharacterForward = cycleCharacterBackward = cycleCharacter0 = cycleCharacter1 =
-                        cycleCharacter2 = false;
+                        cycleCharacter2 = dialogueDismissed = false;
     }
 }

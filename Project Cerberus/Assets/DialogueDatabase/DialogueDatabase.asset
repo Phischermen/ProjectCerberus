@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba9888ed8e1abcb418672498e6a9ee46, type: 3}
+  m_Name: DialogueDatabase
+  m_EditorClassIdentifier: 
+  scenes:
+  - expandedInInspector: 1
+    sceneTitle: TestScene
+    dialogues:
+    - id: I2D2
+      speaker: 0
+      line: I always push it to the end!
+    - id: M8F6
+      speaker: 0
+      line: Just like I do to your mom.
+  - expandedInInspector: 0
+    sceneTitle: Opening
+    dialogues:
+    - id: E0N7
+      speaker: 0
+      line: Hello World!
+    - id: C3C6
+      speaker: 0
+      line: I hope I don't fuck this up!
+    - id: M3F7
+      speaker: 0
+      line: Alrighty then
+  - expandedInInspector: 0
+    sceneTitle: Ending
+    dialogues:
+    - id: G4D0
+      speaker: 0
+      line: Yay it worked!
