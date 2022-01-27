@@ -16,21 +16,25 @@ public class HintSpace : PuzzleEntity
     public Sprite visitedSprite;
     private Sprite _unvisitedSprite;
     private bool _visited;
+    private bool _currentlyOccupied;
 
     public class HintSpaceUndoData : UndoData
     {
         public HintSpace hintSpace;
         private bool _visited;
+        private bool _currentlyOccupied;
 
-        public HintSpaceUndoData(HintSpace hintSpace, bool visited)
+        public HintSpaceUndoData(HintSpace hintSpace, bool visited, bool currentlyOccupied)
         {
             this.hintSpace = hintSpace;
             this._visited = visited;
+            this._currentlyOccupied = currentlyOccupied;
         }
 
         public override void Load()
         {
             hintSpace._visited = _visited;
+            hintSpace._currentlyOccupied = _currentlyOccupied;
             if (_visited)
             {
                 hintSpace.SetFieldsToVisitedPreset();
@@ -38,6 +42,15 @@ public class HintSpace : PuzzleEntity
             else
             {
                 hintSpace.SetFieldsToNotVisitedPreset();
+            }
+
+            if (_currentlyOccupied)
+            {
+                hintSpace.hint.gameObject.SetActive(true);
+            }
+            else
+            {
+                hintSpace.hint.gameObject.SetActive(false);
             }
         }
     }
@@ -72,12 +85,13 @@ public class HintSpace : PuzzleEntity
         }
     }
 #endif
-    
+
     public override void OnEnterCollisionWithEntity(PuzzleEntity other)
     {
         if (other is Cerberus)
         {
             // Show hint
+            _currentlyOccupied = true;
             hint.gameObject.SetActive(true);
             _visited = true;
             SetFieldsToVisitedPreset();
@@ -86,8 +100,12 @@ public class HintSpace : PuzzleEntity
 
     public override void OnExitCollisionWithEntity(PuzzleEntity other)
     {
-        // Hide hint
-        hint.gameObject.SetActive(false);
+        if (other is Cerberus)
+        {
+            // Hide hint
+            _currentlyOccupied = false;
+            hint.gameObject.SetActive(false);
+        }
     }
 
     private void SetFieldsToVisitedPreset()
@@ -102,7 +120,7 @@ public class HintSpace : PuzzleEntity
 
     public override UndoData GetUndoData()
     {
-        var undoData = new HintSpaceUndoData(this, _visited);
+        var undoData = new HintSpaceUndoData(this, _visited, _currentlyOccupied);
         return undoData;
     }
 }

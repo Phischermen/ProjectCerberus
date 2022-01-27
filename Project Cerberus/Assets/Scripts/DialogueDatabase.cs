@@ -2,13 +2,41 @@
 using UnityEngine;
 public static class DialogueDatabase
 {
+	//BasicsNarration
+	public static Vector2Int W4H2 = new Vector2Int(0,0);
+	public static Vector2Int M8T4 = new Vector2Int(0,1);
+	public static Vector2Int F3C6 = new Vector2Int(0,2);
+	public static Vector2Int M7Q2 = new Vector2Int(0,3);
+	public static Vector2Int T331 = new Vector2Int(0,4);
+	public static Vector2Int T332 = new Vector2Int(0,5);
+	public static Vector2Int T333 = new Vector2Int(0,6);
+	public static Vector2Int t334 = new Vector2Int(0,7);
+	public static Vector2Int t335 = new Vector2Int(0,8);
+	public static Vector2Int t336 = new Vector2Int(0,9);
+	public static Vector2Int t337 = new Vector2Int(0,10);
+	public static Vector2Int s1J1 = new Vector2Int(0,11);
+	public static Vector2Int s1J2 = new Vector2Int(0,12);
+	public static Vector2Int s1J3 = new Vector2Int(0,13);
+	public static Vector2Int s1J4 = new Vector2Int(0,14);
+	public static Vector2Int s2K1 = new Vector2Int(0,15);
+	public static Vector2Int s2K2 = new Vector2Int(0,16);
+	public static Vector2Int s2K3 = new Vector2Int(0,17);
+	public static Vector2Int s3L1 = new Vector2Int(0,18);
+	public static Vector2Int s3L2 = new Vector2Int(0,19);
+	public static Vector2Int s3L3 = new Vector2Int(0,20);
+	public static Vector2Int s3L4 = new Vector2Int(0,21);
+	public static Vector2Int aLL1 = new Vector2Int(0,22);
+	public static Vector2Int aLL2 = new Vector2Int(0,23);
+	public static Vector2Int aLL3 = new Vector2Int(0,24);
+	public static Vector2Int aLL4 = new Vector2Int(0,25);
+	public static Vector2Int aLL5 = new Vector2Int(0,26);
 	//TestScene
-	public static Vector2Int I2D2 = new Vector2Int(0,0);
-	public static Vector2Int M8F6 = new Vector2Int(0,1);
+	public static Vector2Int I2D2 = new Vector2Int(1,0);
+	public static Vector2Int M8F6 = new Vector2Int(1,1);
 	//Opening
-	public static Vector2Int E0N7 = new Vector2Int(1,0);
-	public static Vector2Int C3C6 = new Vector2Int(1,1);
-	public static Vector2Int M3F7 = new Vector2Int(1,2);
+	public static Vector2Int E0N7 = new Vector2Int(2,0);
+	public static Vector2Int C3C6 = new Vector2Int(2,1);
+	public static Vector2Int M3F7 = new Vector2Int(2,2);
 	//Ending
-	public static Vector2Int G4D0 = new Vector2Int(2,0);
+	public static Vector2Int G4D0 = new Vector2Int(3,0);
 }

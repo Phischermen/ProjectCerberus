@@ -14,6 +14,100 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scenes:
   - expandedInInspector: 1
+    sceneTitle: BasicsNarration
+    dialogues:
+    - id: W4H2
+      speaker: 0
+      line: This is Jack the hellhound.
+    - id: M8T4
+      speaker: 0
+      line: Jack is just one of the hellhounds you will meet today. Jack has two
+        siblings waiting for him in the next room.
+    - id: F3C6
+      speaker: 0
+      line: Lets get Jack to this checkered square so he can be reunited with his
+        brothers.
+    - id: M7Q2
+      speaker: 0
+      line: And while you're at it, get this golden star too. Atta boy.
+    - id: T331
+      speaker: 0
+      line: These are the siblings I mentioned earlier.
+    - id: T332
+      speaker: 1
+      line: I'm Kahuna.
+    - id: T333
+      speaker: 2
+      line: I'm Laguna.
+    - id: t334
+      speaker: 0
+      line: You are able to take control of any hellhound you like, but you may only
+        control one at a time.
+    - id: t335
+      speaker: 0
+      line: These sparkles indicate you are in control of Jack.
+    - id: t336
+      speaker: 0
+      line: To switch control to a different hellhound, press TAB or click on the
+        hellhound you want to control.
+    - id: t337
+      speaker: 0
+      line: Working together is integral to solving these puzzles, so get used to
+        it!
+    - id: s1J1
+      speaker: 0
+      line: Kahuna, Laguna, and Jack all have a unique special ability.
+    - id: s1J2
+      speaker: 0
+      line: Jack can push a single block so hard, it flies over holes and spikes.
+        This is called a SUPER PUSH.
+    - id: s1J3
+      speaker: 0
+      line: Try using a SUPER PUSH to get this block...
+    - id: s1J4
+      speaker: 0
+      line: ... on this switch.
+    - id: s2K1
+      speaker: 0
+      line: Like I said, every hellhound has a special ability.
+    - id: s2K2
+      speaker: 0
+      line: Kahuna can spew FIREBALLS that push blocks from afar.
+    - id: s2K3
+      speaker: 0
+      line: Try using FIREBALLS to press the switches in this room.
+    - id: s3L1
+      speaker: 0
+      line: Laguna can PULL blocks behind him.
+    - id: s3L2
+      speaker: 0
+      line: Try using a PULL to get the block off the wall...
+    - id: s3L3
+      speaker: 0
+      line: ...a PUSH to get on the spikes...
+    - id: s3L4
+      speaker: 0
+      line: ...and then another PULL to get onto the switch.
+    - id: aLL1
+      speaker: 0
+      line: Now that you are familiar with what each hellhound is capable of, lets
+        solve a puzzle that incorporates SUPER PUSH, FIREBALL, and PULL.
+    - id: aLL2
+      speaker: 0
+      line: Remember, you can switch control to a different hellhound by pressing
+        TAB or by clicking the hellhound you want to control.
+    - id: aLL3
+      speaker: 0
+      line: Also, I have a note regarding this star.
+    - id: aLL4
+      speaker: 0
+      line: Unlike the previous levels, this star requires you to solve the level
+        in a less efficient way.
+    - id: aLL5
+      speaker: 0
+      line: You should know that it is not always possible to score all the trophies
+        using one solution. Sometimes you will have to find alternate solutions.
+  - expandedInInspector: 0
     sceneTitle: TestScene
     dialogues:
     - id: I2D2

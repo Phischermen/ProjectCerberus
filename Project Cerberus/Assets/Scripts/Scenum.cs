@@ -39,5 +39,8 @@ public static class Scenum
 		HadesMansion,
 		HadesFrontLawn,
 		GateToTheUnderworld,
+		BasicsTutorial_1_K,
+		BasicsTutorial_2_K,
+		BasicsTutorial_3_K,
 	}
 }

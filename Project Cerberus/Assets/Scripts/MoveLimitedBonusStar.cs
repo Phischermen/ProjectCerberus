@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEngine;
 
 public class MoveLimitedBonusStar : BonusStar
 {
@@ -45,6 +46,9 @@ public class MoveLimitedBonusStar : BonusStar
         else
         {
             SetFieldsToUncollectedPreset();
+            var popup = TextPopup.Create((movesUntilUnavailable - manager.move).ToString(), Color.yellow);
+            popup.transform.position = transform.position;
+            popup.PlayRiseAndFadeAnimation();
         }
     }
 }

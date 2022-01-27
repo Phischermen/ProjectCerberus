@@ -23,12 +23,12 @@ public class MainMenuController : MonoBehaviour
     private List<GameObject> worldContainers;
     public Button nextWorldButton;
     public Button prevWorldButton;
-#if UNITY_EDITOR
+//#if UNITY_EDITOR
     private void OnGUI()
     {
         if (GUI.Button(new Rect(0, 0, 200, 20), "Delete PlayerPrefs for levels"))
         {
-            for (var index = 0; index < EditorBuildSettings.scenes.Length; index++)
+            for (var index = 0; index < 100; index++)
             {
                 PlayerPrefs.DeleteKey(index.ToString());
                 PlayerPrefs.Save();
@@ -41,7 +41,7 @@ public class MainMenuController : MonoBehaviour
             PlayerPrefs.Save();
         }
     }
-#endif
+//#endif
 
     private void Awake()
     {

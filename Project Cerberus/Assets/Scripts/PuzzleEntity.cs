@@ -395,6 +395,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
 
     public void FinishAllQueuedAnimations()
     {
+        throw new NotImplementedException();
     }
     /*
      * PuzzleEntity animations are procedural. They take the form of coroutines. An animation must follow this pattern:

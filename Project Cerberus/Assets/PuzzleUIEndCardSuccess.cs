@@ -58,7 +58,7 @@ public class PuzzleUIEndCardSuccess : MonoBehaviour
         var currentTrophies = PlayerPrefs.GetString(currentLevelBuildIndex, TrophyData.initialTrophyCode);
         // Calculate which time trophy was earned
         var codeOfTimeTrophyToDisplay =
-            GetCodeOfTropheyToDisplay(currentTrophies[0], _gameManager.timer, _gameManager.parTime,
+            GetCodeOfTropheyToDisplay(currentTrophies[0], Mathf.Floor(_gameManager.timer), _gameManager.parTime,
                 _gameManager.infiniteParTime);
         // Calculate which move trophy was earned
         var codeOfMoveTrophyToDisplay =
@@ -87,8 +87,8 @@ public class PuzzleUIEndCardSuccess : MonoBehaviour
         bonusStarTrophyImage.sprite = bonusStarTrophyData.GetSpriteToDisplay(codeOfBonusStarTrophyToDisplay);
 
         // Display time
-        timeText.text = $"Time\n{_gameManager.timer,3:0}s";
-        timeText.color = _gameManager.timer < _gameManager.parTime ? Color.yellow : Color.white;
+        timeText.text = $"Time\n{Mathf.Floor(_gameManager.timer),3:0}s";
+        timeText.color = Mathf.Floor(_gameManager.timer) <= _gameManager.parTime ? Color.yellow : Color.white;
         // Display moves
         moveText.text = $"Moves\n{_gameManager.move + 1}";
         moveText.color = _gameManager.move < _gameManager.maxMovesBeforeStarLoss ? Color.yellow : Color.white;

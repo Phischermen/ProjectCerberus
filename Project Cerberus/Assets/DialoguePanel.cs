@@ -21,18 +21,29 @@ public class DialoguePanel : MonoBehaviour
     private float timeLastCharPrinted;
 
     private PuzzleGameplayInput _input;
-
+    private GameManager _gameManager;
 
     // Start is called before the first frame update
     void Start()
     {
         i = this;
         _input = FindObjectOfType<PuzzleGameplayInput>();
+        _gameManager = FindObjectOfType<GameManager>();
         _waitForSeconds = new WaitForSeconds(1f / charPerSecond);
         _waitUntilDismissed = new WaitUntil(() => _input.dialogueDismissed);
         _waitUntilDismissedOrTimeUp = 
             new WaitUntil(() => _input.dialogueDismissed || (Time.time - timeLastCharPrinted) > (1f / charPerSecond));
         canvasGroup.alpha = 0;
+    }
+
+    public void StartConversation()
+    {
+        _gameManager.gameplayEnabled = false;
+    }
+
+    public void EndConversation()
+    {
+        _gameManager.gameplayEnabled = true;
     }
 
     public IEnumerator DisplayDialogue(Vector2Int dialogueKey)
