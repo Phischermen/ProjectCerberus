@@ -171,9 +171,9 @@ public class Jack : Cerberus
                     entity.Move(entityPushCoord);
                 }
 
-                Move(coord);
                 PlaySfxPitchShift(superPushedSfx, 0.9f, 1.1f);
                 PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
+                Move(coord);
                 DeclareDoneWithMove();
             }
         }
