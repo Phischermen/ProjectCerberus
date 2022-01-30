@@ -13,6 +13,7 @@ namespace Editor
     {
         private int _editedWorld;
         private int _editedLevel;
+
         public override void OnInspectorGUI()
         {
             var levelSequence = (LevelSequence) target;
@@ -36,6 +37,27 @@ namespace Editor
                         levelSequence.worlds.Remove(world);
                     }
 
+                    // Add buttons to change order of worlds
+                    EditorGUILayout.BeginHorizontal();
+                    if (GUILayout.Button("▲") && i != 0)
+                    {
+                        // Make move up undoable
+                        UnityEditor.Undo.RecordObject(levelSequence, "Move Up");
+                        // Move world "up" the list.
+                        levelSequence.worlds.RemoveAt(i);
+                        levelSequence.worlds.Insert(i - 1, world);
+                    }
+                    if (GUILayout.Button("▼") && i != levelSequence.worlds.Count - 1)
+                    {
+                        // Make move down undoable
+                        UnityEditor.Undo.RecordObject(levelSequence, "Move Down");
+                        // Move world "up" the list.
+                        levelSequence.worlds.RemoveAt(i);
+                        levelSequence.worlds.Insert(i + 1, world);
+                    }
+
+                    EditorGUILayout.EndHorizontal();
+
                     // Iterate through levels.
                     for (var j = 0; j < world.levels.Count; j++)
                     {
@@ -52,6 +74,7 @@ namespace Editor
                                 EditorSceneManager.OpenScene(path);
                             }
                         }
+
                         // Add move up button
                         if (GUILayout.Button("▲") && j != 0)
                         {
@@ -71,6 +94,7 @@ namespace Editor
                             world.levels.RemoveAt(j);
                             world.levels.Insert(j + 1, scene);
                         }
+
                         // Add insert button.
                         if (GUILayout.Button("Ins"))
                         {
@@ -81,6 +105,7 @@ namespace Editor
                             _editedLevel = j;
                             DisplaySelectMenu();
                         }
+
                         // Add delete button.
                         if (GUILayout.Button("✖"))
                         {
@@ -89,10 +114,12 @@ namespace Editor
                             // Remove the scene
                             world.levels.RemoveAt(j);
                         }
+
                         // End row of buttons.
                         GUILayout.EndHorizontal();
                     }
                 } // End of displaying level controls.
+
                 // Add add scene button.
                 if (GUILayout.Button("Add Scene"))
                 {
@@ -105,7 +132,8 @@ namespace Editor
                 }
 
                 EditorGUILayout.EndFoldoutHeaderGroup();
-            }// End of displaying world controls
+            } // End of displaying world controls
+
             // Add add world button
             if (GUILayout.Button("Add World"))
             {
