@@ -52,7 +52,7 @@ public class WoodBlock : BasicBlock
         woodHitSfx.Play();
     }
 
-    public void SetFieldsToShotPreset(bool shot)
+    public virtual void SetFieldsToShotPreset(bool shot)
     {
         if (shot)
         {
