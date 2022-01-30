@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: DefaultLevelSequence
   m_EditorClassIdentifier: 
   worlds:
-  - levels: 0a00000007000000150000001400000013000000
+  - levels: 23000000240000001d0000001e0000001f00000025000000
+    expandedInInspector: 1
+  - levels: 1500000026000000070000001400000013000000
     expandedInInspector: 1
   - levels: 12000000080000001100000010000000
     expandedInInspector: 1

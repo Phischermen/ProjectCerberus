@@ -13,7 +13,16 @@ MonoBehaviour:
   m_Name: DialogueDatabase
   m_EditorClassIdentifier: 
   scenes:
-  - expandedInInspector: 1
+  - expandedInInspector: 0
+    sceneTitle: TestScene
+    dialogues:
+    - id: I2D2
+      speaker: 0
+      line: I always push it to the end!
+    - id: M8F6
+      speaker: 0
+      line: Just like I do to your mom.
+  - expandedInInspector: 0
     sceneTitle: BasicsNarration
     dialogues:
     - id: W4H2
@@ -108,29 +117,5 @@ MonoBehaviour:
       line: You should know that it is not always possible to score all the trophies
         using one solution. Sometimes you will have to find alternate solutions.
   - expandedInInspector: 0
-    sceneTitle: TestScene
-    dialogues:
-    - id: I2D2
-      speaker: 0
-      line: I always push it to the end!
-    - id: M8F6
-      speaker: 0
-      line: Just like I do to your mom.
-  - expandedInInspector: 0
-    sceneTitle: Opening
-    dialogues:
-    - id: E0N7
-      speaker: 0
-      line: Hello World!
-    - id: C3C6
-      speaker: 0
-      line: I hope I don't fuck this up!
-    - id: M3F7
-      speaker: 0
-      line: Alrighty then
-  - expandedInInspector: 0
-    sceneTitle: Ending
-    dialogues:
-    - id: G4D0
-      speaker: 0
-      line: Yay it worked!
+    sceneTitle: JackOutdoors
+    dialogues: []
