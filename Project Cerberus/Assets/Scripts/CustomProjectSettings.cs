@@ -11,6 +11,9 @@ public class CustomProjectSettings : ScriptableObject
 {
     public LevelSequence mainLevelSequence;
     public GameObject puzzleContainerPrefab;
+
+    public GameObject[] puzzleLevelIncludes;
+
     public GameObject textPopupPrefab;
     public DialogueDatabaseAsset dialogueDatabaseAsset;
     public static string resourcePath = "CustomProjectSettings";

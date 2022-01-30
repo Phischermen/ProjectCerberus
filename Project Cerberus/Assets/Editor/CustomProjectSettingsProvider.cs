@@ -31,6 +31,7 @@ namespace Editor
             EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.dialogueDatabaseAsset)));
             EditorGUILayout.LabelField("Prefabs");
             EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.puzzleContainerPrefab)));
+            EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.puzzleLevelIncludes)));
             EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.textPopupPrefab)));
             // Apply changes
             _settings.ApplyModifiedProperties();
