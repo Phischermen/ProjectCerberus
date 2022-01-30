@@ -48,7 +48,7 @@ public class DialoguePanel : MonoBehaviour
 
     public IEnumerator DisplayDialogue(Vector2Int dialogueKey)
     {
-        var message = GameAssets.i.dialogueDatabaseAsset.scenes[dialogueKey.x].dialogues[dialogueKey.y].line;
+        var message = CustomProjectSettings.i.dialogueDatabaseAsset.scenes[dialogueKey.x].dialogues[dialogueKey.y].line;
         textDisplay.text = "";
         displayingMessage = true;
         typing = true;

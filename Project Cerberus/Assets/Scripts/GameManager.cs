@@ -127,8 +127,7 @@ public class GameManager : MonoBehaviour, IUndoable
         // Load Level Sequence and get current world and level
         if (levelSequence == null)
         {
-            levelSequence = Resources.Load<CustomProjectSettings>(CustomProjectSettings.resourcePath)
-                .mainLevelSequence;
+            levelSequence = CustomProjectSettings.i.mainLevelSequence;
             currentLevel = levelSequence.FindCurrentLevelSequence(SceneManager.GetActiveScene().buildIndex);
         }
     }

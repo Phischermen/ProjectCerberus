@@ -28,6 +28,10 @@ namespace Editor
         {
             // Add property field to set mainLevelSequence
             EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.mainLevelSequence)));
+            EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.dialogueDatabaseAsset)));
+            EditorGUILayout.LabelField("Prefabs");
+            EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.puzzleContainerPrefab)));
+            EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.textPopupPrefab)));
             // Apply changes
             _settings.ApplyModifiedProperties();
         }
@@ -59,6 +63,7 @@ namespace Editor
                 settings = ScriptableObject.CreateInstance<CustomProjectSettings>();
                 // Initialize settings
                 settings.mainLevelSequence = null;
+                settings.puzzleContainerPrefab = null;
                 // Create the settings asset
                 AssetDatabase.CreateAsset(settings, CustomProjectSettingsProvider.settingPath);
                 // Save the asset

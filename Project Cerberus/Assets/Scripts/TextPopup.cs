@@ -20,7 +20,7 @@ public class TextPopup : MonoBehaviour
 
     public static TextPopup Create(string text, Color color)
     {
-        var gameObject = Instantiate(GameAssets.i.textPopupPrefab);
+        var gameObject = Instantiate(CustomProjectSettings.i.textPopupPrefab);
         var textPopup = gameObject.GetComponent<TextPopup>();
         textPopup._textMeshPro.text = text;
         textPopup._textMeshPro.color = color;

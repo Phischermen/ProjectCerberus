@@ -65,8 +65,7 @@ public class MainMenuController : MonoBehaviour
     {
         var idx = 0;
         // Load main level sequence.
-        var levelSequence = Resources.Load<CustomProjectSettings>(CustomProjectSettings.resourcePath)
-            .mainLevelSequence;
+        var levelSequence = CustomProjectSettings.i.mainLevelSequence;
         // Initialize container.
         worldContainers = new List<GameObject>();
         // Create a container for the levels in each world.

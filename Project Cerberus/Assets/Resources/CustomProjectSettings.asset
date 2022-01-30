@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ee42af7c51fae409d44daa119b5a17, type: 3}
   m_Name: CustomProjectSettings
   m_EditorClassIdentifier: 
-  mainLevelSequence: {fileID: 11400000, guid: 0109a593f0f5d4b44af9e688bd280475, type: 2}
+  mainLevelSequence: {fileID: 11400000, guid: 69d0841d38644974eb8633580cef0755, type: 2}
+  puzzleContainerPrefab: {fileID: 2715384113237483527, guid: eef179ac3b38ba642b88743486b798b3,
+    type: 3}
