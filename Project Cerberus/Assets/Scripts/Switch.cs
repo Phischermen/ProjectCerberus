@@ -18,6 +18,7 @@ public class Switch : PuzzleEntity
         public override void Load()
         {
             lever.isPressed = flipped;
+            lever._lastIsPressed = flipped; // Prevents unintended callback invocation.
             lever.SwitchOnVisually(flipped);
         }
     }
@@ -64,10 +65,14 @@ public class Switch : PuzzleEntity
             if (isPressed)
             {
                 PlaySfx(pressedAudioSource);
+                SwitchOnVisually(true);
+                onPressed.Invoke();
             }
             else
             {
                 PlaySfx(releasedAudioSource);
+                SwitchOnVisually(false);
+                onReleased.Invoke();
             }
         }
 
@@ -76,18 +81,18 @@ public class Switch : PuzzleEntity
 
     public override void OnEnterCollisionWithEntity(PuzzleEntity other)
     {
+        // TODO don't imediately do these call backs. Double check in late update.
         if (isPressed) return;
         isPressed = true;
-        SwitchOnVisually(true);
-        onPressed.Invoke();
+        
     }
 
     public override void OnExitCollisionWithEntity(PuzzleEntity other)
     {
+        // TODO don't imediately do these call backs. Double check in late update.
         if (!isPressed) return;
         isPressed = false;
-        SwitchOnVisually(false);
-        onReleased.Invoke();
+        
     }
 
     public void SwitchOnVisually(bool on)

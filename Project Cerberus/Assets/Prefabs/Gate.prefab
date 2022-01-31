@@ -200,7 +200,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: -2209497195641252631, guid: f517efbb0e7cff84798d8ddd4641d42b,
+  m_Sprite: {fileID: 1416670008756764745, guid: f517efbb0e7cff84798d8ddd4641d42b,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -248,10 +248,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   open: 0
-  openSprite: {fileID: 8059772277633314806, guid: f517efbb0e7cff84798d8ddd4641d42b,
-    type: 3}
-  closeSprite: {fileID: -2209497195641252631, guid: f517efbb0e7cff84798d8ddd4641d42b,
-    type: 3}
+  doorSprites:
+  - {fileID: 1416670008756764745, guid: f517efbb0e7cff84798d8ddd4641d42b, type: 3}
+  - {fileID: -2081254510633325860, guid: f517efbb0e7cff84798d8ddd4641d42b, type: 3}
+  - {fileID: 1483403870251697562, guid: f517efbb0e7cff84798d8ddd4641d42b, type: 3}
+  - {fileID: 7294122673726471461, guid: f517efbb0e7cff84798d8ddd4641d42b, type: 3}
   openAudioSource: {fileID: 8060495762962412671}
   closeAudioSource: {fileID: 7584267452294638657}
 --- !u!1 &5143207831711789121

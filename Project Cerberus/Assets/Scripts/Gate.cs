@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class Gate : PuzzleEntity
 {
-
     public class GateUndoData : UndoData
     {
         public Gate gate;
@@ -21,28 +20,40 @@ public class Gate : PuzzleEntity
 
         public override void Load()
         {
+            // Stop animation
+            if (gate.animationRoutine != null)
+            {
+                gate.StopCoroutine(gate.animationRoutine);
+                gate.animationIsRunning = false;
+                gate.animationMustStop = false;
+            }
+
             gate._wantsToClose = wantsToClose;
             if (open)
             {
-                gate.OpenGate();
+                gate.OpenGate(false);
             }
             else
             {
-                gate.CloseGate();
+                gate.CloseGate(false);
             }
         }
-
     }
-    
+
     private bool _wantsToClose;
     [ShowInTileInspector] public bool open;
     private bool _lastOpen;
-    [SerializeField] private Sprite openSprite;
-    [SerializeField] private Sprite closeSprite;
+    
+    [SerializeField] private Sprite[] doorSprites;
+    private Sprite openSprite => doorSprites[doorSprites.Length - 1];
+    private Sprite closeSprite => doorSprites[0];
+    private static int turnAnimationWasPlayed;
+    
     private SpriteRenderer _spriteRenderer;
 
     public AudioSource openAudioSource;
     public AudioSource closeAudioSource;
+
     public Gate()
     {
         entityRules = "Can be opened and closed via switches and levers. Jumpable when closed and landable when open.";
@@ -61,16 +72,17 @@ public class Gate : PuzzleEntity
         _spriteRenderer = GetComponent<SpriteRenderer>();
         if (open)
         {
-            OpenGate();
+            OpenGate(false);
         }
         else
         {
-            RequestCloseGate();
+            CloseGate(false);
         }
     }
 
     private void Update()
     {
+        base.Update();
         if (_wantsToClose)
         {
             // Set collision parameters in preparation for collision check.
@@ -78,7 +90,7 @@ public class Gate : PuzzleEntity
             stopsBlock = true;
             if (!CollidesWithAny(currentCell.puzzleEntities))
             {
-                CloseGate();
+                CloseGate(true);
             }
             else
             {
@@ -108,8 +120,23 @@ public class Gate : PuzzleEntity
 
     public void OpenGate()
     {
+        OpenGate(true);
+    }
+
+    public void OpenGate(bool withAnimation)
+    {
         _wantsToClose = false;
-        _spriteRenderer.sprite = openSprite;
+        // Play an open animation.
+        if (withAnimation)
+        {
+            turnAnimationWasPlayed = manager.move;
+            PlayAnimation(OpenGateAnimation(AnimationUtility.gateOpenDuration));
+        }
+        else
+        {
+            _spriteRenderer.sprite = openSprite;
+        }
+
         SetFieldsToOpenPreset();
     }
 
@@ -118,10 +145,19 @@ public class Gate : PuzzleEntity
         _wantsToClose = true;
     }
 
-    private void CloseGate()
+    private void CloseGate(bool withAnimation)
     {
         _wantsToClose = false;
-        _spriteRenderer.sprite = closeSprite;
+        if (withAnimation)
+        {
+            turnAnimationWasPlayed = manager.move;
+            PlayAnimation(CloseGateAnimation(AnimationUtility.gateCloseDuration));
+        }
+        else
+        {
+            _spriteRenderer.sprite = closeSprite;
+        }
+
         SetFieldsToClosedPreset();
     }
 
@@ -141,5 +177,45 @@ public class Gate : PuzzleEntity
         stopsPlayer = true;
         landableScore = -1;
         jumpable = true;
+    }
+
+    // Animations
+    public IEnumerator OpenGateAnimation(float animationDuration)
+    {
+        animationIsRunning = true;
+        var timeEllapsed = 0f;
+        // Cycle through frames. 
+        while (timeEllapsed < animationDuration && animationMustStop == false)
+        {
+            timeEllapsed += Time.fixedDeltaTime * (turnAnimationWasPlayed == manager.move ? 1f : 2f);
+            var spriteIdx = (int) (timeEllapsed * (doorSprites.Length - 1) / animationDuration);
+            _spriteRenderer.sprite = doorSprites[spriteIdx];
+            yield return new WaitForFixedUpdate();
+        }
+
+        // Goto final frame.
+        _spriteRenderer.sprite = openSprite;
+        animationIsRunning = false;
+        animationMustStop = false;
+    }
+
+    public IEnumerator CloseGateAnimation(float animationDuration)
+    {
+        animationIsRunning = true;
+        var timeEllapsed = 0f;
+        // Cycle through frames.
+        while (timeEllapsed < animationDuration && animationMustStop == false)
+        {
+            timeEllapsed += Time.fixedDeltaTime * (turnAnimationWasPlayed == manager.move ? 1f : 2f);
+            var spriteIdx = (doorSprites.Length - 1) -
+                            (int) (timeEllapsed * (doorSprites.Length - 1) / animationDuration);
+            _spriteRenderer.sprite = doorSprites[spriteIdx];
+            yield return new WaitForFixedUpdate();
+        }
+
+        // Goto final frame.
+        _spriteRenderer.sprite = closeSprite;
+        animationIsRunning = false;
+        animationMustStop = false;
     }
 }

@@ -9,6 +9,9 @@ public static class AnimationUtility
     public static float spikedRotationSpeed = 180f;
     public static Vector2 spikedEndPosition = new Vector2(10f, -25f);
     public static float spikedControlPointHeight = 10f;
+
+    public static float gateOpenDuration = 0.5f;
+    public static float gateCloseDuration = 0.5f;
     
     public static int bezierCurveLengthEstimationSegments = 5;
     public static float lengthEstimationDelta = 1f / bezierCurveLengthEstimationSegments;
