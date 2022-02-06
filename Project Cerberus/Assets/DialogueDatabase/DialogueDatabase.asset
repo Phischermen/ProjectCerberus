@@ -118,4 +118,121 @@ MonoBehaviour:
         using one solution. Sometimes you will have to find alternate solutions.
   - expandedInInspector: 0
     sceneTitle: JackOutdoors
-    dialogues: []
+    dialogues:
+    - id: Jou1
+      speaker: 0
+      line: "Hm. Annoying demons. They should know by now that they aren\u2019t allowed
+        to trespass here. Mhm. They almost made me forget to report back to Hades.
+        I should head over to his office before he worries.\r"
+    - id: Jou2
+      speaker: 0
+      line: Hng. I need to warm my brothers of this. Hm. They must avoid the horror!
+  - expandedInInspector: 0
+    sceneTitle: Jack In Hades Office
+    dialogues:
+    - id: Jio1
+      speaker: 0
+      line: Hm. Not Here. Did I miss him?
+    - id: Jio2
+      speaker: 0
+      line: Huh?! What was that?! Hades?!
+  - expandedInInspector: 0
+    sceneTitle: Jack In Bathroom
+    dialogues:
+    - id: jBr1
+      speaker: 0
+      line: ...
+    - id: jBr2
+      speaker: 3
+      line: ...
+    - id: jBr3
+      speaker: 3
+      line: Oh f-
+    - id: jBr4
+      speaker: 0
+      line: '*Scared dog noises*'
+    - id: jBr5
+      speaker: 3
+      line: Jack...
+    - id: jBr6
+      speaker: 0
+      line: '*scared dog noises*'
+    - id: jBr7
+      speaker: 3
+      line: Jac-
+    - id: jBr8
+      speaker: 0
+      line: '*very scared dog noises*'
+    - id: jBr9
+      speaker: 3
+      line: This isn't going to be that bad. I'll prove it to you.
+    - id: jB10
+      speaker: 3
+      line: See, the water is boiling hot. Just as you adore it!
+    - id: jB11
+      speaker: 3
+      line: Ow!
+    - id: jB12
+      speaker: 3
+      line: Jack.
+    - id: jB13
+      speaker: 3
+      line: JACK.
+    - id: jB14
+      speaker: 3
+      line: YOU.
+    - id: jB15
+      speaker: 3
+      line: JACK. DO NOT DARE TO-
+  - expandedInInspector: 1
+    sceneTitle: Gates of Hell
+    dialogues:
+    - id: gOH1
+      speaker: 0
+      line: Grr. We have trouble.
+    - id: gOH2
+      speaker: 2
+      line: What's the matter? Did those demons make it through your area?
+    - id: M7U1
+      speaker: 0
+      line: No, I dealt with those squeaks earlier. We have BIG trouble.
+    - id: C2H6
+      speaker: 1
+      line: Like Sisyphus's stone big?!
+    - id: C0D6
+      speaker: 0
+      line: Even bigger!
+    - id: E6U6
+      speaker: 0
+      line: Hades. Hades. He's made a bath!
+    - id: Q2D2
+      speaker: 2
+      line: So what? Doesn't he like those?
+    - id: N3X2
+      speaker: 2
+      line: Yah! It helps him calm, down after along day of governing the dead!
+    - id: O3V5
+      speaker: 0
+      line: For us!
+    - id: C4B1
+      speaker: 0
+      line: '*GASP*'
+    - id: J3I4
+      speaker: 2
+      line: We've gotta get out of here before he finds us!
+    - id: R2S4
+      speaker: 0
+      line: Hm. But where? He saw me see him fill the bath. He'll be coming for us!
+    - id: E4H4
+      speaker: 0
+      line: Hmmm...
+    - id: Y2K3
+      speaker: 1
+      line: How's about to Elysium? It'll be long before he can reach us and there's
+        that muddy pond we escape to if he does!
+    - id: G4W3
+      speaker: 2
+      line: Yes!
+    - id: F7S3
+      speaker: 0
+      line: Sounds good. Let's move out!
