@@ -57,5 +57,21 @@ namespace Editor
                 transformTriggerBox.bounds = newBounds;
             }
         }
+
+        public override void OnInspectorGUI()
+        {
+            var triggerBox = (TransformTriggerBox) target;
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(triggerBox.objectsToScanFor)));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(triggerBox.onTrigger)));
+            triggerBox.mustContainAllToTrigger =
+                EditorGUILayout.Toggle("Must contain all to trigger", triggerBox.mustContainAllToTrigger);
+            GUI.enabled = !triggerBox.mustContainAllToTrigger;
+            triggerBox.triggerThreshold =
+                EditorGUILayout.IntField("Trigger Threshold", Mathf.Clamp(triggerBox.triggerThreshold, 1,
+                    triggerBox.objectsToScanFor.Count));
+            GUI.enabled = true;
+
+            serializedObject.ApplyModifiedProperties();
+        }
     }
 }

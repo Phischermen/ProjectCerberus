@@ -122,8 +122,11 @@ MonoBehaviour:
     - id: Jou1
       speaker: 0
       line: "Hm. Annoying demons. They should know by now that they aren\u2019t allowed
-        to trespass here. Mhm. They almost made me forget to report back to Hades.
-        I should head over to his office before he worries.\r"
+        to trespass here.\r"
+    - id: Jo15
+      speaker: 0
+      line: Mhm. They almost made me forget to report back to Hades. I should head
+        over to his office before he worries.
     - id: Jou2
       speaker: 0
       line: Hng. I need to warm my brothers of this. Hm. They must avoid the horror!
@@ -187,52 +190,52 @@ MonoBehaviour:
   - expandedInInspector: 1
     sceneTitle: Gates of Hell
     dialogues:
-    - id: gOH1
+    - id: ghJ1
       speaker: 0
       line: Grr. We have trouble.
-    - id: gOH2
+    - id: ghL2
       speaker: 2
       line: What's the matter? Did those demons make it through your area?
-    - id: M7U1
+    - id: ghJ3
       speaker: 0
       line: No, I dealt with those squeaks earlier. We have BIG trouble.
-    - id: C2H6
+    - id: ghK4
       speaker: 1
       line: Like Sisyphus's stone big?!
-    - id: C0D6
+    - id: ghJ5
       speaker: 0
       line: Even bigger!
-    - id: E6U6
+    - id: ghJ6
       speaker: 0
       line: Hades. Hades. He's made a bath!
-    - id: Q2D2
+    - id: ghL7
       speaker: 2
       line: So what? Doesn't he like those?
-    - id: N3X2
+    - id: ghL8
       speaker: 2
       line: Yah! It helps him calm, down after along day of governing the dead!
-    - id: O3V5
+    - id: ghJ9
       speaker: 0
       line: For us!
-    - id: C4B1
+    - id: gJ10
       speaker: 0
       line: '*GASP*'
-    - id: J3I4
+    - id: gL11
       speaker: 2
       line: We've gotta get out of here before he finds us!
-    - id: R2S4
+    - id: gJ12
       speaker: 0
       line: Hm. But where? He saw me see him fill the bath. He'll be coming for us!
-    - id: E4H4
+    - id: gJ13
       speaker: 0
       line: Hmmm...
-    - id: Y2K3
+    - id: gK14
       speaker: 1
       line: How's about to Elysium? It'll be long before he can reach us and there's
         that muddy pond we escape to if he does!
-    - id: G4W3
+    - id: gL15
       speaker: 2
       line: Yes!
-    - id: F7S3
+    - id: gJ16
       speaker: 0
       line: Sounds good. Let's move out!

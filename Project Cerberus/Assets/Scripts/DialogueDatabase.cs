@@ -34,4 +34,43 @@ public static class DialogueDatabase
 	public static Vector2Int aLL4 = new Vector2Int(1,25);
 	public static Vector2Int aLL5 = new Vector2Int(1,26);
 	//JackOutdoors
+	public static Vector2Int Jou1 = new Vector2Int(2,0);
+	public static Vector2Int Jo15 = new Vector2Int(2,1);
+	public static Vector2Int Jou2 = new Vector2Int(2,2);
+	//Jack In Hades Office
+	public static Vector2Int Jio1 = new Vector2Int(3,0);
+	public static Vector2Int Jio2 = new Vector2Int(3,1);
+	//Jack In Bathroom
+	public static Vector2Int jBr1 = new Vector2Int(4,0);
+	public static Vector2Int jBr2 = new Vector2Int(4,1);
+	public static Vector2Int jBr3 = new Vector2Int(4,2);
+	public static Vector2Int jBr4 = new Vector2Int(4,3);
+	public static Vector2Int jBr5 = new Vector2Int(4,4);
+	public static Vector2Int jBr6 = new Vector2Int(4,5);
+	public static Vector2Int jBr7 = new Vector2Int(4,6);
+	public static Vector2Int jBr8 = new Vector2Int(4,7);
+	public static Vector2Int jBr9 = new Vector2Int(4,8);
+	public static Vector2Int jB10 = new Vector2Int(4,9);
+	public static Vector2Int jB11 = new Vector2Int(4,10);
+	public static Vector2Int jB12 = new Vector2Int(4,11);
+	public static Vector2Int jB13 = new Vector2Int(4,12);
+	public static Vector2Int jB14 = new Vector2Int(4,13);
+	public static Vector2Int jB15 = new Vector2Int(4,14);
+	//Gates of Hell
+	public static Vector2Int ghJ1 = new Vector2Int(5,0);
+	public static Vector2Int ghL2 = new Vector2Int(5,1);
+	public static Vector2Int ghJ3 = new Vector2Int(5,2);
+	public static Vector2Int ghK4 = new Vector2Int(5,3);
+	public static Vector2Int ghJ5 = new Vector2Int(5,4);
+	public static Vector2Int ghJ6 = new Vector2Int(5,5);
+	public static Vector2Int ghL7 = new Vector2Int(5,6);
+	public static Vector2Int ghL8 = new Vector2Int(5,7);
+	public static Vector2Int ghJ9 = new Vector2Int(5,8);
+	public static Vector2Int gJ10 = new Vector2Int(5,9);
+	public static Vector2Int gL11 = new Vector2Int(5,10);
+	public static Vector2Int gJ12 = new Vector2Int(5,11);
+	public static Vector2Int gJ13 = new Vector2Int(5,12);
+	public static Vector2Int gK14 = new Vector2Int(5,13);
+	public static Vector2Int gL15 = new Vector2Int(5,14);
+	public static Vector2Int gJ16 = new Vector2Int(5,15);
 }
