@@ -16,6 +16,8 @@ public class CustomProjectSettings : ScriptableObject
 
     public GameObject textPopupPrefab;
     public DialogueDatabaseAsset dialogueDatabaseAsset;
+
+    public AnimationCurve defaultTalkAnimationCurve;
     public static string resourcePath = "CustomProjectSettings";
     
     private static CustomProjectSettings _i;

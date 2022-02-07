@@ -15,6 +15,7 @@ public class Hades : PuzzleEntity
     private List<PuzzleContainer.LevelCell> _openList;
 
     public float chaseFrequency;
+    public bool chaseEntityEnabled;
     private float _lastTimeChased;
 
     public class HadesUndoData : UndoData
@@ -50,7 +51,7 @@ public class Hades : PuzzleEntity
     {
         base.Update();
         // Check if time has come to move another square.
-        if ((Time.time - _lastTimeChased) > chaseFrequency && inHole == false)
+        if (chaseEntityEnabled && (Time.time - _lastTimeChased) > chaseFrequency && inHole == false)
         {
             _lastTimeChased = Time.time;
             var manhattanDistance = Mathf.Abs(position.x - entityToChase.position.x) +
@@ -126,7 +127,7 @@ public class Hades : PuzzleEntity
         }
     }
 
-    private bool MoveHelper(PuzzleContainer.LevelCell neighbor)
+    public bool MoveHelper(PuzzleContainer.LevelCell neighbor)
     {
         if (neighbor.spacesAwayFromChaseTarget < currentCell.spacesAwayFromChaseTarget &&
             neighbor.GetLandableScore() >= 0)
@@ -137,6 +138,12 @@ public class Hades : PuzzleEntity
         }
 
         return false;
+    }
+
+    public void MoveForCutscene(Vector2Int offset)
+    {
+        Move(position + offset);
+        PlayAnimation(SlideToDestination(position, AnimationUtility.basicMoveAndPushSpeed));
     }
 
     public override UndoData GetUndoData()

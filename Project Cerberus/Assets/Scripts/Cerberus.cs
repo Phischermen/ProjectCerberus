@@ -117,7 +117,7 @@ public class Cerberus : PuzzleEntity
 
     // Common movement methods
 
-    protected void BasicMove(Vector2Int offset)
+    public void BasicMove(Vector2Int offset)
     {
         var coord = position + offset;
         var newCell = puzzle.GetCell(coord);
@@ -182,29 +182,5 @@ public class Cerberus : PuzzleEntity
         jumpable = !disableAndShowPentagram;
         landableScore = disableAndShowPentagram ? 0 : -1;
         GetComponent<SpriteRenderer>().sprite = disableAndShowPentagram ? pentagramMarker : _cerberusSprite;
-    }
-
-    // Animation
-
-    public IEnumerator Talk(float maxYOffset, float talkSpeed)
-    {
-        animationIsRunning = true;
-        var ogPosition = transform.position;
-        var delta = 0f;
-
-        while (!animationMustStop)
-        {
-            // Hop up and down
-            delta += talkSpeed * Time.deltaTime;
-            transform.position =
-                new Vector3(ogPosition.x, ogPosition.y + talkAnimationCurve.Evaluate(delta), ogPosition.z);
-            yield return new WaitForFixedUpdate();
-        }
-
-        // Reset position
-        transform.position = ogPosition;
-
-        animationMustStop = false;
-        animationIsRunning = false;
     }
 }

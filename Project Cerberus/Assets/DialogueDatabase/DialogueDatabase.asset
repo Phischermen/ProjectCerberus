@@ -139,7 +139,7 @@ MonoBehaviour:
     - id: Jio2
       speaker: 0
       line: Huh?! What was that?! Hades?!
-  - expandedInInspector: 0
+  - expandedInInspector: 1
     sceneTitle: Jack In Bathroom
     dialogues:
     - id: jBr1
@@ -187,7 +187,7 @@ MonoBehaviour:
     - id: jB15
       speaker: 3
       line: JACK. DO NOT DARE TO-
-  - expandedInInspector: 1
+  - expandedInInspector: 0
     sceneTitle: Gates of Hell
     dialogues:
     - id: ghJ1
@@ -212,7 +212,7 @@ MonoBehaviour:
       speaker: 2
       line: So what? Doesn't he like those?
     - id: ghL8
-      speaker: 2
+      speaker: 1
       line: Yah! It helps him calm, down after along day of governing the dead!
     - id: ghJ9
       speaker: 0

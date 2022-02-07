@@ -48,10 +48,10 @@ public class BasicsTutorialController : MonoBehaviour
             pointer.gameObject.SetActive(false);
             DialoguePanel.i.StartConversation();
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.T331);
-            kahuna.PlayAnimation(kahuna.Talk(1f,0.5f));
+            kahuna.PlayAnimation(kahuna.Talk(1f,0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.T332);
             kahuna.FinishCurrentAnimation();
-            laguna.PlayAnimation(laguna.Talk(1f,0.5f));
+            laguna.PlayAnimation(laguna.Talk(1f,0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.T333);
             laguna.FinishCurrentAnimation();
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.t334);

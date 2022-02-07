@@ -16,7 +16,7 @@ public class OpeningScenesController : MonoBehaviour
             var jack = FindObjectOfType<Jack>();
 
             DialoguePanel.i.StartConversation();
-            jack.PlayAnimation(jack.Talk(1f, 0.5f));
+            jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.Jou1);
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.Jo15);
             jack.FinishCurrentAnimation();
@@ -30,22 +30,50 @@ public class OpeningScenesController : MonoBehaviour
             var laguna = FindObjectOfType<Laguna>();
             
             DialoguePanel.i.StartConversation();
+            jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.ghJ1);
+            jack.FinishCurrentAnimation();
+            laguna.PlayAnimation(laguna.Talk(1f,0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.ghL2);
+            laguna.FinishCurrentAnimation();
+            jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.ghJ3);
+            jack.FinishCurrentAnimation();
+            kahuna.PlayAnimation(kahuna.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.ghK4);
+            kahuna.FinishCurrentAnimation();
+            jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.ghJ5);
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.ghJ6);
+            jack.FinishCurrentAnimation();
+            laguna.PlayAnimation(laguna.Talk(1f,0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.ghL7);
+            laguna.FinishCurrentAnimation();
+            kahuna.PlayAnimation(kahuna.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.ghL8);
+            kahuna.FinishCurrentAnimation();
+            jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.ghJ9);
+            jack.FinishCurrentAnimation();
+            // TODO GASPing animation.
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.gJ10);
+            laguna.PlayAnimation(laguna.Talk(1f,0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.gL11);
+            laguna.FinishCurrentAnimation();
+            jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.gJ12);
+            jack.FinishCurrentAnimation();
+            // TODO Thinking animation.
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.gJ13);
+            kahuna.PlayAnimation(kahuna.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.gK14);
+            kahuna.FinishCurrentAnimation();
+            laguna.PlayAnimation(laguna.Talk(1f,0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.gL15);
+            laguna.FinishCurrentAnimation();
+            jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.gJ16);
+            jack.FinishCurrentAnimation();
             DialoguePanel.i.EndConversation();
         }
     }
@@ -56,7 +84,7 @@ public class OpeningScenesController : MonoBehaviour
         var jack = FindObjectOfType<Jack>();
 
         DialoguePanel.i.StartConversation();
-        jack.PlayAnimation(jack.Talk(1f, 0.5f));
+        jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
         yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.Jio1);
         yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.Jio2);
         jack.FinishCurrentAnimation();
@@ -66,7 +94,47 @@ public class OpeningScenesController : MonoBehaviour
     public IEnumerator OnEnterBathroomCutscene()
     {
         yield return null;
-        Debug.Log("Bathroom cutscene");
+        var jack = FindObjectOfType<Jack>();
+        var hades = FindObjectOfType<Hades>();
+        
+        // TODO Reveal bathroom.
+        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr1);
+        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr2);
+        hades.PlayAnimation(hades.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr3);
+        hades.FinishCurrentAnimation();
+        jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr4);
+        jack.FinishCurrentAnimation();
+        hades.PlayAnimation(hades.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr5);
+        hades.FinishCurrentAnimation();
+        jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr6);
+        jack.FinishCurrentAnimation();
+        hades.PlayAnimation(hades.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr7);
+        hades.FinishCurrentAnimation();
+        jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr8);
+        jack.FinishCurrentAnimation();
+        hades.PlayAnimation(hades.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr9);
+        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jB10);
+        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jB11);
+        jack.BasicMove(Vector2Int.right);
+        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jB12);
+        hades.MoveForCutscene(Vector2Int.right);
+        jack.BasicMove(Vector2Int.right);
+        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jB13);
+        hades.MoveForCutscene(Vector2Int.right);
+        jack.BasicMove(Vector2Int.right);
+        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jB14);
+        hades.MoveForCutscene(Vector2Int.right);
+        jack.BasicMove(Vector2Int.right);
+        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jB15);
+        hades.FinishCurrentAnimation();
+        hades.chaseEntityEnabled = true;
     }
 
     public void PlayOnEnterOfficeCutscene()

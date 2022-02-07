@@ -41,7 +41,7 @@ public class JackTutorialController : MonoBehaviour
 
         var jack = FindObjectOfType<Jack>();
         
-        jack.PlayAnimation(jack.Talk(1f, 0.5f));
+        jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
         var gameManager = FindObjectOfType<GameManager>();
         gameManager.gameplayEnabled = false;
         yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.I2D2);

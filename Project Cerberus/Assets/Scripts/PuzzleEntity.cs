@@ -547,4 +547,26 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         animationIsRunning = false;
         animationMustStop = false;
     }
+    
+    public IEnumerator Talk(float maxYOffset, float talkSpeed, AnimationCurve talkAnimationCurve)
+    {
+        animationIsRunning = true;
+        var ogPosition = transform.position;
+        var delta = 0f;
+
+        while (!animationMustStop)
+        {
+            // Hop up and down
+            delta += talkSpeed * Time.deltaTime;
+            transform.position =
+                new Vector3(ogPosition.x, ogPosition.y + talkAnimationCurve.Evaluate(delta) * maxYOffset, ogPosition.z);
+            yield return new WaitForFixedUpdate();
+        }
+
+        // Reset position
+        transform.position = ogPosition;
+
+        animationMustStop = false;
+        animationIsRunning = false;
+    }
 }
