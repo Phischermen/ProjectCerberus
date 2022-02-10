@@ -5,12 +5,10 @@ using UnityEngine;
 public class BasicsTutorialController : MonoBehaviour
 {
     public int tutorialSequence;
-    [Header("Sequence 3")]
-    public Switch mySwitch;
+    [Header("Sequence 3")] public Switch mySwitch;
 
     public BasicBlock block;
-    [Header("Sequence 5")]
-    public Switch mySwitch1;
+    [Header("Sequence 5")] public Switch mySwitch1;
 
     public BasicBlock block1;
     public Transform spikes;
@@ -18,10 +16,22 @@ public class BasicsTutorialController : MonoBehaviour
     // Start is called before the first frame update
     IEnumerator Start()
     {
+        var pointer = FindObjectOfType<Pointer>();
+        // Check if player wants to skip tutorials.
+        if (PlayerPrefs.GetInt("SilenceTutorials", 0) == 1)
+        {
+            if (pointer)
+            {
+                pointer.gameObject.SetActive(false);
+            }
+
+            yield break;
+        }
+
         if (tutorialSequence == 1)
         {
             yield return null;
-            var pointer = FindObjectOfType<Pointer>();
+
             var jack = FindObjectOfType<Jack>();
             var star = FindObjectOfType<BonusStar>();
             var finish = FindObjectOfType<Finish>();
@@ -41,17 +51,16 @@ public class BasicsTutorialController : MonoBehaviour
         else if (tutorialSequence == 2)
         {
             yield return null;
-            var pointer = FindObjectOfType<Pointer>();
             var jack = FindObjectOfType<Jack>();
             var kahuna = FindObjectOfType<Kahuna>();
             var laguna = FindObjectOfType<Laguna>();
             pointer.gameObject.SetActive(false);
             DialoguePanel.i.StartConversation();
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.T331);
-            kahuna.PlayAnimation(kahuna.Talk(1f,0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+            kahuna.PlayAnimation(kahuna.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.T332);
             kahuna.FinishCurrentAnimation();
-            laguna.PlayAnimation(laguna.Talk(1f,0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+            laguna.PlayAnimation(laguna.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.T333);
             laguna.FinishCurrentAnimation();
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.t334);
@@ -66,7 +75,6 @@ public class BasicsTutorialController : MonoBehaviour
         else if (tutorialSequence == 3)
         {
             yield return null;
-            var pointer = FindObjectOfType<Pointer>();
             pointer.gameObject.SetActive(false);
             DialoguePanel.i.StartConversation();
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.s1J1);
@@ -91,7 +99,6 @@ public class BasicsTutorialController : MonoBehaviour
         else if (tutorialSequence == 5)
         {
             yield return null;
-            var pointer = FindObjectOfType<Pointer>();
             pointer.gameObject.SetActive(false);
             DialoguePanel.i.StartConversation();
             yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.s3L1);
@@ -108,7 +115,6 @@ public class BasicsTutorialController : MonoBehaviour
         else if (tutorialSequence == 6)
         {
             yield return null;
-            var pointer = FindObjectOfType<Pointer>();
             var star = FindObjectOfType<BonusStar>();
             pointer.gameObject.SetActive(false);
             DialoguePanel.i.StartConversation();

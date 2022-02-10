@@ -12,7 +12,10 @@ using UnityEngine.UI;
 public class MainMenuController : MonoBehaviour
 {
     public static int availableLevels = 0;
-    [FormerlySerializedAs("levelChoice")] public GameObject levelChoiceButton;
+    public static bool silenceTutorials;
+    public static bool silenceStory;
+    
+    public GameObject levelChoiceButton;
     public GameObject worldContainer;
     public GameObject levelChoicePanel;
     public GameObject mainPanel;
@@ -20,10 +23,14 @@ public class MainMenuController : MonoBehaviour
     public int displayedWorld = 0;
     public int maxWorld = 0;
 
-    private List<GameObject> worldContainers;
+    private List<GameObject> _worldContainers;
     public Button nextWorldButton;
     public Button prevWorldButton;
-//#if UNITY_EDITOR
+    public Toggle silenceTutorialsToggle;
+    public Toggle silenceStoryToggle;
+
+
+    //#if UNITY_EDITOR
     private void OnGUI()
     {
         if (GUI.Button(new Rect(0, 0, 200, 20), "Delete PlayerPrefs for levels"))
@@ -47,17 +54,21 @@ public class MainMenuController : MonoBehaviour
     {
         // Load saved data.
         availableLevels = PlayerPrefs.GetInt("AvailableLevels", 0);
+        silenceTutorials = silenceTutorialsToggle.isOn = PlayerPrefs.GetInt("SilenceTutorials", 1) == 1;
+        silenceStory = silenceStoryToggle.isOn = PlayerPrefs.GetInt("SilenceTutorials", 1) == 1;
+        // Initialize Level Select Panel
         InitializeLevelSelectPanel();
         // Deactivate all but the first world container.
-        foreach (var container in worldContainers)
+        foreach (var container in _worldContainers)
         {
             container.SetActive(false);
         }
 
-        worldContainers[0].SetActive(true);
-        // Initialize remaining UI components.
+        _worldContainers[0].SetActive(true);
+        // Initialize remaining UI components for Level Select Panel.
         prevWorldButton.interactable = false;
         nextWorldButton.interactable = true;
+        // Level selection panel is ready, but it's not the initial screen. Deactivate it.
         levelChoicePanel.SetActive(false);
     }
 
@@ -67,13 +78,13 @@ public class MainMenuController : MonoBehaviour
         // Load main level sequence.
         var levelSequence = CustomProjectSettings.i.mainLevelSequence;
         // Initialize container.
-        worldContainers = new List<GameObject>();
+        _worldContainers = new List<GameObject>();
         // Create a container for the levels in each world.
         foreach (var world in levelSequence.worlds)
         {
-            // Instantiate the world container. Add to worldContainers.
+            // Instantiate the world container. Add to _worldContainers.
             var newWorldContainer = Instantiate(worldContainer, levelChoicePanel.transform);
-            worldContainers.Add(newWorldContainer);
+            _worldContainers.Add(newWorldContainer);
             // Create a level choice foreach level in each world.
             foreach (var level in world.levels)
             {
@@ -108,9 +119,9 @@ public class MainMenuController : MonoBehaviour
     {
         if (displayedWorld < maxWorld)
         {
-            worldContainers[displayedWorld].SetActive(false);
+            _worldContainers[displayedWorld].SetActive(false);
             displayedWorld += 1;
-            worldContainers[displayedWorld].SetActive(true);
+            _worldContainers[displayedWorld].SetActive(true);
         }
 
         if (displayedWorld == maxWorld)
@@ -125,9 +136,9 @@ public class MainMenuController : MonoBehaviour
     {
         if (displayedWorld > 0)
         {
-            worldContainers[displayedWorld].SetActive(false);
+            _worldContainers[displayedWorld].SetActive(false);
             displayedWorld -= 1;
-            worldContainers[displayedWorld].SetActive(true);
+            _worldContainers[displayedWorld].SetActive(true);
         }
 
         if (displayedWorld == 0)
@@ -136,5 +147,19 @@ public class MainMenuController : MonoBehaviour
         }
 
         nextWorldButton.interactable = true;
+    }
+
+    public void SilenceTutorialsToggled(bool value)
+    {
+        PlayerPrefs.SetInt("SilenceTutorials", value ? 1 : 0);
+        PlayerPrefs.Save();
+        silenceTutorials = value;
+    }
+    
+    public void SilenceStoryToggled(bool value)
+    {
+        PlayerPrefs.SetInt("SilenceStory", value ? 1 : 0);
+        PlayerPrefs.Save();
+        silenceStory = value;
     }
 }

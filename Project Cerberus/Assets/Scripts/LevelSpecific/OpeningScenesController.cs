@@ -10,6 +10,11 @@ public class OpeningScenesController : MonoBehaviour
 
     public IEnumerator Start()
     {
+        // Check if player wants to skip story.
+        if (MainMenuController.silenceStory)
+        {
+            yield break;
+        }
         if (openingSequence == 1)
         {
             yield return null;
@@ -98,30 +103,34 @@ public class OpeningScenesController : MonoBehaviour
         var hades = FindObjectOfType<Hades>();
         
         // TODO Reveal bathroom.
-        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr1);
-        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr2);
-        hades.PlayAnimation(hades.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
-        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr3);
-        hades.FinishCurrentAnimation();
-        jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
-        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr4);
-        jack.FinishCurrentAnimation();
-        hades.PlayAnimation(hades.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
-        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr5);
-        hades.FinishCurrentAnimation();
-        jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
-        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr6);
-        jack.FinishCurrentAnimation();
-        hades.PlayAnimation(hades.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
-        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr7);
-        hades.FinishCurrentAnimation();
-        jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
-        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr8);
-        jack.FinishCurrentAnimation();
-        hades.PlayAnimation(hades.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
-        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr9);
-        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jB10);
-        yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jB11);
+        // This section is skipped if the player wants to silence story.
+        if (!MainMenuController.silenceStory)
+        {
+            yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr1);
+            yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr2);
+            hades.PlayAnimation(hades.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+            yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr3);
+            hades.FinishCurrentAnimation();
+            jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+            yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr4);
+            jack.FinishCurrentAnimation();
+            hades.PlayAnimation(hades.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+            yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr5);
+            hades.FinishCurrentAnimation();
+            jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+            yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr6);
+            jack.FinishCurrentAnimation();
+            hades.PlayAnimation(hades.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+            yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr7);
+            hades.FinishCurrentAnimation();
+            jack.PlayAnimation(jack.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+            yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr8);
+            jack.FinishCurrentAnimation();
+            hades.PlayAnimation(hades.Talk(1f, 0.5f, CustomProjectSettings.i.defaultTalkAnimationCurve));
+            yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jBr9);
+            yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jB10);
+            yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jB11);
+        }
         jack.BasicMove(Vector2Int.right);
         yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jB12);
         hades.MoveForCutscene(Vector2Int.right);
@@ -139,7 +148,7 @@ public class OpeningScenesController : MonoBehaviour
 
     public void PlayOnEnterOfficeCutscene()
     {
-        if (!_triggerTripped1)
+        if (!_triggerTripped1 && !MainMenuController.silenceStory)
         {
             StartCoroutine(OnEnterOfficeCutscene());
         }
