@@ -102,7 +102,7 @@ public class PuzzleGameplayInput : MonoBehaviour
 
             mergeOrSplit = mergeOrSplit || keyboard.leftCtrlKey.wasPressedThisFrame;
 
-            undoPressed = undoPressed || keyboard.rightShiftKey.wasPressedThisFrame;
+            undoPressed = undoPressed || keyboard.uKey.wasPressedThisFrame;
             resetPressed = resetPressed || keyboard.rKey.wasPressedThisFrame;
 
             toggleFixedCameraMode = toggleFixedCameraMode || keyboard.spaceKey.wasPressedThisFrame;
