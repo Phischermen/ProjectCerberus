@@ -93,7 +93,7 @@ public class MainMenuController : MonoBehaviour
                 var choice = newLevelChoice.GetComponent<LevelChoice>();
                 // Set fields for LevelChoice.
                 choice.levelIdx = idx;
-                choice.sceneIdx = level;
+                choice.sceneIdx = level.x;
                 choice.settings = PlayerPrefs.GetString(level.ToString(), TrophyData.initialTrophyCode);
                 choice.ApplySettings();
                 choice.GetComponentInChildren<Text>().text = (idx).ToString();

@@ -173,7 +173,7 @@ public class GameManager : MonoBehaviour, IUndoable
         }
 
         currentCerberus = availableCerberus[0];
-        
+
         // Setup camera.
         _cameraController.SetCameraMode(startInFixedCameraMode
             ? PuzzleCameraController.CameraMode.FixedPointMode
@@ -502,8 +502,15 @@ public class GameManager : MonoBehaviour, IUndoable
 
     public void ProceedToNextLevel()
     {
-        currentLevel += 1;
-        var nextScene = levelSequence.GetSceneBuildIndexForLevel(currentLevel);
-        SceneManager.LoadScene(nextScene);
+        var nextScene = levelSequence.GetSceneBuildIndexForLevel(currentLevel + 1);
+        if (nextScene == -1)
+        {
+            Debug.Log($"Could not find next level {currentLevel + 1}");
+        }
+        else
+        {
+            currentLevel += 1;
+            SceneManager.LoadScene(nextScene);
+        }
     }
 }

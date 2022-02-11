@@ -2,6 +2,9 @@
  * A custom editor for level sequence.
  */
 
+using System;
+using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -14,10 +17,52 @@ namespace Editor
         private int _editedWorld;
         private int _editedLevel;
 
+        private static GUIStyle _normalStyle;
+        private static GUIStyle _sceneMissingStyle;
+
+        private static GUIStyle _normalButtonStyle;
+        private static GUIStyle _sceneMissingButtonStyle;
+
+        private static double _timeForNextValidation;
+
         public override void OnInspectorGUI()
         {
+            // Initialize styles
+            if (_normalStyle == null)
+            {
+                _normalStyle = new GUIStyle(GUI.skin.label);
+                _sceneMissingStyle = new GUIStyle(GUI.skin.label)
+                {
+                    normal = new GUIStyleState()
+                    {
+                        textColor = Color.red
+                    }
+                };
+
+                _normalButtonStyle = new GUIStyle(GUI.skin.button);
+                _sceneMissingButtonStyle = new GUIStyle(GUI.skin.button)
+                {
+                    normal = new GUIStyleState()
+                    {
+                        textColor = Color.red
+                    },
+                    hover = new GUIStyleState()
+                    {
+                        textColor = Color.red
+                    }
+                    
+                    
+                };
+            }
+
+            // Proceed with InspectorGUI
             var levelSequence = (LevelSequence) target;
             GUILayout.Label("Level Sequence");
+            // Add button for manual validation
+            if (GUILayout.Button("Validate"))
+            {
+                ValidateLevelSequence();
+            }
             // Iterate through every world.
             for (var i = 0; i < levelSequence.worlds.Count; i++)
             {
@@ -47,6 +92,7 @@ namespace Editor
                         levelSequence.worlds.RemoveAt(i);
                         levelSequence.worlds.Insert(i - 1, world);
                     }
+
                     if (GUILayout.Button("▼") && i != levelSequence.worlds.Count - 1)
                     {
                         // Make move down undoable
@@ -64,14 +110,20 @@ namespace Editor
                         var scene = world.levels[j];
                         // Each level has a row of controls. Start building here.
                         GUILayout.BeginHorizontal();
-                        var path = EditorBuildSettings.scenes[scene].path;
-                        EditorGUILayout.LabelField(path);
+                        var buildSettingsScene = EditorBuildSettings.scenes[scene.y];
+                        var path = buildSettingsScene.path;
+                        var enabled = buildSettingsScene.enabled;
+                        var sceneExists = File.Exists(path);
+                        EditorGUILayout.LabelField(sceneExists ? $"({scene.x},{scene.y}){path}" : "SCENE DELETED", enabled ? _normalStyle : _sceneMissingStyle);
                         // Add edit button
-                        if (GUILayout.Button("Open"))
+                        if (GUILayout.Button("Open", sceneExists ? _normalButtonStyle : _sceneMissingButtonStyle))
                         {
-                            if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                            if (sceneExists)
                             {
-                                EditorSceneManager.OpenScene(path);
+                                if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                                {
+                                    EditorSceneManager.OpenScene(path);
+                                }
                             }
                         }
 
@@ -147,6 +199,38 @@ namespace Editor
             {
                 // Apply changes.
                 EditorUtility.SetDirty(levelSequence);
+                ValidateLevelSequence();
+            }
+            // Validation
+            if (_timeForNextValidation < EditorApplication.timeSinceStartup)
+            {
+                ValidateLevelSequence();
+            }
+        }
+        
+        private void ValidateLevelSequence()
+        {
+            _timeForNextValidation = EditorApplication.timeSinceStartup + 10.0;
+            var levelSequence = (LevelSequence) target;
+            // Ensure that 'index for instancing' is valid.
+            for (var i = 0; i < levelSequence.worlds.Count; i++)
+            {
+                var world = levelSequence.worlds[i];
+                for (var j = 0; j < world.levels.Count; j++)
+                {
+                    var level = world.levels[j];
+                    // Bound check level.y
+                    level.y = Mathf.Clamp(level.y, 0, EditorBuildSettings.scenes.Length);
+                    // Verify level.x is the actual index to to instance scene.
+                    var actualIndexToInstanceScene = EditorBuildSettings.scenes
+                        .Where((scene, i1) => scene.enabled && i1 < level.y).Count();
+                    if (level.x != actualIndexToInstanceScene)
+                    {
+                        level.x = actualIndexToInstanceScene;
+                    }
+
+                    world.levels[j] = level;
+                }
             }
         }
 
@@ -154,17 +238,23 @@ namespace Editor
         {
             // Initialize generic menu.
             GenericMenu menu = new GenericMenu();
-            // Populate generic menu with scene names from EditorBuildSettings.
+            // Populate generic menu with scene names from EditorBuildSettings, whilst searching for disabled scenes
+            var indexToInstanceScene = 0;
             for (var index = 0; index < EditorBuildSettings.scenes.Length; index++)
             {
                 var scene = EditorBuildSettings.scenes[index];
-                // Get scene path.
-                var name = scene.path;
-                // Extract name from the full path.
-                name = name.Remove(name.LastIndexOf('.'));
-                name = name.Remove(0, name.LastIndexOf('/') + 1);
-                // Add the item to the menu. OnSelectScene is the callback.
-                menu.AddItem(new GUIContent(name), false, OnSelectScene, index);
+                if (scene.enabled)
+                {
+                    // Get scene path.
+                    var name = scene.path;
+                    // Extract name from the full path.
+                    name = name.Remove(name.LastIndexOf('.'));
+                    name = name.Remove(0, name.LastIndexOf('/') + 1);
+                    // Add the item to the menu. OnSelectScene is the callback.
+                    menu.AddItem(new GUIContent(name), false, OnSelectScene,
+                        new Vector2Int(indexToInstanceScene, index));
+                    indexToInstanceScene += 1;
+                }
             }
 
             // Show menu.
@@ -175,10 +265,10 @@ namespace Editor
         {
             // Cast objects.
             var levelSequence = (LevelSequence) target;
-            var index = (int) userdata;
+            var tuple = (Vector2Int) userdata;
             // Insert the selected scene into the edited field.
             levelSequence.worlds[_editedWorld].levels
-                .Insert(_editedLevel, index);
+                .Insert(_editedLevel, tuple);
         }
     }
 }

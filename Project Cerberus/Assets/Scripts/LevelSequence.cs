@@ -15,15 +15,16 @@ public class LevelSequence : ScriptableObject
     [Serializable]
     public class World
     {
-        // public List<SceneAsset> levels;
-        public List<int> levels;
+        // I'd prefer to use a tuple, but tuples are not serializable in Unity.
+        // X: index for instancing
+        // Y: index for display
+        public List<Vector2Int> levels;
         public bool expandedInInspector;
 
         public World()
         {
             expandedInInspector = true;
-            // levels = new List<SceneAsset>();
-            levels = new List<int>();
+            levels = new List<Vector2Int>();
         }
     }
 
@@ -56,7 +57,7 @@ public class LevelSequence : ScriptableObject
         // Search through each world's level list for scene via build index.
         for (int i = 0; i < worlds.Count; i++)
         {
-            var levelSequence = worlds[i].levels.FindIndex((idx) => idx == sceneBuildIndex);
+            var levelSequence = worlds[i].levels.FindIndex((idx) => idx.x == sceneBuildIndex);
             if (levelSequence == -1)
             {
                 numberOfLevelsInPreviousWorld += worlds[i].levels.Count;
@@ -84,7 +85,7 @@ public class LevelSequence : ScriptableObject
             }
             else if (levelSequence > 0)
             {
-                return levelsInCurrentWorld[levelSequence];
+                return levelsInCurrentWorld[levelSequence].x;
             }
         }
 
