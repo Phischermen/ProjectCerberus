@@ -39,7 +39,7 @@ public class MoveLimitedBonusStar : BonusStar
         {
             SetFieldsToCollectedPreset();
         }
-        else if (manager.move >= movesUntilUnavailable)
+        else if (manager.move >= movesUntilUnavailable || unavailable)
         {
             SetFieldsToUnavailablePreset();
         }
