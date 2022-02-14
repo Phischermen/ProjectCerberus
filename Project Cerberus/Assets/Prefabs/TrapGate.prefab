@@ -121,10 +121,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   open: 0
-  openSprite: {fileID: 7875211463105501505, guid: f517efbb0e7cff84798d8ddd4641d42b,
-    type: 3}
-  closeSprite: {fileID: -396951860172281549, guid: f517efbb0e7cff84798d8ddd4641d42b,
-    type: 3}
+  doorSprites:
+  - {fileID: 7875211463105501505, guid: f517efbb0e7cff84798d8ddd4641d42b, type: 3}
+  - {fileID: 3412032136446850332, guid: f517efbb0e7cff84798d8ddd4641d42b, type: 3}
+  - {fileID: 1122102295909716930, guid: f517efbb0e7cff84798d8ddd4641d42b, type: 3}
+  - {fileID: -6204977568079112757, guid: f517efbb0e7cff84798d8ddd4641d42b, type: 3}
   openAudioSource: {fileID: 2508971401760580372}
   closeAudioSource: {fileID: 7112503561523208946}
 --- !u!1 &582679103138459756
