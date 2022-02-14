@@ -30,13 +30,17 @@ namespace Editor
             // Initialize styles
             if (_normalStyle == null)
             {
-                _normalStyle = new GUIStyle(GUI.skin.label);
+                _normalStyle = new GUIStyle(GUI.skin.label)
+                {
+                    wordWrap = false
+                };
                 _sceneMissingStyle = new GUIStyle(GUI.skin.label)
                 {
                     normal = new GUIStyleState()
                     {
                         textColor = Color.red
-                    }
+                    },
+                    wordWrap = false
                 };
 
                 _normalButtonStyle = new GUIStyle(GUI.skin.button);
@@ -114,7 +118,8 @@ namespace Editor
                         var path = buildSettingsScene.path;
                         var enabled = buildSettingsScene.enabled;
                         var sceneExists = File.Exists(path);
-                        EditorGUILayout.LabelField(sceneExists ? $"({scene.x},{scene.y}){path}" : "SCENE DELETED", enabled ? _normalStyle : _sceneMissingStyle);
+                        //EditorGUILayout.LabelField(sceneExists ? $"({scene.x},{scene.y}){path}" : "SCENE DELETED", enabled ? _normalStyle : _sceneMissingStyle);
+                        EditorGUILayout.LabelField(sceneExists ? path : "SCENE DELETED", enabled ? _normalStyle : _sceneMissingStyle);
                         // Add edit button
                         if (GUILayout.Button("Open", sceneExists ? _normalButtonStyle : _sceneMissingButtonStyle))
                         {
