@@ -44,6 +44,7 @@ public class Gate : PuzzleEntity
     [ShowInTileInspector] public bool open;
     private bool _lastOpen;
     
+    [Tooltip("First element is the closed sprite.")]
     [SerializeField] private Sprite[] doorSprites;
     private Sprite openSprite => doorSprites[doorSprites.Length - 1];
     private Sprite closeSprite => doorSprites[0];
