@@ -64,7 +64,9 @@ public class CrackedTile : FloorTile
 
     public override void OnExitCollisionWithEntity(PuzzleEntity other)
     {
-        if (!other.isSuperPushed)
+        // Check that the other puzzle entity is not a destructible block that was destroyed, nor a super pushed block.
+        bool otherIsDestroyedWood = (other is WoodBlock woodBlock) && woodBlock.isDestroyed;
+        if (!(other.isSuperPushed || otherIsDestroyedWood))
         {
             stage += 1;
             var popup = TextPopup.Create((3 - stage).ToString(), Color.yellow);

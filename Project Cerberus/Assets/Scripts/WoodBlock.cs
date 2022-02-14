@@ -26,6 +26,7 @@ public class WoodBlock : BasicBlock
     [SerializeField] private Sprite wholeSprite;
     [SerializeField] private Sprite destroyedSprite;
     private SpriteRenderer _spriteRenderer;
+    public bool isDestroyed;
     public AudioSource woodHitSfx;
 
     protected WoodBlock()
@@ -56,6 +57,8 @@ public class WoodBlock : BasicBlock
     {
         if (shot)
         {
+            isDestroyed = true;
+            SetCollisionsEnabled(false);
             stopsPlayer = false;
             stopsBlock = false;
             isBlock = false;
@@ -68,6 +71,8 @@ public class WoodBlock : BasicBlock
         }
         else
         {
+            isDestroyed = false;
+            SetCollisionsEnabled(true);
             stopsPlayer = true;
             stopsBlock = true;
             isBlock = true;
