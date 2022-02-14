@@ -65,6 +65,7 @@ public class WoodBlock : BasicBlock
             landableScore = 1;
             jumpable = false;
             interactsWithFireball = false;
+            pullable = false;
             pushableByStandardMove = false;
             pushableByJacksMultiPush = false;
             pushableByJacksSuperPush = false;
@@ -79,6 +80,7 @@ public class WoodBlock : BasicBlock
             landableScore = -1;
             jumpable = true;
             interactsWithFireball = true;
+            pullable = true;
             pushableByStandardMove = true;
             pushableByJacksMultiPush = true;
             pushableByJacksSuperPush = true;

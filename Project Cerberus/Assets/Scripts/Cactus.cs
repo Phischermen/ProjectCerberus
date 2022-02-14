@@ -21,6 +21,7 @@ public class Cactus : WoodBlock
             landableScore = 1;
             jumpable = false;
             interactsWithFireball = false;
+            pullable = false;
             pushableByStandardMove = false;
             pushableByJacksMultiPush = false;
             pushableByJacksSuperPush = false;
@@ -34,6 +35,7 @@ public class Cactus : WoodBlock
             jumpable = true;
             interactsWithFireball = true;
             // Cactuses must remain unpushable.
+            pullable = true;
             pushableByStandardMove = false;
             pushableByJacksMultiPush = true;
             pushableByJacksSuperPush = false;
