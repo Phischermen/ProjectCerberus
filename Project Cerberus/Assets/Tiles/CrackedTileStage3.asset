@@ -38,7 +38,7 @@ MonoBehaviour:
   position: {x: 0, y: 0, z: 0}
   needsToBeCloned: 1
   stopsPlayer: 0
-  stopsHades: 1
+  stopsHades: 0
   stopsBlock: 0
   stopsFireball: 0
   allowsAllSuperPushedEntitiesPassage: 1

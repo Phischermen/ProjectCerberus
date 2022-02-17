@@ -207,7 +207,7 @@ GameObject:
   - component: {fileID: 598418820}
   - component: {fileID: 598418819}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: SceneController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -225,7 +225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ecd0d18cd39c054d8b3ff88f4b74701, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  openingSequence: 2
+  openingSequence: 3
 --- !u!4 &598418820
 Transform:
   m_ObjectHideFlags: 0

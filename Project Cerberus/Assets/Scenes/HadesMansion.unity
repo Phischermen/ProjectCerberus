@@ -6833,7 +6833,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ecd0d18cd39c054d8b3ff88f4b74701, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  openingSequence: 0
+  openingSequence: 2
 --- !u!4 &2054579315
 Transform:
   m_ObjectHideFlags: 0
@@ -6917,6 +6917,7 @@ MonoBehaviour:
       m_Calls: []
   entityToChase: {fileID: 1673970916}
   chaseFrequency: 1
+  chaseEntityEnabled: 0
 --- !u!212 &2098258188
 SpriteRenderer:
   m_ObjectHideFlags: 0

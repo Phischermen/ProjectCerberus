@@ -30,6 +30,15 @@ public class OpeningScenesController : MonoBehaviour
         else if (openingSequence == 2)
         {
             yield return null;
+            var finish = FindObjectOfType<Finish>();
+            
+            // Hide finish
+            finish.SetCollisionsEnabled(false);
+            finish.LookUnavailable();
+        }
+        else if (openingSequence == 3)
+        {
+            yield return null;
             var jack = FindObjectOfType<Jack>();
             var kahuna = FindObjectOfType<Kahuna>();
             var laguna = FindObjectOfType<Laguna>();
@@ -103,6 +112,7 @@ public class OpeningScenesController : MonoBehaviour
         var hades = FindObjectOfType<Hades>();
         
         // TODO Reveal bathroom.
+        DialoguePanel.i.StartConversation();
         // This section is skipped if the player wants to silence story.
         if (!MainMenuController.silenceStory)
         {
@@ -143,7 +153,12 @@ public class OpeningScenesController : MonoBehaviour
         jack.BasicMove(Vector2Int.right);
         yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.jB15);
         hades.FinishCurrentAnimation();
+        DialoguePanel.i.EndConversation();
         hades.chaseEntityEnabled = true;
+        // Show finish
+        var finish = FindObjectOfType<Finish>();
+        finish.LookAvailable();
+        finish.SetCollisionsEnabled(true);
     }
 
     public void PlayOnEnterOfficeCutscene()

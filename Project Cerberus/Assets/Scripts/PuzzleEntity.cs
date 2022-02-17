@@ -119,7 +119,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     public virtual void OnShotByKahuna()
     {
     }
-    
+
     // This method should be used to update the sprites and launch effects.
     public virtual void OnShotByKahunaVisually()
     {
@@ -245,6 +245,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         }
 
         return (isPlayer && floorTile.stopsPlayer) ||
+               (isHades && floorTile.stopsHades) ||
                (isBlock && floorTile.stopsBlock);
     }
 
@@ -309,7 +310,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             source.Play();
         }
     }
-    
+
     public void PlaySfxIfNotPlaying(AudioSource source)
     {
         if (source && !source.isPlaying)
@@ -425,11 +426,12 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         animationIsRunning = true;
         var timePassed = 0f;
 
-        while(timePassed < delay && animationMustStop == false)
+        while (timePassed < delay && animationMustStop == false)
         {
             timePassed += Time.deltaTime;
             yield return new WaitForFixedUpdate();
         }
+
         var startingPosition = transform.position;
         var destinationPosition = puzzle.GetCellCenterWorld(destination);
         var distanceToTravel = Vector3.Distance(startingPosition, destinationPosition);
@@ -465,7 +467,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             manager.joinAndSplitEnabled = false;
         }
 
-        
+
         // Remove from puzzle container so it can't be interacted with.
         // Note: MoveForUndo() will put entity back into puzzle container.
         puzzle.RemoveEntityFromCell(this, position);
@@ -530,24 +532,25 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         animationIsRunning = false;
         animationMustStop = false;
     }
-    
+
     public IEnumerator InteractWithFireball(float delay)
     {
         animationIsRunning = true;
         var timePassed = 0f;
 
-        while(timePassed < delay && animationMustStop == false)
+        while (timePassed < delay && animationMustStop == false)
         {
             timePassed += Time.deltaTime;
             yield return new WaitForFixedUpdate();
         }
+
         // Make entity react to being hit by fireball.
         OnShotByKahunaVisually();
         // Set these to false
         animationIsRunning = false;
         animationMustStop = false;
     }
-    
+
     public IEnumerator Talk(float maxYOffset, float talkSpeed, AnimationCurve talkAnimationCurve)
     {
         animationIsRunning = true;

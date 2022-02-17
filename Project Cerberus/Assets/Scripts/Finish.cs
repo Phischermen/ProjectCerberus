@@ -11,6 +11,16 @@ public class Finish : PuzzleEntity
         landableScore = 0;
     }
 
+    public void LookUnavailable()
+    {
+        spriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
+    }
+    
+    public void LookAvailable()
+    {
+        spriteRenderer.color = new Color(1f, 1f, 1f, 1f);
+    }
+
     public override void OnEnterCollisionWithEntity(PuzzleEntity other)
     {
         if (other is Cerberus cerberus)

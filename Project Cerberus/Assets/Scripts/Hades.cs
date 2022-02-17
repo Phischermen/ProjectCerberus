@@ -35,6 +35,7 @@ public class Hades : PuzzleEntity
     protected Hades()
     {
         // Set properties here
+        isHades = true;
         stopsPlayer = true;
         stopsBlock = true;
         pushableByJacksMultiPush = true;
