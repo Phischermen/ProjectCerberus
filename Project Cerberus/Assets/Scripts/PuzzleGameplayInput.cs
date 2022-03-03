@@ -120,7 +120,7 @@ public class PuzzleGameplayInput : MonoBehaviour
 
         cycleCharacter = cycleCharacter || cycleCharacter0 || cycleCharacter1 || cycleCharacter2 ||
                          cycleCharacterForward || cycleCharacterBackward;
-        dialogueDismissed = specialPressed || undoPressed || mergeOrSplit;
+        dialogueDismissed = specialPressed || undoPressed || mergeOrSplit || leftClicked;
     }
 
     private void ProcessMouse(Mouse mouse)
