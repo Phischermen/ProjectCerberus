@@ -28,7 +28,6 @@ public class Gate : PuzzleEntity
                 gate.animationMustStop = false;
             }
 
-            gate._wantsToClose = wantsToClose;
             if (open)
             {
                 gate.OpenGate(false);
@@ -37,6 +36,8 @@ public class Gate : PuzzleEntity
             {
                 gate.CloseGate(false);
             }
+            // This has to be set last because OpenGate() & CloseGate() affect _wantsToClose.
+            gate._wantsToClose = wantsToClose;
         }
     }
 
