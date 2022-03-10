@@ -58,6 +58,7 @@ public class HintSpace : PuzzleEntity
     protected HintSpace()
     {
         isStatic = true;
+        ignoresSwitch = true;
         entityRules =
             "HintSpace shows a tutorial dialogue when it is stepped on, and hides it when the player steps off.";
     }

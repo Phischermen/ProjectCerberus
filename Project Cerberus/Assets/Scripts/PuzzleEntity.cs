@@ -34,6 +34,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
     [ShowInTileInspector] public bool stopsPlayer { get; protected set; }
     [ShowInTileInspector] public bool stopsHades { get; protected set; }
     [ShowInTileInspector] public bool stopsBlock { get; protected set; }
+    [ShowInTileInspector] public bool ignoresSwitch { get; protected set; }
     [ShowInTileInspector, HideInInspector] public bool inHole;
     [ShowInTileInspector] public bool pullable { get; protected set; }
     [ShowInTileInspector] public bool pushableByFireball { get; protected set; }
