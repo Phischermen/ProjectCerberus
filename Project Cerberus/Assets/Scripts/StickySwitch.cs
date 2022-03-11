@@ -10,18 +10,21 @@ public class StickySwitch : Switch
     {
         public StickySwitch stickySwitch;
         public int movesElapsedSinceExit;
+        public bool entityHasExited;
 
-        public StickySwitchUndoData(StickySwitch stickySwitch, bool flipped, int movesElapsedSinceExit) : base(
+        public StickySwitchUndoData(StickySwitch stickySwitch, bool flipped, int movesElapsedSinceExit, bool entityHasExited) : base(
             stickySwitch, flipped)
         {
             this.stickySwitch = stickySwitch;
             this.movesElapsedSinceExit = movesElapsedSinceExit;
+            this.entityHasExited = entityHasExited;
         }
 
         public override void Load()
         {
             base.Load();
             stickySwitch.movesElapsedSinceExit = movesElapsedSinceExit;
+            stickySwitch.entityHasExited = entityHasExited;
         }
     }
 
@@ -56,10 +59,7 @@ public class StickySwitch : Switch
             popup.PlayRiseAndFadeAnimation();
             if (movesElapsedSinceExit > movesSwitchStaysStuck)
             {
-                Debug.Log("Switching off");
                 isPressed = false;
-                SwitchOnVisually(false);
-                onReleased.Invoke();
                 movesElapsedSinceExit = 0;
             }
         }
@@ -67,7 +67,7 @@ public class StickySwitch : Switch
 
     public override UndoData GetUndoData()
     {
-        var undoData = new StickySwitchUndoData(this, isPressed, movesElapsedSinceExit);
+        var undoData = new StickySwitchUndoData(this, isPressed, movesElapsedSinceExit, entityHasExited);
         return undoData;
     }
 }
