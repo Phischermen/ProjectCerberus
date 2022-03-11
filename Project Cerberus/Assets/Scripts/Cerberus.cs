@@ -16,14 +16,16 @@ public class Cerberus : PuzzleEntity
         public bool inHole;
         public bool onTopOfGoal;
         public bool collisionDisabledAndPentagramDisplayed;
+        public bool hasPerformedSpecial;
 
         public CerberusUndoData(Cerberus cerberus, Vector2Int position, bool inHole,
             bool collisionDisabledAndPentagramDisplayed,
-            bool onTopOfGoal)
+            bool onTopOfGoal, bool hasPerformedSpecial)
         {
             this.cerberus = cerberus;
             this.position = position;
             this.onTopOfGoal = onTopOfGoal;
+            this.hasPerformedSpecial = hasPerformedSpecial;
             this.inHole = inHole;
             this.collisionDisabledAndPentagramDisplayed = collisionDisabledAndPentagramDisplayed;
         }
@@ -38,6 +40,7 @@ public class Cerberus : PuzzleEntity
             }
 
             cerberus.onTopOfGoal = onTopOfGoal;
+            cerberus.hasPerformedSpecial = hasPerformedSpecial;
             cerberus.SetDisableCollsionAndShowPentagramMarker(collisionDisabledAndPentagramDisplayed, false);
         }
     }
@@ -57,8 +60,9 @@ public class Cerberus : PuzzleEntity
 
     [HideInInspector] public bool doneWithMove;
     [HideInInspector, ShowInTileInspector] public bool onTopOfGoal;
+    [ShowInTileInspector] public bool hasPerformedSpecial;
+    [ShowInTileInspector] public bool isCerberusMajor;
 
-    [ShowInTileInspector] public bool isCerberusMajor = false;
     protected PuzzleGameplayInput input;
 
     private Sprite _cerberusSprite;
@@ -77,7 +81,8 @@ public class Cerberus : PuzzleEntity
     public override UndoData GetUndoData()
     {
         var undoData = new CerberusUndoData(this, position, inHole,
-            collisionDisabledAndPentagramDisplayed: manager.cerberusFormed != isCerberusMajor, onTopOfGoal);
+            collisionDisabledAndPentagramDisplayed: manager.cerberusFormed != isCerberusMajor, onTopOfGoal,
+            hasPerformedSpecial);
         return undoData;
     }
 

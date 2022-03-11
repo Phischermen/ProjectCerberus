@@ -182,6 +182,8 @@ public class Kahuna : Cerberus
                     AnimationUtility.fireBallAcceleration, distanceToTravel));
                 // Interact with entity
                 entityToPushOrInteractWith.OnShotByKahuna();
+                
+                hasPerformedSpecial = true;
                 DeclareDoneWithMove();
             }
             else
@@ -209,6 +211,8 @@ public class Kahuna : Cerberus
                     PlayAnimation(LaunchFireball(destinationPosition, AnimationUtility.initialFireballSpeed,
                         AnimationUtility.fireBallAcceleration, distanceToTravel));
                     entityToPushOrInteractWith.Move(pushCoord);
+                    
+                    hasPerformedSpecial = true;
                     DeclareDoneWithMove();
                 }
                 else

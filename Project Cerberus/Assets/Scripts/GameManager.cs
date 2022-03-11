@@ -172,6 +172,14 @@ public class GameManager : MonoBehaviour, IUndoable
             _cerberusThatMustReachGoal += 1;
         }
 
+        if (_cerberusMajor && _cerberusThatMustReachGoal == 0)
+        {
+            // Cerberus Major is the only cerberus prefab in the scene.
+            availableCerberus.Add(_cerberusMajor);
+            _cerberusThatMustReachGoal = 3;
+            cerberusFormed = true;
+        }
+
         currentCerberus = availableCerberus[0];
 
         // Setup camera.
@@ -181,9 +189,9 @@ public class GameManager : MonoBehaviour, IUndoable
         _cameraController.GotoDesiredPositionAndSize();
 
         // Set initial gameplay variables
-        if (_cerberusMajor)
+        if (_cerberusMajor && (_jack || _kahuna || _laguna))
         {
-            // Player may only merge or split if cerberus major is in scene
+            // Player may only merge or split if cerberus major is in scene and at least one of dog's is in the scene.
             joinAndSplitEnabled = true;
             // Cerberus Major is inactive by default
             _cerberusMajor.SetDisableCollsionAndShowPentagramMarker(true);

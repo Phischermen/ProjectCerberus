@@ -106,6 +106,8 @@ public class Laguna : Cerberus
 
                     Move(coord);
                     entityToPull.Move(p);
+                    
+                    hasPerformedSpecial = true;
                     DeclareDoneWithMove();
                 }
                 else
@@ -135,6 +137,8 @@ public class Laguna : Cerberus
                         pushableEntity.Move(pushCoord);
                         Move(coord);
                         entityToPull.Move(p);
+                        
+                        hasPerformedSpecial = true;
                         DeclareDoneWithMove();
                     }
                     else

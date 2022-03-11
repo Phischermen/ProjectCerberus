@@ -7,7 +7,8 @@ public class CerberusMajor : Cerberus
 {
     [SerializeField] private GameObject jumpArrowSource;
     private GameObject[] _jumpArrows;
-    private bool goalIsOnJumpPath;
+    private bool _goalIsOnJumpPath;
+    public bool isJumping { get; protected set; }
 
     public struct JumpInfo
     {
@@ -68,126 +69,120 @@ public class CerberusMajor : Cerberus
     public override void StartMove()
     {
         base.StartMove();
-        goalIsOnJumpPath = false;
+        _goalIsOnJumpPath = false;
     }
 
     public override void ProcessMoveInput()
     {
         base.ProcessMoveInput();
-        var lastJumpSpacePosition = (jumpSpaces.Count > 0) ? jumpSpaces[jumpSpaces.Count - 1].position : position;
-        if (input.specialHeld || (input.rightClicked && input.clickedCell != lastJumpSpacePosition))
+        if (isJumping)
         {
-            if (input.upPressed || (input.clickedCell.x == lastJumpSpacePosition.x &&
-                                    input.clickedCell.y > lastJumpSpacePosition.y))
+            if (input.specialPressed || input.upPressed || input.downPressed || input.leftPressed ||
+                input.rightPressed || input.leftClicked || input.rightClicked || input.cycleCharacter)
             {
-                AddJumpSpace(Vector2Int.up, 90);
-            }
-
-            else if (input.downPressed || (input.clickedCell.x == lastJumpSpacePosition.x &&
-                                           input.clickedCell.y < lastJumpSpacePosition.y))
-            {
-                AddJumpSpace(Vector2Int.down, 270);
-            }
-
-            else if (input.rightPressed || (input.clickedCell.y == lastJumpSpacePosition.y &&
-                                            input.clickedCell.x > lastJumpSpacePosition.x))
-            {
-                AddJumpSpace(Vector2Int.right, 0);
-            }
-
-            else if (input.leftPressed || (input.clickedCell.y == lastJumpSpacePosition.y &&
-                                           input.clickedCell.x < lastJumpSpacePosition.x))
-            {
-                AddJumpSpace(Vector2Int.left, 180);
-            }
-        }
-        else if (input.specialReleased || (input.rightClicked && input.clickedCell == lastJumpSpacePosition))
-        {
-            if (jumpSpaces.Count > 0)
-            {
-                puzzle.PushToUndoStack();
-
-
-                // Travel across jump spaces
-                var numberOfSuccessfullJumps = 0;
-                foreach (var jumpInfo in jumpSpaces)
-                {
-                    // Verify that jump is still possible.
-                    VerifyJumpAndLand(jumpInfo.jumpedOverCell, jumpInfo.landedUponCell,
-                        out bool canJump, out bool canLand);
-                    if (!canJump || !canLand)
-                    {
-                        break;
-                    }
-
-                    // Move but do not refresh floor tiles; that will be done via JumpAlongPath animation.
-                    Move(jumpInfo.position, doNotRefreshTiles: true);
-                    numberOfSuccessfullJumps += 1;
-                }
-
-                JumpInfo[] jumpInfoCopy = new JumpInfo[numberOfSuccessfullJumps];
-                jumpSpaces.CopyTo(0, jumpInfoCopy, 0, numberOfSuccessfullJumps);
-                PlayAnimation(JumpAlongPath(jumpInfoCopy, AnimationUtility.jumpSpeed));
-
-                jumpSpaces.Clear();
-                RenderJumpPath();
-
-                DeclareDoneWithMove();
+                FinishCurrentAnimation();
             }
         }
         else
         {
-            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y &&
-                                    input.leftClicked))
+            var lastJumpSpacePosition = (jumpSpaces.Count > 0) ? jumpSpaces[jumpSpaces.Count - 1].position : position;
+            if (input.specialHeld || (input.rightClicked && input.clickedCell != lastJumpSpacePosition))
             {
-                BasicMove(Vector2Int.up);
-                jumpSpaces.Clear();
-                RenderJumpPath();
-            }
+                if (input.upPressed || (input.clickedCell.x == lastJumpSpacePosition.x &&
+                                        input.clickedCell.y > lastJumpSpacePosition.y))
+                {
+                    AddJumpSpace(Vector2Int.up, 90);
+                }
 
-            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y &&
-                                           input.leftClicked))
-            {
-                BasicMove(Vector2Int.down);
-                jumpSpaces.Clear();
-                RenderJumpPath();
-            }
+                else if (input.downPressed || (input.clickedCell.x == lastJumpSpacePosition.x &&
+                                               input.clickedCell.y < lastJumpSpacePosition.y))
+                {
+                    AddJumpSpace(Vector2Int.down, 270);
+                }
 
-            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x &&
-                                            input.leftClicked))
-            {
-                BasicMove(Vector2Int.right);
-                jumpSpaces.Clear();
-                RenderJumpPath();
-            }
+                else if (input.rightPressed || (input.clickedCell.y == lastJumpSpacePosition.y &&
+                                                input.clickedCell.x > lastJumpSpacePosition.x))
+                {
+                    AddJumpSpace(Vector2Int.right, 0);
+                }
 
-            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x &&
-                                           input.leftClicked))
-            {
-                BasicMove(Vector2Int.left);
-                jumpSpaces.Clear();
-                RenderJumpPath();
+                else if (input.leftPressed || (input.clickedCell.y == lastJumpSpacePosition.y &&
+                                               input.clickedCell.x < lastJumpSpacePosition.x))
+                {
+                    AddJumpSpace(Vector2Int.left, 180);
+                }
             }
-        }
-
-        if (input.undoPressed)
-        {
-            if (jumpSpaces.Count > 0)
+            else if (input.specialReleased || (input.rightClicked && input.clickedCell == lastJumpSpacePosition))
             {
-                jumpSpaces.Clear();
-                RenderJumpPath();
+                if (jumpSpaces.Count > 0)
+                {
+                    puzzle.PushToUndoStack();
+                    JumpInfo[] jumpInfoCopy = new JumpInfo[jumpSpaces.Count];
+                    jumpSpaces.CopyTo(0, jumpInfoCopy, 0, jumpSpaces.Count);
+                    // Travel across jump spaces
+                    PlayAnimation(JumpAlongPath(jumpInfoCopy, AnimationUtility.jumpSpeed));
+
+                    jumpSpaces.Clear();
+                    RenderJumpPath();
+                    
+                    // NOTE: Normally, DeclareDoneWithMove() would be called here, but it is actually called at the end
+                    // of JumpAlongPath() in order to keep bonus stars available, gates open, etc.
+                }
             }
             else
             {
-                manager.wantsToUndo = true;
-            }
-        }
+                if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y &&
+                                        input.leftClicked))
+                {
+                    BasicMove(Vector2Int.up);
+                    jumpSpaces.Clear();
+                    RenderJumpPath();
+                }
 
-        if (input.cycleCharacter)
-        {
-            jumpSpaces.Clear();
-            RenderJumpPath();
-            manager.wantsToCycleCharacter = true;
+                else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y &&
+                                               input.leftClicked))
+                {
+                    BasicMove(Vector2Int.down);
+                    jumpSpaces.Clear();
+                    RenderJumpPath();
+                }
+
+                else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x &&
+                                                input.leftClicked))
+                {
+                    BasicMove(Vector2Int.right);
+                    jumpSpaces.Clear();
+                    RenderJumpPath();
+                }
+
+                else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x &&
+                                               input.leftClicked))
+                {
+                    BasicMove(Vector2Int.left);
+                    jumpSpaces.Clear();
+                    RenderJumpPath();
+                }
+            }
+
+            if (input.undoPressed)
+            {
+                if (jumpSpaces.Count > 0)
+                {
+                    jumpSpaces.Clear();
+                    RenderJumpPath();
+                }
+                else
+                {
+                    manager.wantsToUndo = true;
+                }
+            }
+
+            if (input.cycleCharacter)
+            {
+                jumpSpaces.Clear();
+                RenderJumpPath();
+                manager.wantsToCycleCharacter = true;
+            }
         }
     }
 
@@ -211,7 +206,7 @@ public class CerberusMajor : Cerberus
             jumpSpaces.Clear();
             RenderJumpPath();
             // Cerberus cannot possibly have goal in jump path.
-            goalIsOnJumpPath = false;
+            _goalIsOnJumpPath = false;
             return;
         }
 
@@ -228,9 +223,9 @@ public class CerberusMajor : Cerberus
                 jumpSpaces.RemoveRange(idxOfSpaceToRemove, jumpSpaces.Count - idxOfSpaceToRemove);
                 RenderJumpPath();
                 // Cerberus cannot possibly have goal in jump path.
-                goalIsOnJumpPath = false;
+                _goalIsOnJumpPath = false;
             }
-            else if (!goalIsOnJumpPath)
+            else if (!_goalIsOnJumpPath)
             {
                 // Add space to path if goal is not in path
                 jumpSpaces.Add(newJumpInfo);
@@ -240,7 +235,7 @@ public class CerberusMajor : Cerberus
                 {
                     if (entity is Finish)
                     {
-                        goalIsOnJumpPath = true;
+                        _goalIsOnJumpPath = true;
                     }
                 }
             }
@@ -270,8 +265,17 @@ public class CerberusMajor : Cerberus
     public IEnumerator JumpAlongPath(CerberusMajor.JumpInfo[] points, float speed)
     {
         animationIsRunning = true;
+        isJumping = true;
         foreach (var point in points)
         {
+            // Verify jump and land is still possible.
+            VerifyJumpAndLand(point.jumpedOverCell, point.landedUponCell,
+                out bool canJump, out bool canLand);
+            if (!canJump || !canLand)
+            {
+                break;
+            }
+
             // Use a bezier curve to model the jump path
             var A = transform.position; // Start point
             var B = A + Vector3.up; // Control point
@@ -296,13 +300,18 @@ public class CerberusMajor : Cerberus
                 yield return new WaitForFixedUpdate();
             }
 
+            Move(point.position);
             // Refresh the tile when CerberusMajor lands on it visually
-            puzzle.tilemap.RefreshTile(new Vector3Int(point.position.x, point.position.y, 0));
+            //puzzle.tilemap.RefreshTile(new Vector3Int(point.position.x, point.position.y, 0));
             transform.position = D;
             PuzzleCameraController.i.AddShake(0.1f);
         }
 
         animationMustStop = false;
         animationIsRunning = false;
+        isJumping = false;
+        
+        hasPerformedSpecial = true;
+        DeclareDoneWithMove();
     }
 }

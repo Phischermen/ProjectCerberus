@@ -79,6 +79,7 @@ public class Jack : Cerberus
 
     private void SuperPushMove(Vector2Int offset)
     {
+        
         var coord = position + offset;
         var newCell = puzzle.GetCell(coord);
         var collidesWithAndCannotPushEntity = CollidesWithAny(newCell.GetEntitesThatCannotBePushedByStandardMove());
@@ -94,6 +95,7 @@ public class Jack : Cerberus
             PlaySfxPitchShift(walkSFX, 0.9f, 1.1f);
             PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
             Move(coord);
+            
             DeclareDoneWithMove();
         }
         else if (entitiesToPush.Count == 1)
@@ -142,7 +144,8 @@ public class Jack : Cerberus
                 pushableEntity.isSuperPushed = !lastMove && !firstMove;
                 pushableEntity.Move(pushableEntity.position + offset, !lastMove, lastMove && !firstMove);
             }
-
+            
+            hasPerformedSpecial = true;
             DeclareDoneWithMove();
         }
         else if (!blocked)
@@ -174,6 +177,8 @@ public class Jack : Cerberus
                 PlaySfxPitchShift(superPushedSfx, 0.9f, 1.1f);
                 PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                 Move(coord);
+                
+                hasPerformedSpecial = true;
                 DeclareDoneWithMove();
             }
         }

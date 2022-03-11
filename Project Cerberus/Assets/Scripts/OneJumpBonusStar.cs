@@ -48,10 +48,10 @@ public class OneJumpBonusStar : BonusStar
 
         if (_oneJumpChanceAboutToBeMissed)
         {
-            return "Bonus star must be collected on this turn!";
+            return "Bonus star must be collected in one jump!";
         }
 
-        return "Bonus star disappears after you make a move with Cerberus.";
+        return "Bonus star disappears after you jump with Cerberus.";
     }
 
     public override void OnPlayerMadeMove()
@@ -60,17 +60,9 @@ public class OneJumpBonusStar : BonusStar
         {
             SetFieldsToCollectedPreset();
         }
-        else if (unavailable || manager.currentCerberus.isCerberusMajor)
+        else if (unavailable || manager.currentCerberus.isCerberusMajor && manager.currentCerberus.hasPerformedSpecial)
         {
-            if (_oneJumpChanceAboutToBeMissed)
-            {
-                SetFieldsToUnavailablePreset();
-            }
-            else
-            {
-                // If player does not collect star on their next move, they'll lose it.
-                _oneJumpChanceAboutToBeMissed = true;
-            }
+            SetFieldsToUnavailablePreset();
         }
         else
         {
