@@ -22,7 +22,7 @@ namespace Editor
             for (int i = 0; i < dialogueDatabase.scenes.Count; i++)
             {
                 var scene = dialogueDatabase.scenes[i];
-                
+
                 EditorGUILayout.BeginHorizontal();
                 // Add title text area
                 scene.sceneTitle = EditorGUILayout.TextField(scene.sceneTitle);
@@ -78,23 +78,49 @@ namespace Editor
                         dialogue.id = GUILayout.TextField(dialogue.id, 4);
                         dialogue.speaker = (DialogueDatabaseAsset.Speaker) EditorGUILayout.EnumPopup(dialogue.speaker);
                         // Add move up button
-                        if (GUILayout.Button("▲") && j != 0)
+                        if (GUILayout.Button("▲"))
                         {
-                            // Make move up undoable.
-                            UnityEditor.Undo.RecordObject(dialogueDatabase, "Move Up");
-                            // Move the dialogue "up" the list.
-                            scene.dialogues.RemoveAt(j);
-                            scene.dialogues.Insert(j - 1, dialogue);
+                            if (j == 0 && i != 0)
+                            {
+                                // Move dialogue to previous scene
+                                var prevScene = dialogueDatabase.scenes[i - 1];
+                                // Make move down undoable.
+                                UnityEditor.Undo.RecordObject(dialogueDatabase, "Move Up");
+                                // Move the dialogue "down" the list.
+                                scene.dialogues.RemoveAt(j);
+                                prevScene.dialogues.Insert(prevScene.dialogues.Count, dialogue);
+                            }
+                            else
+                            {
+                                // Make move up undoable.
+                                UnityEditor.Undo.RecordObject(dialogueDatabase, "Move Up");
+                                // Move the dialogue "up" the list.
+                                scene.dialogues.RemoveAt(j);
+                                scene.dialogues.Insert(j - 1, dialogue);
+                            }
                         }
 
                         // Add move down button.
-                        if (GUILayout.Button("▼") && j != scene.dialogues.Count - 1)
+                        if (GUILayout.Button("▼"))
                         {
-                            // Make move down undoable.
-                            UnityEditor.Undo.RecordObject(dialogueDatabase, "Move Down");
-                            // Move the dialogue "down" the list.
-                            scene.dialogues.RemoveAt(j);
-                            scene.dialogues.Insert(j + 1, dialogue);
+                            if (j == scene.dialogues.Count - 1 && i != dialogueDatabase.scenes.Count - 1)
+                            {
+                                // Move dialogue to next scene
+                                var nextScene = dialogueDatabase.scenes[i + 1];
+                                // Make move down undoable.
+                                UnityEditor.Undo.RecordObject(dialogueDatabase, "Move Down");
+                                // Move the dialogue "down" the list.
+                                scene.dialogues.RemoveAt(j);
+                                nextScene.dialogues.Insert(0, dialogue);
+                            }
+                            else
+                            {
+                                // Make move down undoable.
+                                UnityEditor.Undo.RecordObject(dialogueDatabase, "Move Down");
+                                // Move the dialogue "down" the list.
+                                scene.dialogues.RemoveAt(j);
+                                scene.dialogues.Insert(j + 1, dialogue);
+                            }
                         }
 
                         // Add insert button.
@@ -145,7 +171,7 @@ namespace Editor
                 var scene = new DialogueDatabaseAsset.Scene();
                 dialogueDatabase.scenes.Add(scene);
             }
-            
+
             // Generate Dialogue Database
             if (GUILayout.Button("Generate CSharp script"))
             {
