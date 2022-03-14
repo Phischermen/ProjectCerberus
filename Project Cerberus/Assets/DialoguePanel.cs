@@ -31,7 +31,7 @@ public class DialoguePanel : MonoBehaviour
         _gameManager = FindObjectOfType<GameManager>();
         _waitForSeconds = new WaitForSeconds(1f / charPerSecond);
         _waitUntilDismissed = new WaitUntil(() => _input.dialogueDismissed);
-        _waitUntilDismissedOrTimeUp = 
+        _waitUntilDismissedOrTimeUp =
             new WaitUntil(() => _input.dialogueDismissed || (Time.time - timeLastCharPrinted) > (1f / charPerSecond));
         canvasGroup.alpha = 0;
     }
@@ -64,12 +64,35 @@ public class DialoguePanel : MonoBehaviour
                 break;
             }
         }
+
         typing = false;
         textDisplay.text = message;
-        // Wait one frame before allowing message dismisal.
+        // Wait one frame before allowing message dismissal.
         yield return null;
         yield return _waitUntilDismissed;
         displayingMessage = false;
         canvasGroup.alpha = 0;
+    }
+
+    public IEnumerator DisplayDialogues(params Vector2Int[] sceneKeys)
+    {
+        StartConversation();
+        foreach (var sceneKey in sceneKeys)
+        {
+            yield return DisplayDialogue(new Vector2Int(sceneKey.x, sceneKey.y));
+        }
+        EndConversation();
+    }
+
+    public IEnumerator DisplayDialoguesFromScene(int sceneKey)
+    {
+        var sceneLength = CustomProjectSettings.i.dialogueDatabaseAsset.scenes[sceneKey].dialogues.Count;
+        StartConversation();
+        for (int j = 0; j < sceneLength; j++)
+        {
+            yield return DisplayDialogue(new Vector2Int(sceneKey, j));
+        }
+
+        EndConversation();
     }
 }
