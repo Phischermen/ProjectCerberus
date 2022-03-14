@@ -139,7 +139,7 @@ MonoBehaviour:
     - id: Jio2
       speaker: 0
       line: Huh?! What was that?! Hades?!
-  - expandedInInspector: 1
+  - expandedInInspector: 0
     sceneTitle: Jack In Bathroom
     dialogues:
     - id: jBr1
@@ -239,3 +239,59 @@ MonoBehaviour:
     - id: gJ16
       speaker: 0
       line: Sounds good. Let's move out!
+  - expandedInInspector: 1
+    sceneTitle: CerberusTutorial1
+    dialogues:
+    - id: ct01
+      speaker: 0
+      line: Jack, Kahuna, and Laguna have merged together to become Cerberus!
+    - id: ct02
+      speaker: 0
+      line: Cerberus has the power to JUMP over walls, blocks, pits and spikes.
+    - id: ct03
+      speaker: 0
+      line: Cerberus may jump in any direction except diagonally.
+  - expandedInInspector: 1
+    sceneTitle: CerberusTutorial2
+    dialogues:
+    - id: ct04
+      speaker: 0
+      line: Cerberus can land on these purple blocks.
+    - id: ct05
+      speaker: 0
+      line: Try pushing this purple block...
+    - id: ct06
+      speaker: 0
+      line: ... onto these spikes...
+    - id: ct07
+      speaker: 0
+      line: ... and then use it to jump over this pit.
+  - expandedInInspector: 0
+    sceneTitle: CerberusTutorial3
+    dialogues:
+    - id: cta1
+      speaker: 0
+      line: There are limits to what Cerberus can jump over.
+    - id: cta2
+      speaker: 0
+      line: Anything with red spikes, for instance, cannot be jumped over.
+  - expandedInInspector: 1
+    sceneTitle: CerberusTutorial4
+    dialogues:
+    - id: ct08
+      speaker: 0
+      line: You now have the power to merge into Cerberus.
+    - id: ct09
+      speaker: 0
+      line: If you see this sigil in the level, that means you may merge into Cerberus
+        by pressing LEFT CONTROL.
+    - id: ct10
+      speaker: 0
+      line: If there is no sigil, you may not merge.
+    - id: ct11
+      speaker: 0
+      line: Take note how there is only one goal. That's not enough goals to fit
+        Jack, Kahuna, and Laguna.
+    - id: ct12
+      speaker: 0
+      line: That means to beat this level, you need to get Cerberus to this goal.

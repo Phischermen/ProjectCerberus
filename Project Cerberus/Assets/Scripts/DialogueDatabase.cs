@@ -73,4 +73,22 @@ public static class DialogueDatabase
 	public static Vector2Int gK14 = new Vector2Int(5,13);
 	public static Vector2Int gL15 = new Vector2Int(5,14);
 	public static Vector2Int gJ16 = new Vector2Int(5,15);
+	//CerberusTutorial1
+	public static Vector2Int ct01 = new Vector2Int(6,0);
+	public static Vector2Int ct02 = new Vector2Int(6,1);
+	public static Vector2Int ct03 = new Vector2Int(6,2);
+	//CerberusTutorial2
+	public static Vector2Int ct04 = new Vector2Int(7,0);
+	public static Vector2Int ct05 = new Vector2Int(7,1);
+	public static Vector2Int ct06 = new Vector2Int(7,2);
+	public static Vector2Int ct07 = new Vector2Int(7,3);
+	//CerberusTutorial3
+	public static Vector2Int cta1 = new Vector2Int(8,0);
+	public static Vector2Int cta2 = new Vector2Int(8,1);
+	//CerberusTutorial4
+	public static Vector2Int ct08 = new Vector2Int(9,0);
+	public static Vector2Int ct09 = new Vector2Int(9,1);
+	public static Vector2Int ct10 = new Vector2Int(9,2);
+	public static Vector2Int ct11 = new Vector2Int(9,3);
+	public static Vector2Int ct12 = new Vector2Int(9,4);
 }

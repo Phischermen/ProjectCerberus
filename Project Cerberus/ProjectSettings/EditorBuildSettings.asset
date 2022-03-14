@@ -131,6 +131,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MakeAPathForCerberus.unity
     guid: 081cae5f18c0ef74f9a3896aba913f4f
+  - enabled: 1
+    path: Assets/Scenes/CushionBlockTutorial.unity
+    guid: ab303766f83e9b945a8910da5b5b8e61
+  - enabled: 1
+    path: Assets/Scenes/CerberusJumpTutorial.unity
+    guid: 60d625a73f2fea84a90c4a26aeae99a8
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 90dfd16557c9de34499995dab2adeb9a,
       type: 2}

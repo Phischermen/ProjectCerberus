@@ -18,7 +18,7 @@ public class BasicsTutorialController : MonoBehaviour
     {
         var pointer = FindObjectOfType<Pointer>();
         // Check if player wants to skip tutorials.
-        if (PlayerPrefs.GetInt("SilenceTutorials", 0) == 1)
+        if (MainMenuController.silenceTutorials)
         {
             if (pointer)
             {
