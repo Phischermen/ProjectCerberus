@@ -90,7 +90,7 @@ public class CerberusTutorialController : MonoBehaviour
                 }
             };
         }
-        Gizmos.DrawIcon(transform.position, "Film Marker");
-        Handles.Label(transform.position, tutorialSequence.ToString(), _triggerStyle);
+        Gizmos.DrawIcon(new Vector3(0,1,0), "Film Marker");
+        Handles.Label(new Vector3(0,1,0), tutorialSequence.ToString(), _triggerStyle);
     }
 }

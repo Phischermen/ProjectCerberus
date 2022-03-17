@@ -71,6 +71,8 @@ public class Cerberus : PuzzleEntity
     public AudioSource pushFailSFX;
     public AnimationCurve talkAnimationCurve;
 
+    public UnityEvent onStandardMove;
+    
     protected override void Awake()
     {
         base.Awake();
@@ -142,6 +144,7 @@ public class Cerberus : PuzzleEntity
                 PlaySfx(walkSFX);
                 PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                 Move(coord);
+                onStandardMove.Invoke();
                 DeclareDoneWithMove();
             }
             else
@@ -165,6 +168,7 @@ public class Cerberus : PuzzleEntity
 
                     pushableEntity.Move(pushCoord);
                     Move(coord);
+                    onStandardMove.Invoke();
                     DeclareDoneWithMove();
                 }
                 else

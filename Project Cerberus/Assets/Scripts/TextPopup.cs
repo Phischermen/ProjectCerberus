@@ -12,6 +12,7 @@ public class TextPopup : MonoBehaviour
     public AnimationCurve fadeCurve;
     public float duration;
     private TextMeshPro _textMeshPro;
+    private Color _color;
 
     private void Awake()
     {
@@ -23,7 +24,7 @@ public class TextPopup : MonoBehaviour
         var gameObject = Instantiate(CustomProjectSettings.i.textPopupPrefab);
         var textPopup = gameObject.GetComponent<TextPopup>();
         textPopup._textMeshPro.text = text;
-        textPopup._textMeshPro.color = color;
+        textPopup._color = color;
         return textPopup;
     }
 
@@ -34,8 +35,7 @@ public class TextPopup : MonoBehaviour
 
     private IEnumerator RiseAndFade(float delay)
     {
-        var cachedColor = _textMeshPro.color;
-        var destinationColor = new Color(_textMeshPro.color.r, _textMeshPro.color.g, _textMeshPro.color.b, 0);
+        var destinationColor = new Color(_color.r, _color.g, _color.b, 0);
         var cachedPosition = transform.position;
         var timeEllapsed = 0f;
         yield return new WaitForSeconds(delay);
@@ -44,7 +44,7 @@ public class TextPopup : MonoBehaviour
             timeEllapsed += Time.fixedDeltaTime;
             var t = timeEllapsed / duration;
             transform.position = cachedPosition + Vector3.up * riseCurve.Evaluate(t);
-            _textMeshPro.color = Color.Lerp(cachedColor, destinationColor, fadeCurve.Evaluate(t));
+            _textMeshPro.color = Color.Lerp(_color, destinationColor, fadeCurve.Evaluate(t));
             yield return new WaitForFixedUpdate();
         }
         Destroy(gameObject);

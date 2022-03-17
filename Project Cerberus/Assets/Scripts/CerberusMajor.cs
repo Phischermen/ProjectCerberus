@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 
 public class CerberusMajor : Cerberus
@@ -9,6 +10,7 @@ public class CerberusMajor : Cerberus
     private GameObject[] _jumpArrows;
     private bool _goalIsOnJumpPath;
     public bool isJumping { get; protected set; }
+    
 
     public struct JumpInfo
     {
@@ -49,6 +51,7 @@ public class CerberusMajor : Cerberus
     public AudioSource mergeSfx;
     public AudioSource splitSfx;
 
+    public UnityEvent onSingleJumpCompleted;
     CerberusMajor()
     {
         isCerberusMajor = true;
@@ -312,6 +315,10 @@ public class CerberusMajor : Cerberus
         isJumping = false;
         
         hasPerformedSpecial = true;
+        if (points.Length == 1)
+        {
+            onSingleJumpCompleted.Invoke();
+        }
         DeclareDoneWithMove();
     }
 }

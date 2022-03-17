@@ -239,7 +239,7 @@ MonoBehaviour:
     - id: gJ16
       speaker: 0
       line: Sounds good. Let's move out!
-  - expandedInInspector: 1
+  - expandedInInspector: 0
     sceneTitle: CerberusTutorial1
     dialogues:
     - id: ct01
@@ -251,7 +251,7 @@ MonoBehaviour:
     - id: ct03
       speaker: 0
       line: Cerberus may jump in any direction except diagonally.
-  - expandedInInspector: 1
+  - expandedInInspector: 0
     sceneTitle: CerberusTutorial2
     dialogues:
     - id: ct04
@@ -275,7 +275,7 @@ MonoBehaviour:
     - id: cta2
       speaker: 0
       line: Anything with red spikes, for instance, cannot be jumped over.
-  - expandedInInspector: 1
+  - expandedInInspector: 0
     sceneTitle: CerberusTutorial4
     dialogues:
     - id: ct08
@@ -295,3 +295,21 @@ MonoBehaviour:
     - id: ct12
       speaker: 0
       line: That means to beat this level, you need to get Cerberus to this goal.
+  - expandedInInspector: 1
+    sceneTitle: PlayerKeepsDoingSingleJumps
+    dialogues:
+    - id: cj01
+      speaker: 0
+      line: I can't help but notice that you are jumping one space at a time.
+    - id: cj02
+      speaker: 0
+      line: You are capable of chaining a limitless amount of jumps together, and
+        performing them all in a single move!
+    - id: cj03
+      speaker: 0
+      line: All you need to do is hold LEFT SHIFT, press MOVE KEYS to set a path,
+        and then release LEFT SHIFT to perform the jumps.
+    - id: cj04
+      speaker: 0
+      line: Later puzzles exploit chain jumping, so be sure to get your practice
+        in now!

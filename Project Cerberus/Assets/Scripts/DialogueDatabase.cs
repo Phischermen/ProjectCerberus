@@ -91,4 +91,9 @@ public static class DialogueDatabase
 	public static Vector2Int ct10 = new Vector2Int(9,2);
 	public static Vector2Int ct11 = new Vector2Int(9,3);
 	public static Vector2Int ct12 = new Vector2Int(9,4);
+	//PlayerKeepsDoingSingleJumps
+	public static Vector2Int cj01 = new Vector2Int(10,0);
+	public static Vector2Int cj02 = new Vector2Int(10,1);
+	public static Vector2Int cj03 = new Vector2Int(10,2);
+	public static Vector2Int cj04 = new Vector2Int(10,3);
 }

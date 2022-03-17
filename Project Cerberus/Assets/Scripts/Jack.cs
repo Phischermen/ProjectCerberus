@@ -95,7 +95,7 @@ public class Jack : Cerberus
             PlaySfxPitchShift(walkSFX, 0.9f, 1.1f);
             PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
             Move(coord);
-            
+            onStandardMove.Invoke();
             DeclareDoneWithMove();
         }
         else if (entitiesToPush.Count == 1)
