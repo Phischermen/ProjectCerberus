@@ -260,7 +260,7 @@ PrefabInstance:
     - target: {fileID: 4781076114989600008, guid: e790ae468f1fd944889ced0cce7b172f,
         type: 3}
       propertyPath: movesUntilUnavailable
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e790ae468f1fd944889ced0cce7b172f, type: 3}
@@ -3343,6 +3343,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialSequence: 1
+  purpleBlock: {fileID: 0}
+  spikes: {fileID: 0}
+  pit: {fileID: 0}
 --- !u!4 &2088031878
 Transform:
   m_ObjectHideFlags: 0
