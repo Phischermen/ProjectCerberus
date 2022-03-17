@@ -3,7 +3,9 @@
  * back to refactor BasicTutorialController.cs to use my new methods, since it'd take too much time.
  */
 
+using System;
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 
 public class CerberusTutorialController : MonoBehaviour
@@ -14,6 +16,7 @@ public class CerberusTutorialController : MonoBehaviour
 
     public Transform spikes;
     public Transform pit;
+    private GUIStyle _triggerStyle;
 
     // Start is called before the first frame update
     IEnumerator Start()
@@ -74,8 +77,20 @@ public class CerberusTutorialController : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDrawGizmos()
     {
+        if (_triggerStyle == null)
+        {
+            _triggerStyle = new GUIStyle()
+            {
+                normal = new GUIStyleState()
+                {
+                    background = Texture2D.grayTexture,
+                    textColor = Color.white
+                }
+            };
+        }
+        Gizmos.DrawIcon(transform.position, "Film Marker");
+        Handles.Label(transform.position, tutorialSequence.ToString(), _triggerStyle);
     }
 }
