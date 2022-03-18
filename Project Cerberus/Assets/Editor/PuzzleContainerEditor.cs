@@ -126,6 +126,40 @@ namespace Editor
                     child.Translate(Vector3.down * tilemap.layoutGrid.cellSize.y);
                 }
             }
+
+            if (GUILayout.Button("Rotate 90°"))
+            {
+                var puzzleContainer = (PuzzleContainer) target;
+                var tilemap = puzzleContainer.GetComponentInChildren<Tilemap>();
+                tilemap.CompressBounds();
+                var bounds = tilemap.cellBounds;
+                // Iterate across tiles forwards
+                for (int i = bounds.yMin; i < bounds.yMax; i++)
+                {
+                    for (int j = bounds.xMin; j < bounds.xMax; j++)
+                    {
+                        // Get current tile
+                        var tile = tilemap.GetTile(new Vector3Int(j, i, 0));
+
+                        // Set tile in next quadrant to cached tile. Erase original.
+                        tilemap.SetTile(new Vector3Int(-i, j, 0), tile);
+                        //Debug.Log($"Processing point ({i},{j})");
+                        tilemap.SetTile(new Vector3Int(j, i, 0), null);
+                    }
+                }
+
+                // Translate children
+                for (var i = 0; i < puzzleContainer.transform.childCount; i++)
+                {
+                    var child = puzzleContainer.transform.GetChild(i);
+                    //Skip tilemap
+                    if (child == tilemap.transform) continue;
+                    var transform = child.transform;
+                    var position = transform.position + new Vector3(0, -1, 0);
+                    position = new Vector3(-position.y, position.x, position.z);
+                    transform.position = position;
+                }
+            }
         }
     }
 }

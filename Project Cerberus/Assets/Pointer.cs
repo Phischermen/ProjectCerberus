@@ -9,7 +9,7 @@ public class Pointer : MonoBehaviour
     private static float maxOffset = 0.25f;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         position = transform.position;
     }
