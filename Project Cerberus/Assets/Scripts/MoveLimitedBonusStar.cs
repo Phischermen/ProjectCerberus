@@ -30,7 +30,12 @@ public class MoveLimitedBonusStar : BonusStar
             return "Bonus star can no longer be obtained.";
         }
 
-        return $"Bonus star disappears in {movesUntilUnavailable - manager.move} move(s).";
+        if (customBonusStarMessageAvailable == "")
+        {
+            return $"Bonus star disappears in {movesUntilUnavailable - manager.move} move(s).";
+        }
+
+        return string.Format(customBonusStarMessageAvailable, movesUntilUnavailable - manager.move);
     }
 
     public override void OnPlayerMadeMove()

@@ -5,6 +5,7 @@
  * next scene.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -374,6 +375,11 @@ public class GameManager : MonoBehaviour, IUndoable
         {
             timer += Time.deltaTime;
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawIcon(new Vector3(0, 3, 0), "Gears");
     }
 
     // Gameover

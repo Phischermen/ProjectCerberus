@@ -121,6 +121,18 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &315964895 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4781076114989600008, guid: e790ae468f1fd944889ced0cce7b172f,
+    type: 3}
+  m_PrefabInstance: {fileID: 1169548295}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbd2b9895c2c88d46a79ab69e6531425, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &367884014 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2715384113237483522, guid: eef179ac3b38ba642b88743486b798b3,
@@ -354,6 +366,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Cerberus
+      objectReference: {fileID: 0}
+    - target: {fileID: 2367660277570903778, guid: 57145c7816772984c9f1ad984b13a440,
+        type: 3}
+      propertyPath: onSingleJumpCompleted.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2367660277570903778, guid: 57145c7816772984c9f1ad984b13a440,
+        type: 3}
+      propertyPath: onSingleJumpCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2367660277570903778, guid: 57145c7816772984c9f1ad984b13a440,
+        type: 3}
+      propertyPath: onSingleJumpCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 315964895}
+    - target: {fileID: 2367660277570903778, guid: 57145c7816772984c9f1ad984b13a440,
+        type: 3}
+      propertyPath: onSingleJumpCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2367660277570903778, guid: 57145c7816772984c9f1ad984b13a440,
+        type: 3}
+      propertyPath: onSingleJumpCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: RequestMakeBonusStarUnavailable
+      objectReference: {fileID: 0}
+    - target: {fileID: 2367660277570903778, guid: 57145c7816772984c9f1ad984b13a440,
+        type: 3}
+      propertyPath: onSingleJumpCompleted.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 2367660277570903779, guid: 57145c7816772984c9f1ad984b13a440,
         type: 3}
@@ -784,6 +826,12 @@ PrefabInstance:
         type: 3}
       propertyPath: movesUntilUnavailable
       value: 26
+      objectReference: {fileID: 0}
+    - target: {fileID: 4781076114989600008, guid: e790ae468f1fd944889ced0cce7b172f,
+        type: 3}
+      propertyPath: customBonusStarMessageAvailable
+      value: Bonus star dissappears in {0} moves, or if Cerberus does not jump at
+        least two space at a time.
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e790ae468f1fd944889ced0cce7b172f, type: 3}
@@ -4160,7 +4208,7 @@ PrefabInstance:
     - target: {fileID: 2715384113343177923, guid: eef179ac3b38ba642b88743486b798b3,
         type: 3}
       propertyPath: maxMovesBeforeStarLoss
-      value: 32
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 2715384113343177923, guid: eef179ac3b38ba642b88743486b798b3,
         type: 3}
