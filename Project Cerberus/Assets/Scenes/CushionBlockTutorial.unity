@@ -2966,6 +2966,12 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1748476723662889241, guid: d41b14201ac5b9348be8812538929b2d,
         type: 3}
+      propertyPath: m_Icon
+      value: 
+      objectReference: {fileID: -1412012063857583412, guid: 0000000000000000d000000000000000,
+        type: 0}
+    - target: {fileID: 1748476723662889241, guid: d41b14201ac5b9348be8812538929b2d,
+        type: 3}
       propertyPath: m_Name
       value: Cushion
       objectReference: {fileID: 0}
