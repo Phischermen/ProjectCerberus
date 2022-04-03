@@ -449,19 +449,22 @@ public class PuzzleContainer : MonoBehaviour
 
     public void UndoToFirstMove()
     {
-        // Pop from undoStack until data of the first move is uncovered.
-        while (_undoStack.Count != 1)
+        if (_undoStack.Count > 0)
         {
-            _undoStack.Pop();
-        }
+            // Pop from undoStack until data of the first move is uncovered.
+            while (_undoStack.Count != 1)
+            {
+                _undoStack.Pop();
+            }
 
-        var undoList = _undoStack.Pop();
-        foreach (var undoData in undoList)
-        {
-            undoData.Load();
-        }
+            var undoList = _undoStack.Pop();
+            foreach (var undoData in undoList)
+            {
+                undoData.Load();
+            }
 
-        // Refresh tiles.
-        tilemap.RefreshAllTiles();
+            // Refresh tiles.
+            tilemap.RefreshAllTiles();
+        }
     }
 }

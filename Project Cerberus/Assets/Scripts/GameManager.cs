@@ -95,6 +95,7 @@ public class GameManager : MonoBehaviour, IUndoable
     [SerializeField] private GameObject _uiPrefab;
     [SerializeField] private GameObject _gameOverEndCard;
     [SerializeField] private GameObject _victoryEndCard;
+    [SerializeField] private GameObject _pauseMenu;
 
     private Laguna _laguna;
     private Jack _jack;
@@ -205,6 +206,11 @@ public class GameManager : MonoBehaviour, IUndoable
 
     void Update()
     {
+        if (_input.pause)
+        {
+            gameplayEnabled = false;
+            Instantiate(_pauseMenu);
+        }
         // Process movement of currently controlled cerberus if gameplay is enabled.
         if (gameplayEnabled)
         {
