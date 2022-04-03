@@ -52,13 +52,15 @@ public class Hades : PuzzleEntity
     {
         base.Update();
         // Check if time has come to move another square.
-        if (chaseEntityEnabled && (Time.time - _lastTimeChased) > chaseFrequency && inHole == false)
+        if (chaseEntityEnabled && entityToChase != null && (Time.time - _lastTimeChased) > chaseFrequency &&
+            inHole == false)
         {
             _lastTimeChased = Time.time;
             var manhattanDistance = Mathf.Abs(position.x - entityToChase.position.x) +
                                     Mathf.Abs(position.y - entityToChase.position.y);
             // Determine if recalculation necessary.
-            if (currentCell.spacesAwayFromChaseTarget == 0 || manhattanDistance != currentCell.spacesAwayFromChaseTarget)
+            if (currentCell.spacesAwayFromChaseTarget == 0 ||
+                manhattanDistance != currentCell.spacesAwayFromChaseTarget)
             {
                 Debug.Log("Recalculated");
                 SamplePathfind();
