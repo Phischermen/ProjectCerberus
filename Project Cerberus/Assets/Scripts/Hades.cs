@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Hades : PuzzleEntity
 {
@@ -17,6 +18,11 @@ public class Hades : PuzzleEntity
     public float chaseFrequency;
     public bool chaseEntityEnabled;
     private float _lastTimeChased;
+    private bool _pathToTargetExists;
+    private bool _onTopOfTarget;
+
+    public UnityEvent onCatchTarget;
+    public UnityEvent onBecomeTrapped;
 
     public class HadesUndoData : UndoData
     {
@@ -51,11 +57,26 @@ public class Hades : PuzzleEntity
     private new void Update()
     {
         base.Update();
+        // Check if on top of chase target.
+        if (position == entityToChase.position)
+        {
+            if (!_onTopOfTarget)
+            {
+                _onTopOfTarget = true;
+                onCatchTarget.Invoke();
+            }
+        }
+        else
+        {
+            _onTopOfTarget = false;
+        }
+
         // Check if time has come to move another square.
         if (chaseEntityEnabled && entityToChase != null && (Time.time - _lastTimeChased) > chaseFrequency &&
             inHole == false)
         {
             _lastTimeChased = Time.time;
+            var notPreviouslyTrapped = _pathToTargetExists;
             var manhattanDistance = Mathf.Abs(position.x - entityToChase.position.x) +
                                     Mathf.Abs(position.y - entityToChase.position.y);
             // Determine if recalculation necessary.
@@ -81,11 +102,18 @@ public class Hades : PuzzleEntity
 
             var neighbor4 = puzzle.GetCell(position + Vector2Int.down);
             if (!MoveHelper(neighbor4)) SamplePathfind();
+            if (_pathToTargetExists == false && notPreviouslyTrapped)
+            {
+                onBecomeTrapped.Invoke();
+            }
         }
     }
 
     private void SamplePathfind()
     {
+        // Check if already on top of entity.
+        _pathToTargetExists = position == entityToChase.position;
+        if (_onTopOfTarget) return;
         _openList.Clear();
         _openList.Add(entityToChase.currentCell);
         PuzzleContainer.LevelCell.numberOfSearches += 1;
@@ -113,14 +141,17 @@ public class Hades : PuzzleEntity
     private void SampleHelper(PuzzleContainer.LevelCell currentElement, PuzzleContainer.LevelCell successor,
         int newSearchId)
     {
-        if (!successor.floorTile.stopsHades && successor.GetLandableScore() >= 0
-        )
+        if (!successor.floorTile.stopsHades && successor.GetLandableScore() >= 0)
         {
             if (successor.searchId != newSearchId)
             {
                 successor.searchId = newSearchId;
                 successor.spacesAwayFromChaseTarget = currentElement.spacesAwayFromChaseTarget + 1;
                 _openList.Add(successor);
+                if (successor.position == position)
+                {
+                    _pathToTargetExists = true;
+                }
             }
         }
         else

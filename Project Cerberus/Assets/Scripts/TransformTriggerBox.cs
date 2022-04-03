@@ -10,7 +10,7 @@ using UnityEngine.Events;
 
 public class TransformTriggerBox : MonoBehaviour
 {
-    public List<PuzzleEntity> objectsToScanFor;
+    public List<PuzzleEntity> objectsToScanFor = new List<PuzzleEntity>();
     public UnityEvent onTrigger;
     public bool mustContainAllToTrigger;
     public int triggerThreshold;
