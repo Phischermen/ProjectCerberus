@@ -37,7 +37,8 @@ namespace Editor
             Handles.Label(position, transformTriggerBox.name, _triggerStyle);
         }
 
-        protected virtual void OnSceneGUI()
+        //protected virtual void OnSceneGUI()
+        protected void OnSceneGUI()
         {
             TransformTriggerBox transformTriggerBox = (TransformTriggerBox) target;
 
@@ -63,6 +64,7 @@ namespace Editor
             var triggerBox = (TransformTriggerBox) target;
             EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(triggerBox.objectsToScanFor)));
             EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(triggerBox.onTrigger)));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(triggerBox.bounds)));
             triggerBox.mustContainAllToTrigger =
                 EditorGUILayout.Toggle("Must contain all to trigger", triggerBox.mustContainAllToTrigger);
             GUI.enabled = !triggerBox.mustContainAllToTrigger;

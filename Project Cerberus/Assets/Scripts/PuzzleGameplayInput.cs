@@ -31,7 +31,8 @@ public class PuzzleGameplayInput : MonoBehaviour
         cycleCharacter2,
         leftClicked,
         rightClicked,
-        dialogueDismissed;
+        dialogueDismissed,
+        pause;
 
     [HideInInspector] public Vector2Int clickedCell;
     [HideInInspector] public Cerberus clickedCerberus;
@@ -78,6 +79,8 @@ public class PuzzleGameplayInput : MonoBehaviour
 
             cycleCharacterBackward = gamepad.leftShoulder.wasPressedThisFrame;
             cycleCharacterForward = gamepad.rightShoulder.wasPressedThisFrame;
+
+            pause = gamepad.startButton.wasPressedThisFrame;
         }
 
         if (keyboard != null)
@@ -111,6 +114,8 @@ public class PuzzleGameplayInput : MonoBehaviour
             cycleCharacter0 = cycleCharacter0 || keyboard.digit1Key.wasPressedThisFrame;
             cycleCharacter1 = cycleCharacter1 || keyboard.digit2Key.wasPressedThisFrame;
             cycleCharacter2 = cycleCharacter2 || keyboard.digit3Key.wasPressedThisFrame;
+
+            pause = pause || keyboard.escapeKey.wasPressedThisFrame;
         }
 
         if (mouse != null)
@@ -166,6 +171,6 @@ public class PuzzleGameplayInput : MonoBehaviour
             downReleased = specialPressed = specialHeld = specialReleased = mergeOrSplit =
                 undoPressed = resetPressed = toggleFixedCameraMode = leftClicked = rightClicked = cycleCharacter =
                     cycleCharacterForward = cycleCharacterBackward = cycleCharacter0 = cycleCharacter1 =
-                        cycleCharacter2 = dialogueDismissed = false;
+                        cycleCharacter2 = dialogueDismissed = pause = false;
     }
 }

@@ -56,3 +56,6 @@ MonoBehaviour:
     - {x: 23, y: 26}
     - {x: 25, y: 28}
     expandedInInspector: 1
+  - levels:
+    - {x: 41, y: 44}
+    expandedInInspector: 1

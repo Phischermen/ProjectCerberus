@@ -5259,6 +5259,7 @@ MonoBehaviour:
   mergeOrSplit: 0
   undoPressed: 0
   resetPressed: 0
+  toggleFixedCameraMode: 0
   cycleCharacter: 0
   cycleCharacterForward: 0
   cycleCharacterBackward: 0
@@ -5267,6 +5268,7 @@ MonoBehaviour:
   cycleCharacter2: 0
   leftClicked: 0
   rightClicked: 0
+  dialogueDismissed: 0
   clickedCell: {x: 0, y: 0}
   clickedCerberus: {fileID: 0}
 --- !u!1 &2715384113343177922
@@ -5316,11 +5318,14 @@ MonoBehaviour:
   parTime: 1
   infinteMovesTilStarLoss: 1
   maxMovesBeforeStarLoss: 0
+  startInFixedCameraMode: 1
   _uiPrefab: {fileID: 5552925204807599473, guid: bcfbc7b7922f7f54986d4d7e2413af3e,
     type: 3}
   _gameOverEndCard: {fileID: 6748275472432033483, guid: 2c37ffdf5f8040047ade7d6be95b0902,
     type: 3}
   _victoryEndCard: {fileID: 6748275472432033483, guid: 04c485a2fb11ad44fb09745c92d95e06,
+    type: 3}
+  _pauseMenu: {fileID: 6748275472432033483, guid: ce708114527947a4b99af55a376952d9,
     type: 3}
   currentCerberus: {fileID: 0}
   joinAndSplitEnabled: 0
@@ -5330,7 +5335,6 @@ MonoBehaviour:
   wantsToUndo: 0
   collectedStar: 0
   gameplayEnabled: 0
-  gameOverImminent: 0
   gameOverEndCardDisplayed: 0
 --- !u!1 &9147218094792065641
 GameObject:
