@@ -19,6 +19,7 @@ public class LevelSequence : ScriptableObject
         // X: index for instancing
         // Y: index for display
         public List<Vector2Int> levels;
+        public AudioClip music;
         public bool expandedInInspector;
 
         public World()
@@ -72,7 +73,7 @@ public class LevelSequence : ScriptableObject
         return -1;
     }
 
-    public int GetSceneBuildIndexForLevel(int levelSequence)
+    public int GetSceneBuildIndexForLevel(int levelSequence, bool andPlayMusic = false)
     {
         // Subtract number of levels in each world until levelSequence is less than the number of levels in the current
         // world. Index that world for the scene build index.
@@ -83,8 +84,10 @@ public class LevelSequence : ScriptableObject
             {
                 levelSequence -= levelsInCurrentWorld.Count;
             }
-            else if (levelSequence > 0)
+            else if (levelSequence >= 0)
             {
+                // Music management is thrown in here just for its convenience.
+                if (andPlayMusic) DiskJockey.PlayTrack(worlds[i].music);
                 return levelsInCurrentWorld[levelSequence].x;
             }
         }

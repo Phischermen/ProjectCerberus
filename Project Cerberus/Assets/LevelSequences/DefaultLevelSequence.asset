@@ -23,6 +23,7 @@ MonoBehaviour:
     - {x: 30, y: 33}
     - {x: 29, y: 32}
     - {x: 31, y: 34}
+    music: {fileID: 0}
     expandedInInspector: 1
   - levels:
     - {x: 5, y: 8}
@@ -35,6 +36,7 @@ MonoBehaviour:
     - {x: 4, y: 7}
     - {x: 15, y: 18}
     - {x: 13, y: 16}
+    music: {fileID: 8300000, guid: 7301edc76681742fa93d95d304cab97b, type: 3}
     expandedInInspector: 1
   - levels:
     - {x: 21, y: 24}
@@ -43,6 +45,7 @@ MonoBehaviour:
     - {x: 8, y: 11}
     - {x: 36, y: 39}
     - {x: 12, y: 15}
+    music: {fileID: 8300000, guid: 8279b16a6c3184040bc3aee589dcd75f, type: 3}
     expandedInInspector: 1
   - levels:
     - {x: 40, y: 43}
@@ -55,7 +58,9 @@ MonoBehaviour:
     - {x: 6, y: 9}
     - {x: 23, y: 26}
     - {x: 25, y: 28}
+    music: {fileID: 8300000, guid: 490d1e1935bc94793b72f79fa279accd, type: 3}
     expandedInInspector: 1
   - levels:
     - {x: 41, y: 44}
+    music: {fileID: 8300000, guid: 490d1e1935bc94793b72f79fa279accd, type: 3}
     expandedInInspector: 1

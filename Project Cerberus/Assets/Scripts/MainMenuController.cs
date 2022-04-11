@@ -3,6 +3,7 @@
  * responsible for instantiating the level select screen and populating it with instances of LevelChoice.
  */
 
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -14,7 +15,8 @@ public class MainMenuController : MonoBehaviour
     public static int availableLevels = 0;
     public static bool silenceTutorials;
     public static bool silenceStory;
-    
+
+    public AudioClip mainMenuMusic;
     public GameObject levelChoiceButton;
     public GameObject worldContainer;
     public GameObject levelChoicePanel;
@@ -70,6 +72,12 @@ public class MainMenuController : MonoBehaviour
         nextWorldButton.interactable = true;
         // Level selection panel is ready, but it's not the initial screen. Deactivate it.
         levelChoicePanel.SetActive(false);
+    }
+
+    private void Start()
+    {
+        // Play music.
+        DiskJockey.PlayTrack(mainMenuMusic);
     }
 
     private void InitializeLevelSelectPanel()

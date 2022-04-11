@@ -47,6 +47,9 @@ public class LevelChoice : MonoBehaviour
 
     private void ButtonPressed()
     {
+        //Play music.
+        CustomProjectSettings.i.mainLevelSequence.GetSceneBuildIndexForLevel(levelIdx, andPlayMusic: true);
+        
         SceneManager.LoadScene(sceneIdx);
     }
 }

@@ -211,6 +211,7 @@ public class GameManager : MonoBehaviour, IUndoable
             gameplayEnabled = false;
             Instantiate(_pauseMenu);
         }
+
         // Process movement of currently controlled cerberus if gameplay is enabled.
         if (gameplayEnabled)
         {
@@ -522,7 +523,7 @@ public class GameManager : MonoBehaviour, IUndoable
 
     public void ProceedToNextLevel()
     {
-        var nextScene = levelSequence.GetSceneBuildIndexForLevel(currentLevel + 1);
+        var nextScene = levelSequence.GetSceneBuildIndexForLevel(currentLevel + 1, andPlayMusic: true);
         if (nextScene == -1)
         {
             Debug.Log($"Could not find next level {currentLevel + 1}");

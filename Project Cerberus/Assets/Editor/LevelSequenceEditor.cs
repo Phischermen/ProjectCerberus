@@ -107,6 +107,7 @@ namespace Editor
                     }
 
                     EditorGUILayout.EndHorizontal();
+                    world.music = (AudioClip) EditorGUILayout.ObjectField("Music", world.music, typeof(AudioClip), false);
 
                     // Iterate through levels.
                     for (var j = 0; j < world.levels.Count; j++)
