@@ -122,6 +122,8 @@ public class GameManager : MonoBehaviour, IUndoable
 
     [HideInInspector] public bool gameOverEndCardDisplayed;
 
+    [HideInInspector] public bool playMusicAtStart;
+
     void Awake()
     {
         // Create UI
@@ -131,11 +133,18 @@ public class GameManager : MonoBehaviour, IUndoable
         {
             levelSequence = CustomProjectSettings.i.mainLevelSequence;
             currentLevel = levelSequence.FindCurrentLevelSequence(SceneManager.GetActiveScene().buildIndex);
+            playMusicAtStart = true;
         }
     }
 
     void Start()
     {
+        if (playMusicAtStart)
+        {
+            // Play music in case user plays a level at the beginning of the game.
+            CustomProjectSettings.i.mainLevelSequence.GetSceneBuildIndexForLevel(currentLevel, andPlayMusic: true);
+        }
+
         // Get objects
         _puzzleContainer = FindObjectOfType<PuzzleContainer>();
         _input = FindObjectOfType<PuzzleGameplayInput>();
