@@ -6,10 +6,11 @@ using UnityEngine;
 public class ElysiumPondController : MonoBehaviour
 {
     public int sequence;
-    
+
     private GUIStyle _triggerStyle;
 
     private Hades _hades;
+
     // Start is called before the first frame update
     IEnumerator Start()
     {
@@ -46,7 +47,7 @@ public class ElysiumPondController : MonoBehaviour
         Debug.Log("Hades screams in agony and gives up!");
         _hades.chaseEntityEnabled = false;
     }
-
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         if (_triggerStyle == null)
@@ -60,7 +61,9 @@ public class ElysiumPondController : MonoBehaviour
                 }
             };
         }
-        Gizmos.DrawIcon(new Vector3(0,1,0), "Film Marker");
-        Handles.Label(new Vector3(0,1,0), sequence.ToString(), _triggerStyle);
+
+        Gizmos.DrawIcon(new Vector3(0, 1, 0), "Film Marker");
+        Handles.Label(new Vector3(0, 1, 0), sequence.ToString(), _triggerStyle);
     }
+#endif
 }
