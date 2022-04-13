@@ -8,11 +8,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-public class GameManager : MonoBehaviour, IUndoable
+public class GameManager : MonoBehaviourPunCallbacks, IUndoable
 {
     class GameManagerUndoData : UndoData
     {
@@ -532,6 +534,45 @@ public class GameManager : MonoBehaviour, IUndoable
         {
             currentLevel += 1;
             SceneManager.LoadScene(nextScene);
+        }
+    }
+
+    // Multiplayer Callbacks + Methods
+    public override void OnLeftRoom()
+    {
+        SceneManager.LoadScene((int) Scenum.Scene.MainMenu);
+    }
+
+    public bool LeaveRoom()
+    {
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();
+            Debug.Log("Room left.");
+            return true;
+        }
+        return false;
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        Debug.LogFormat("OnPlayerEnteredRoom() {0}", newPlayer.NickName); // not seen if you're the player connecting
+
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
+        }
+    }
+    
+    public override void OnPlayerLeftRoom(Player other)
+    {
+        Debug.LogFormat("OnPlayerLeftRoom() {0}", other.NickName); // seen when other disconnects
+
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.LogFormat("OnPlayerLeftRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
         }
     }
 }

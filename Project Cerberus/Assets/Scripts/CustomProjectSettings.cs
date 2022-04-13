@@ -18,6 +18,7 @@ public class CustomProjectSettings : ScriptableObject
     public DialogueDatabaseAsset dialogueDatabaseAsset;
 
     public AnimationCurve defaultTalkAnimationCurve;
+    
     public static string resourcePath = "CustomProjectSettings";
     
     private static CustomProjectSettings _i;
