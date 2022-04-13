@@ -206,7 +206,7 @@ public class GameManager : MonoBehaviour, IUndoable
 
     void Update()
     {
-        if (_input.pause && gameplayEnabled == false)
+        if (_input.pause && gameplayEnabled == true)
         {
             gameplayEnabled = false;
             Instantiate(_pauseMenu);
