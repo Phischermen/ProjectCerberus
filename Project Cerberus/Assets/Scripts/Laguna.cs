@@ -11,59 +11,6 @@ public class Laguna : Cerberus
     public override void CheckInputForResetUndoOrCycle()
     {
         base.CheckInputForResetUndoOrCycle();
-    }
-
-    public override CerberusCommand ProcessInputIntoCommand()
-    {
-        var command = base.ProcessInputIntoCommand();
-        if (input.specialHeld || input.rightClicked)
-        {
-            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y))
-            {
-                PullMove(Vector2Int.up);
-            }
-
-            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y))
-            {
-                PullMove(Vector2Int.down);
-            }
-
-            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x))
-            {
-                PullMove(Vector2Int.right);
-            }
-
-            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x))
-            {
-                PullMove(Vector2Int.left);
-            }
-        }
-        else
-        {
-            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y &&
-                                    input.leftClicked))
-            {
-                BasicMove(Vector2Int.up);
-            }
-
-            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y &&
-                                           input.leftClicked))
-            {
-                BasicMove(Vector2Int.down);
-            }
-
-            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x &&
-                                            input.leftClicked))
-            {
-                BasicMove(Vector2Int.right);
-            }
-
-            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x &&
-                                           input.leftClicked))
-            {
-                BasicMove(Vector2Int.left);
-            }
-        }
 
         if (input.cycleCharacter)
         {
@@ -74,6 +21,61 @@ public class Laguna : Cerberus
         {
             manager.wantsToUndo = true;
         }
+    }
+
+    public override CerberusCommand ProcessInputIntoCommand()
+    {
+        var command = base.ProcessInputIntoCommand();
+        if (input.specialHeld || input.rightClicked)
+        {
+            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y))
+            {
+                command.specialUp = true;
+            }
+
+            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y))
+            {
+                command.specialDown = true;
+            }
+
+            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x))
+            {
+                command.specialRight = true;
+            }
+
+            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x))
+            {
+                command.specialLeft = true;
+            }
+        }
+        else
+        {
+            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y &&
+                                    input.leftClicked))
+            {
+                command.moveUp = true;
+            }
+
+            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y &&
+                                           input.leftClicked))
+            {
+                command.moveDown = true;
+            }
+
+            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x &&
+                                            input.leftClicked))
+            {
+                command.moveRight = true;
+            }
+
+            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x &&
+                                           input.leftClicked))
+            {
+                command.moveLeft = true;
+            }
+        }
+
+
 
         return command;
     }
@@ -81,7 +83,39 @@ public class Laguna : Cerberus
     public override void InterpretCommand(CerberusCommand command)
     {
         base.InterpretCommand(command);
-        
+        base.InterpretCommand(command);
+        if (command.specialUp)
+        {
+            PullMove(Vector2Int.up);
+        }
+        else if (command.specialDown)
+        {
+            PullMove(Vector2Int.down);
+        }
+        else if (command.specialRight)
+        {
+            PullMove(Vector2Int.right);
+        }
+        else if (command.specialLeft)
+        {
+            PullMove(Vector2Int.left);
+        }
+        else if (command.moveUp)
+        {
+            BasicMove(Vector2Int.up);
+        }
+        else if (command.moveDown)
+        {
+            BasicMove(Vector2Int.down);
+        }
+        else if (command.moveRight)
+        {
+            BasicMove(Vector2Int.right);
+        }
+        else if (command.moveLeft)
+        {
+            BasicMove(Vector2Int.left);
+        }
     }
 
     private void PullMove(Vector2Int offset)
