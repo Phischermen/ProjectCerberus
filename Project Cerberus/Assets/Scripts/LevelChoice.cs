@@ -4,6 +4,7 @@
  */
 
 using System;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -49,7 +50,13 @@ public class LevelChoice : MonoBehaviour
     {
         //Play music.
         CustomProjectSettings.i.mainLevelSequence.GetSceneBuildIndexForLevel(levelIdx, andPlayMusic: true);
-        
-        SceneManager.LoadScene(sceneIdx);
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LoadLevel(sceneIdx);
+        }
+        else
+        {
+            SceneManager.LoadScene(sceneIdx);
+        }
     }
 }
