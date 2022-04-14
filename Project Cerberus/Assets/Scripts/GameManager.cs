@@ -14,7 +14,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-public class GameManager : MonoBehaviourPunCallbacks, IUndoable
+public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
 {
     class GameManagerUndoData : UndoData
     {
@@ -126,6 +126,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
 
     void Awake()
     {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            /* KF (4/14/2022) It is necessary to allocate a viewId, even though game manager is a scene object and it
+             should have it's viewId already allocated. But it does not for some reason. I am curious if I can hard code
+             a view id for my game manager, or if that would have unforeseen consequences.
+             */
+            PhotonNetwork.AllocateViewID(photonView);
+            PhotonNetwork.Instantiate("PhotonBootStrapper", Vector3.zero, Quaternion.identity);
+        }
         // Create UI
         Instantiate(_uiPrefab);
         // Load Level Sequence and get current world and level
@@ -222,6 +231,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
             // Check if cerberus made their move
             if (currentCerberus.doneWithMove)
             {
+                photonView.RPC(nameof(RPCTest), RpcTarget.AllViaServer);
                 // Start timer
                 _timerRunning = true;
                 // Check how many of available cerberus are on goal.
@@ -551,6 +561,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
             Debug.Log("Room left.");
             return true;
         }
+
         return false;
     }
 
@@ -561,10 +572,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
 
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
+            Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}",
+                PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
         }
     }
-    
+
     public override void OnPlayerLeftRoom(Player other)
     {
         Debug.LogFormat("OnPlayerLeftRoom() {0}", other.NickName); // seen when other disconnects
@@ -572,7 +584,22 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
 
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.LogFormat("OnPlayerLeftRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
+            Debug.LogFormat("OnPlayerLeftRoom IsMasterClient {0}",
+                PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
         }
+    }
+
+    public AudioClip testAudio;
+
+    [PunRPC]
+    public void RPCTest()
+    {
+        Debug.Log("RPCTest called");
+        AudioSource.PlayClipAtPoint(testAudio, Vector3.one);
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        // Deliberately empty.
     }
 }
