@@ -14,58 +14,9 @@ public class Jack : Cerberus
             "Jack can push a single object really far, but can't push a row of objects farther than one tile.";
     }
 
-    public override void ProcessMoveInput()
+    public override void CheckInputForResetUndoOrCycle()
     {
-        base.ProcessMoveInput();
-        if (input.specialHeld || input.rightClicked)
-        {
-            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y))
-            {
-                SuperPushMove(Vector2Int.up);
-            }
-
-            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y))
-            {
-                SuperPushMove(Vector2Int.down);
-            }
-
-            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x))
-            {
-                SuperPushMove(Vector2Int.right);
-            }
-
-            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x))
-            {
-                SuperPushMove(Vector2Int.left);
-            }
-        }
-        else
-        {
-            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y &&
-                                    input.leftClicked))
-            {
-                BasicMove(Vector2Int.up);
-            }
-
-            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y &&
-                                           input.leftClicked))
-            {
-                BasicMove(Vector2Int.down);
-            }
-
-            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x &&
-                                            input.leftClicked))
-            {
-                BasicMove(Vector2Int.right);
-            }
-
-            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x &&
-                                           input.leftClicked))
-            {
-                BasicMove(Vector2Int.left);
-            }
-        }
-
+        base.CheckInputForResetUndoOrCycle();
         if (input.cycleCharacter)
         {
             manager.wantsToCycleCharacter = true;
@@ -77,9 +28,100 @@ public class Jack : Cerberus
         }
     }
 
+    public override CerberusCommand ProcessInputIntoCommand()
+    {
+        var command = base.ProcessInputIntoCommand();
+        if (input.specialHeld || input.rightClicked)
+        {
+            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y))
+            {
+                command.specialUp = true;
+            }
+
+            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y))
+            {
+                command.specialDown = true;
+            }
+
+            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x))
+            {
+                command.specialRight = true;
+            }
+
+            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x))
+            {
+                command.specialLeft = true;
+            }
+        }
+        else
+        {
+            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y &&
+                                    input.leftClicked))
+            {
+                command.moveUp = true;
+            }
+
+            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y &&
+                                           input.leftClicked))
+            {
+                command.moveDown = true;
+            }
+
+            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x &&
+                                            input.leftClicked))
+            {
+                command.moveRight = true;
+            }
+
+            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x &&
+                                           input.leftClicked))
+            {
+                command.moveLeft = true;
+            }
+        }
+
+        return command;
+    }
+
+    public override void InterpretCommand(CerberusCommand command)
+    {
+        base.InterpretCommand(command);
+        if (command.specialUp)
+        {
+            SuperPushMove(Vector2Int.up);
+        }
+        else if (command.specialDown)
+        {
+            SuperPushMove(Vector2Int.down);
+        }
+        else if (command.specialRight)
+        {
+            SuperPushMove(Vector2Int.right);
+        }
+        else if (command.specialLeft)
+        {
+            SuperPushMove(Vector2Int.left);
+        }
+        else if (command.moveUp)
+        {
+            BasicMove(Vector2Int.up);
+        }
+        else if (command.moveDown)
+        {
+            BasicMove(Vector2Int.down);
+        }
+        else if (command.moveRight)
+        {
+            BasicMove(Vector2Int.right);
+        }
+        else if (command.moveLeft)
+        {
+            BasicMove(Vector2Int.left);
+        }
+    }
+
     private void SuperPushMove(Vector2Int offset)
     {
-        
         var coord = position + offset;
         var newCell = puzzle.GetCell(coord);
         var collidesWithAndCannotPushEntity = CollidesWithAny(newCell.GetEntitesThatCannotBePushedByStandardMove());
@@ -144,7 +186,7 @@ public class Jack : Cerberus
                 pushableEntity.isSuperPushed = !lastMove && !firstMove;
                 pushableEntity.Move(pushableEntity.position + offset, !lastMove, lastMove && !firstMove);
             }
-            
+
             hasPerformedSpecial = true;
             DeclareDoneWithMove();
         }
@@ -177,7 +219,7 @@ public class Jack : Cerberus
                 PlaySfxPitchShift(superPushedSfx, 0.9f, 1.1f);
                 PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                 Move(coord);
-                
+
                 hasPerformedSpecial = true;
                 DeclareDoneWithMove();
             }

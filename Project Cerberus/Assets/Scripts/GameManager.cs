@@ -227,11 +227,16 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
         if (gameplayEnabled)
         {
             var nextMoveNeedsToStart = false;
-            currentCerberus.ProcessMoveInput();
+            // TODO Get input and read command queue.
+            // If there is input, generate command and send to master client.
+            // If there are commands, get the first one.
+            // Execute the command.
+            currentCerberus.ProcessInputIntoCommand();
             // Check if cerberus made their move
             if (currentCerberus.doneWithMove)
             {
-                photonView.RPC(nameof(RPCTest), RpcTarget.AllViaServer);
+                // If not master client, send input to master client.
+                photonView.RPC(nameof(RPCReplicateMove), RpcTarget.AllViaServer);
                 // Start timer
                 _timerRunning = true;
                 // Check how many of available cerberus are on goal.
@@ -526,6 +531,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
 
     public void ReplayLevel()
     {
+        // TODO sync clients here.
         _puzzleContainer.UndoToFirstMove();
         gameplayEnabled = true;
         // Repopulate availableCerberus
@@ -592,10 +598,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
     public AudioClip testAudio;
 
     [PunRPC]
-    public void RPCTest()
+    public void RPCReplicateMove()
     {
-        Debug.Log("RPCTest called");
-        AudioSource.PlayClipAtPoint(testAudio, Vector3.one);
+        Debug.Log("RPCReplicateMove called");
+        // TODO append information to a command queue.
+        //AudioSource.PlayClipAtPoint(testAudio, Vector3.one);
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

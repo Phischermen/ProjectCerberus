@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -9,6 +10,22 @@ using Random = UnityEngine.Random;
 
 public class Cerberus : PuzzleEntity
 {
+    public class CerberusCommand
+    {
+        public bool moveUp,
+            moveDown,
+            moveLeft,
+            moveRight,
+            specialUp,
+            specialDown,
+            specialLeft,
+            specialRight,
+            specialActivated,
+            specialDeactivated,
+            specialPerformed,
+            mergeOrSplit;
+    }
+
     class CerberusUndoData : UndoData
     {
         public Cerberus cerberus;
@@ -72,7 +89,7 @@ public class Cerberus : PuzzleEntity
     public AnimationCurve talkAnimationCurve;
 
     public UnityEvent onStandardMove;
-    
+
     protected override void Awake()
     {
         base.Awake();
@@ -88,14 +105,43 @@ public class Cerberus : PuzzleEntity
         return undoData;
     }
 
-    public virtual void ProcessMoveInput()
+    // NOTE: The input checked in the following method is not networked, or is conditionally networked.
+    public virtual void CheckInputForResetUndoOrCycle()
     {
         if (input.resetPressed)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            if (PhotonNetwork.InRoom)
+            {
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    manager.ReplayLevel();
+                }
+                else
+                {
+                    // TODO display message that says that only the host may reset the level.
+                }
+            }
+            else
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+        }
+    }
+
+    public virtual CerberusCommand ProcessInputIntoCommand()
+    {
+        var command = new CerberusCommand();
+        if (input.mergeOrSplit && manager.joinAndSplitEnabled)
+        {
+            command.mergeOrSplit = true;
         }
 
-        if (input.mergeOrSplit && manager.joinAndSplitEnabled)
+        return command;
+    }
+
+    public virtual void InterpretCommand(CerberusCommand command)
+    {
+        if (command.mergeOrSplit)
         {
             if (this is CerberusMajor cerberusMajor)
             {
