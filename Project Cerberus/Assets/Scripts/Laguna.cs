@@ -8,9 +8,14 @@ public class Laguna : Cerberus
         entityRules = "Laguna can pull objects.";
     }
 
-    public override void ProcessMoveInput()
+    public override void CheckInputForResetUndoOrCycle()
     {
-        base.ProcessMoveInput();
+        base.CheckInputForResetUndoOrCycle();
+    }
+
+    public override CerberusCommand ProcessInputIntoCommand()
+    {
+        var command = base.ProcessInputIntoCommand();
         if (input.specialHeld || input.rightClicked)
         {
             if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y))
@@ -69,8 +74,15 @@ public class Laguna : Cerberus
         {
             manager.wantsToUndo = true;
         }
+
+        return command;
     }
 
+    public override void InterpretCommand(CerberusCommand command)
+    {
+        base.InterpretCommand(command);
+        
+    }
 
     private void PullMove(Vector2Int offset)
     {
