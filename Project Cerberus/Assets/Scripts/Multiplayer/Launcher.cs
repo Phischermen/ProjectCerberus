@@ -2,6 +2,7 @@
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Multiplayer
 {
@@ -14,9 +15,11 @@ namespace Multiplayer
         public GameObject multiplayerControlsPanel;
 
         public bool isConnecting;
+        private Text _connectionStatusText;
 
         private void Awake()
         {
+            _connectionStatusText = multiplayerConnectionPanel.GetComponent<Text>();
             PhotonNetwork.AutomaticallySyncScene = true;
             multiplayerControlsPanel.SetActive(true);
             multiplayerConnectionPanel.SetActive(false);
@@ -53,8 +56,16 @@ namespace Multiplayer
         public override void OnJoinedRoom()
         {
             Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
-            // TODO Let host select a level. Don't imediately load a level.
-            PhotonNetwork.LoadLevel((int) Scenum.Scene.BasicsTutorial_1_K);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                FindObjectOfType<MainMenuController>().ShowLevelSelectPanelForMultiplayer();
+            }
+            else
+            {
+                _connectionStatusText.text = "Host is selecting a level.";
+            }
+
+            
         }
 
         private void Connect()

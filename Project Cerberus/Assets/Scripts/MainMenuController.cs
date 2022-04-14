@@ -118,6 +118,12 @@ public class MainMenuController : MonoBehaviour
         maxWorld = levelSequence.worlds.Count - 1;
     }
 
+    public void ShowLevelSelectPanelForMultiplayer()
+    {
+        multiplayerPanel.SetActive(false);
+        levelChoicePanel.SetActive(true);
+    }
+
     // Menu actions
     // Main
 
