@@ -31,6 +31,7 @@ public class Jack : Cerberus
     public override CerberusCommand ProcessInputIntoCommand()
     {
         var command = base.ProcessInputIntoCommand();
+        command.cerberusId = 0;
         if (input.specialHeld || input.rightClicked)
         {
             if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y))

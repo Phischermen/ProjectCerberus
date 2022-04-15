@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
 using Photon.Realtime;
+using Priority_Queue;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -124,6 +125,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
 
     [HideInInspector] public bool gameOverEndCardDisplayed;
 
+    public Queue<Cerberus.CerberusCommand> _commandQueue;
+
     void Awake()
     {
         if (PhotonNetwork.IsMasterClient)
@@ -132,9 +135,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
              should have it's viewId already allocated. But it does not for some reason. I am curious if I can hard code
              a view id for my game manager, or if that would have unforeseen consequences.
              */
-            PhotonNetwork.AllocateViewID(photonView);
-            PhotonNetwork.Instantiate("PhotonBootStrapper", Vector3.zero, Quaternion.identity);
+            //PhotonNetwork.AllocateViewID(photonView);
+            //PhotonNetwork.Instantiate("PhotonBootStrapper", Vector3.zero, Quaternion.identity);
         }
+
         // Create UI
         Instantiate(_uiPrefab);
         // Load Level Sequence and get current world and level
@@ -164,7 +168,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
         _kahuna = FindObjectOfType<Kahuna>();
         _laguna = FindObjectOfType<Laguna>();
         _cerberusMajor = FindObjectOfType<CerberusMajor>();
-
+        
         // Initialize availableCerberus
         availableCerberus = new List<Cerberus>();
         if (_jack)
@@ -213,6 +217,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
         timer = 0;
         _timerRunning = false;
         gameplayEnabled = true;
+        
+        // Initialize Command Queue.
+        _commandQueue = new Queue<Cerberus.CerberusCommand>();
     }
 
     void Update()
@@ -227,16 +234,33 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
         if (gameplayEnabled)
         {
             var nextMoveNeedsToStart = false;
-            // TODO Get input and read command queue.
-            // If there is input, generate command and send to master client.
+            var command = currentCerberus.ProcessInputIntoCommand();
+            // If commanded to do something, send command to master client.
+            if (command.doSomething)
+            {
+                if (PhotonNetwork.InRoom)
+                {
+                    photonView.RPC(nameof(RPCEnqueueCommand), RpcTarget.AllViaServer, command);
+                }
+                else
+                {
+                    _commandQueue.Enqueue(command);
+                }
+            }
+
             // If there are commands, get the first one.
-            // Execute the command.
-            currentCerberus.ProcessInputIntoCommand();
+            if (_commandQueue.Count > 0)
+            {
+                var nextCommand = _commandQueue.Dequeue();
+
+                // TODO get correct cerberus and then perform all those checks.
+                currentCerberus.InterpretCommand(nextCommand);
+            }
+
+
             // Check if cerberus made their move
             if (currentCerberus.doneWithMove)
             {
-                // If not master client, send input to master client.
-                photonView.RPC(nameof(RPCReplicateMove), RpcTarget.AllViaServer);
                 // Start timer
                 _timerRunning = true;
                 // Check how many of available cerberus are on goal.
@@ -598,15 +622,22 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
     public AudioClip testAudio;
 
     [PunRPC]
-    public void RPCReplicateMove()
+    public void RPCEnqueueCommand(Cerberus.CerberusCommand command)
     {
-        Debug.Log("RPCReplicateMove called");
-        // TODO append information to a command queue.
-        //AudioSource.PlayClipAtPoint(testAudio, Vector3.one);
+        _commandQueue.Enqueue(command);
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        // Deliberately empty.
+        if (stream.IsWriting && PhotonNetwork.IsMasterClient)
+        {
+            stream.SendNext(timer);
+            stream.SendNext(move);
+        }
+        else if (stream.IsReading)
+        {
+            timer = (float) stream.ReceiveNext();
+            move = (int) stream.ReceiveNext();
+        }
     }
 }

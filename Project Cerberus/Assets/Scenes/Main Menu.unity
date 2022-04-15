@@ -1071,6 +1071,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   multiplayerConnectionPanel: {fileID: 62168442}
   multiplayerControlsPanel: {fileID: 954336461}
+  isConnecting: 0
 --- !u!4 &932459299
 Transform:
   m_ObjectHideFlags: 0
