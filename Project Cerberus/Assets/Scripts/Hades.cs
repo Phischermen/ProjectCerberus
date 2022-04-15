@@ -24,11 +24,11 @@ public class Hades : PuzzleEntity
     public UnityEvent onCatchTarget;
     public UnityEvent onBecomeTrapped;
 
-    public class HadesUndoData : UndoData
+    public class HadesStateData : StateData
     {
         public Hades hades;
 
-        public HadesUndoData(Hades hades)
+        public HadesStateData(Hades hades)
         {
             this.hades = hades;
         }
@@ -180,9 +180,9 @@ public class Hades : PuzzleEntity
         PlayAnimation(SlideToDestination(position, AnimationUtility.basicMoveAndPushSpeed));
     }
 
-    public override UndoData GetUndoData()
+    public override StateData GetUndoData()
     {
-        var undoData = new HadesUndoData(this);
+        var undoData = new HadesStateData(this);
         return undoData;
     }
 }

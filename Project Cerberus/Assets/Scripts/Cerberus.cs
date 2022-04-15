@@ -183,25 +183,25 @@ public class Cerberus : PuzzleEntity
             skipCerberusJumpAnimation;
     }
 
-    class CerberusUndoData : UndoData
+    class CerberusStateData : StateData
     {
         public Cerberus cerberus;
-        public Vector2Int position;
-        public bool inHole;
-        public bool onTopOfGoal;
-        public bool collisionDisabledAndPentagramDisplayed;
-        public bool hasPerformedSpecial;
+        public Vector2Int position => myVector2Int;
+        public bool inHole => booleans[0];
+        public bool onTopOfGoal => booleans[1];
+        public bool collisionDisabledAndPentagramDisplayed => booleans[2];
+        public bool hasPerformedSpecial => booleans[3];
 
-        public CerberusUndoData(Cerberus cerberus, Vector2Int position, bool inHole,
+        public CerberusStateData(Cerberus cerberus, Vector2Int position, bool inHole,
             bool collisionDisabledAndPentagramDisplayed,
             bool onTopOfGoal, bool hasPerformedSpecial)
         {
             this.cerberus = cerberus;
-            this.position = position;
-            this.onTopOfGoal = onTopOfGoal;
-            this.hasPerformedSpecial = hasPerformedSpecial;
-            this.inHole = inHole;
-            this.collisionDisabledAndPentagramDisplayed = collisionDisabledAndPentagramDisplayed;
+            myVector2Int = position;
+            booleans[0] = inHole;
+            booleans[1] = onTopOfGoal;
+            booleans[2] = collisionDisabledAndPentagramDisplayed;
+            booleans[3] = hasPerformedSpecial;
         }
 
         public override void Load()
@@ -254,9 +254,9 @@ public class Cerberus : PuzzleEntity
         _cerberusSprite = GetComponent<SpriteRenderer>().sprite;
     }
 
-    public override UndoData GetUndoData()
+    public override StateData GetUndoData()
     {
-        var undoData = new CerberusUndoData(this, position, inHole,
+        var undoData = new CerberusStateData(this, position, inHole,
             collisionDisabledAndPentagramDisplayed: manager.cerberusFormed != isCerberusMajor, onTopOfGoal,
             hasPerformedSpecial);
         return undoData;

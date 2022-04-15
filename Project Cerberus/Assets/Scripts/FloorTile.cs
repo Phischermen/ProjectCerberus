@@ -46,7 +46,7 @@ public class FloorTile : Tile, IUndoable
     {
     }
 
-    public virtual UndoData GetUndoData()
+    public virtual StateData GetUndoData()
     {
         return null;
     }

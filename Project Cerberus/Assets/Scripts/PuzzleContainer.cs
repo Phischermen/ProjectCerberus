@@ -249,7 +249,7 @@ public class PuzzleContainer : MonoBehaviour
     public LevelCell[,] levelMap { get; protected set; }
     public Tilemap tilemap { get; protected set; }
 
-    private Stack<List<UndoData>> _undoStack;
+    private Stack<List<StateData>> _undoStack;
     private List<IUndoable> _undoables;
 
     private SimplePriorityQueue<PuzzleEntity> _entitiesToProcessWhenPlayerMakesMove;
@@ -280,7 +280,7 @@ public class PuzzleContainer : MonoBehaviour
 
         // Initialize Undo collections.
         _undoables = new List<IUndoable>();
-        _undoStack = new Stack<List<UndoData>>();
+        _undoStack = new Stack<List<StateData>>();
 
         // Initialize _entitiesToProcessWhenPlayerMakesMove collection
         _entitiesToProcessWhenPlayerMakesMove = new SimplePriorityQueue<PuzzleEntity>();
@@ -420,7 +420,7 @@ public class PuzzleContainer : MonoBehaviour
         if (_manager.gameplayEnabled)
         {
             // Get undo data from every undoable, so board state can be recreated.
-            var undoList = new List<UndoData>();
+            var undoList = new List<StateData>();
             foreach (var undoable in _undoables)
             {
                 var data = undoable.GetUndoData();

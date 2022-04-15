@@ -4,8 +4,8 @@ using UnityEngine;
 
 public interface IUndoable
 {
-    //method instantiates UndoData and returns it
-    UndoData GetUndoData();
+    //method instantiates StateData and returns it
+    StateData GetUndoData();
 
 
 }

@@ -17,29 +17,30 @@ using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
 {
-    class GameManagerUndoData : UndoData
+    class GameManagerStateData : StateData
     {
         private GameManager _gameManager;
         private Cerberus _currentCerberus;
 
+        // These values are networked via IPunObservable.
         private int _move;
-        private float _timer;
+        private float _timer; 
 
-        private bool _joinSplitEnabled;
-        private bool _cerberusFormed;
+        public bool joinSplitEnabled => booleans[0];
+        public bool cerberusFormed => booleans[1];
 
-        private bool _collectedStar;
+        public bool collectedStar => booleans[2];
 
-        public GameManagerUndoData(GameManager gameManager, int move, float timer, Cerberus currentCerberus,
+        public GameManagerStateData(GameManager gameManager, int move, float timer, Cerberus currentCerberus,
             bool cerberusFormed, bool joinSplitEnabled, bool collectedStar)
         {
             _gameManager = gameManager;
             _currentCerberus = currentCerberus;
             _move = move;
             _timer = timer;
-            _cerberusFormed = cerberusFormed;
-            _joinSplitEnabled = joinSplitEnabled;
-            _collectedStar = collectedStar;
+            booleans[0] = joinSplitEnabled;
+            booleans[1] = cerberusFormed;
+            booleans[2] = collectedStar;
         }
 
         public override void Load()
@@ -462,9 +463,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
     }
 
     // Undo
-    public UndoData GetUndoData()
+    public StateData GetUndoData()
     {
-        var undoData = new GameManagerUndoData(this, move, timer, currentCerberus, cerberusFormed, joinAndSplitEnabled,
+        var undoData = new GameManagerStateData(this, move, timer, currentCerberus, cerberusFormed, joinAndSplitEnabled,
             collectedStar);
         return undoData;
     }
@@ -550,7 +551,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
     {
         _puzzleContainer.UndoLastMove();
         gameplayEnabled = true;
-        // Note: Timer is reset via GameManagerUndoData.Load()
+        // Note: Timer is reset via GameManagerStateData.Load()
     }
 
     public void ReplayLevel()
@@ -560,7 +561,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
         gameplayEnabled = true;
         // Repopulate availableCerberus
         RepopulateAvailableCerberus();
-        // Note: Timer is reset via GameManagerUndoData.Load()
+        // Note: Timer is reset via GameManagerStateData.Load()
     }
 
     public void ProceedToNextLevel()

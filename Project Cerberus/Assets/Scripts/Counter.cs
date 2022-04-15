@@ -6,19 +6,20 @@ using UnityEngine.Events;
 
 public class Counter : MonoBehaviour, IUndoable
 {
-    public class CounterUndoData : UndoData
+    public class CounterStateData : StateData
     {
         private Counter _counter;
-        private int _count;
-        public CounterUndoData(Counter counter, int count)
+        public byte count => myByte;
+        public CounterStateData(Counter counter, int count)
         {
             _counter = counter;
-            _count = count;
+            // NOTE: In order not to ruin serialization of counter, I am not refactoring the type of "count."
+            myByte = (byte)count;
         }
 
         public override void Load()
         {
-            _counter.count = _count;
+            _counter.count = count;
         }
     }
     
@@ -109,10 +110,9 @@ public class Counter : MonoBehaviour, IUndoable
         }
     }
 
-    public UndoData GetUndoData()
+    public StateData GetUndoData()
     {
-        var undoData = new CounterUndoData(this, count);
+        var undoData = new CounterStateData(this, count);
         return undoData;
     }
-
 }

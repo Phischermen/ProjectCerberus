@@ -4,15 +4,15 @@ using UnityEngine.Events;
 
 public class Switch : PuzzleEntity
 {
-    public class SwitchUndoData : UndoData
+    public class SwitchStateData : StateData
     {
         public Switch lever;
-        public bool flipped;
+        public bool flipped => booleans[0];
 
-        public SwitchUndoData(Switch lever, bool flipped)
+        public SwitchStateData(Switch lever, bool flipped)
         {
             this.lever = lever;
-            this.flipped = flipped;
+            booleans[0] = flipped;
         }
 
         public override void Load()
@@ -42,9 +42,9 @@ public class Switch : PuzzleEntity
         landableScore = 0;
     }
 
-    public override UndoData GetUndoData()
+    public override StateData GetUndoData()
     {
-        var undoData = new SwitchUndoData(this, isPressed);
+        var undoData = new SwitchStateData(this, isPressed);
         return undoData;
     }
 

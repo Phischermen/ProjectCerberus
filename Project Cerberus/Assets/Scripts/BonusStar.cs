@@ -12,17 +12,17 @@ using UnityEngine;
 
 public class BonusStar : PuzzleEntity
 {
-    public class BonusStarUndoData : UndoData
+    public class BonusStarStateData : StateData
     {
         BonusStar _bonusStar;
-        bool collected;
-        bool unavailable;
+        bool collected => booleans[0];
+        bool unavailable => booleans[1];
 
-        public BonusStarUndoData(BonusStar bonusStar, bool collected, bool unavailable)
+        public BonusStarStateData(BonusStar bonusStar, bool collected, bool unavailable)
         {
             this._bonusStar = bonusStar;
-            this.collected = collected;
-            this.unavailable = unavailable;
+            booleans[0] = collected;
+            booleans[1] = unavailable;
         }
 
         public override void Load()
@@ -70,9 +70,9 @@ public class BonusStar : PuzzleEntity
         }
     }
 
-    public override UndoData GetUndoData()
+    public override StateData GetUndoData()
     {
-        var undoData = new BonusStarUndoData(this, collected, unavailable);
+        var undoData = new BonusStarStateData(this, collected, unavailable);
         return undoData;
     }
 

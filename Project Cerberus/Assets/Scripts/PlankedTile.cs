@@ -6,15 +6,15 @@ using UnityEngine.Tilemaps;
 [CreateAssetMenu(menuName = "FloorTile/Planked")]
 public class PlankedTile : FloorTile
 {
-    public class PlankedTileUndoData : UndoData
+    public class PlankedTileStateData : StateData
     {
         public PlankedTile tile;
-        public bool broken;
+        public bool broken => booleans[0];
 
-        public PlankedTileUndoData(PlankedTile tile, bool broken)
+        public PlankedTileStateData(PlankedTile tile, bool broken)
         {
             this.tile = tile;
-            this.broken = broken;
+            booleans[0] = broken;
         }
 
         public override void Load()
@@ -49,8 +49,8 @@ public class PlankedTile : FloorTile
         }
     }
 
-    public override UndoData GetUndoData()
+    public override StateData GetUndoData()
     {
-        return new PlankedTileUndoData(this, broken);
+        return new PlankedTileStateData(this, broken);
     }
 }
