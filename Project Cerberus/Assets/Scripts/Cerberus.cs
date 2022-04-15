@@ -21,7 +21,7 @@ public class Cerberus : PuzzleEntity
 
     public class CerberusCommand
     {
-        public int cerberusId;
+        public byte cerberusId;
         public bool[] commands = new bool[12];
 
         public bool moveUp
@@ -102,53 +102,69 @@ public class Cerberus : PuzzleEntity
             set => commands[11] = value;
         }
 
-        //public List<CerberusMajor.JumpInfo> jumpPath;
         public static byte[] Serialize(object o)
         {
             var command = (CerberusCommand) o;
-            int index = 0;
-            var commandBytes = new byte[2 * command.commands.Length];
-            for (var i = 0; i < command.commands.Length; i++)
-            {
-                var boolBytes = BitConverter.GetBytes(command.commands[i]);
-                for (var i1 = 0; i1 < boolBytes.Length; i1++)
-                {
-                    commandBytes[index + i1] = boolBytes[i1];
-                }
-
-                index += boolBytes.Length;
-            }
-
-            var idBytes = BitConverter.GetBytes(command.cerberusId);
-            return Combine(commandBytes, idBytes);
+            byte moveAndSpecialByte = 0;
+            // Serialize move & special
+            if (command.specialUp) moveAndSpecialByte += 1;
+            if (command.specialDown) moveAndSpecialByte += 2;
+            if (command.specialRight) moveAndSpecialByte += 4;
+            if (command.specialLeft) moveAndSpecialByte += 8;
+            if (command.moveUp) moveAndSpecialByte += 16;
+            if (command.moveDown) moveAndSpecialByte += 32;
+            if (command.moveRight) moveAndSpecialByte += 64;
+            if (command.moveLeft) moveAndSpecialByte += 128;
+            // Serialize special status and Id
+            byte statusAndId = 0;
+            if (command.specialActivated) statusAndId += 1;
+            if (command.specialDeactivated) statusAndId += 2;
+            if (command.specialPerformed) statusAndId += 4;
+            if (command.mergeOrSplit) statusAndId += 8;
+            if (command.skipCerberusJumpAnimation) statusAndId += 16;
+            if (command.cerberusId == 1) statusAndId += 32;
+            if (command.cerberusId == 2) statusAndId += 64;
+            if (command.cerberusId == 3) statusAndId += 128;
+            return new[] {moveAndSpecialByte, statusAndId};
         }
 
         public static object Deserialize(byte[] data)
         {
             var command = new CerberusCommand();
-            int index = 0;
-            for (var i = 0; i < command.commands.Length; i++)
+            var bitArray = new BitArray(data);
+
+            // Deserialize move & special
+            command.specialUp = bitArray[0];
+            command.specialDown = bitArray[1];
+            command.specialRight = bitArray[2];
+            command.specialLeft = bitArray[3];
+            command.moveUp = bitArray[4];
+            command.moveDown = bitArray[5];
+            command.moveRight = bitArray[6];
+            command.moveLeft = bitArray[7];
+
+            // Deserialize special status and Id
+            command.specialActivated = bitArray[8 + 0];
+            command.specialDeactivated = bitArray[8 + 1];
+            command.specialPerformed = bitArray[8 + 2];
+            command.mergeOrSplit = bitArray[8 + 3];
+            command.skipCerberusJumpAnimation = bitArray[8 + 4];
+            if (bitArray[8 + 5])
             {
-                command.commands[i] = BitConverter.ToBoolean(data, i);
+                command.cerberusId = 1;
             }
 
-            index += command.commands.Length;
-            command.cerberusId = BitConverter.ToInt32(data, index);
+            if (bitArray[8 + 6])
+            {
+                command.cerberusId = 2;
+            }
+
+            if (bitArray[8 + 7])
+            {
+                command.cerberusId = 3;
+            }
+            
             return command;
-        }
-
-        private static byte[] Combine(params byte[][] arrays)
-        {
-            // TODO make this an extension method.
-            byte[] rv = new byte[arrays.Sum(a => a.Length)];
-            int offset = 0;
-            foreach (byte[] array in arrays)
-            {
-                System.Buffer.BlockCopy(array, 0, rv, offset, array.Length);
-                offset += array.Length;
-            }
-
-            return rv;
         }
 
         public bool doSomething =>
