@@ -810,6 +810,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialSequence: 2
+  mySwitch: {fileID: 0}
+  block: {fileID: 0}
+  mySwitch1: {fileID: 0}
+  block1: {fileID: 0}
+  spikes: {fileID: 0}
 --- !u!4 &1270940465
 Transform:
   m_ObjectHideFlags: 0
@@ -3024,6 +3029,11 @@ PrefabInstance:
         type: 3}
       propertyPath: infinteMovesTilStarLoss
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814524327749792703, guid: eef179ac3b38ba642b88743486b798b3,
+        type: 3}
+      propertyPath: sceneViewId
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eef179ac3b38ba642b88743486b798b3, type: 3}

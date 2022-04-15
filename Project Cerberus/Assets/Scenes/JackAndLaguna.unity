@@ -4482,6 +4482,11 @@ PrefabInstance:
       propertyPath: infinteMovesTilStarLoss
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2814524327749792703, guid: eef179ac3b38ba642b88743486b798b3,
+        type: 3}
+      propertyPath: sceneViewId
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4796204304794197701, guid: eef179ac3b38ba642b88743486b798b3,
         type: 3}
       propertyPath: m_RootOrder
