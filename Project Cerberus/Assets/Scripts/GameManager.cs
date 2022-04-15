@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
 
         // These values are networked via IPunObservable.
         private int _move;
-        private float _timer; 
+        private float _timer;
 
         public bool joinSplitEnabled => booleans[0];
         public bool cerberusFormed => booleans[1];
@@ -169,7 +169,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
         _kahuna = FindObjectOfType<Kahuna>();
         _laguna = FindObjectOfType<Laguna>();
         _cerberusMajor = FindObjectOfType<CerberusMajor>();
-        
+
         // Initialize availableCerberus
         availableCerberus = new List<Cerberus>();
         if (_jack)
@@ -218,7 +218,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
         timer = 0;
         _timerRunning = false;
         gameplayEnabled = true;
-        
+
         // Initialize Command Queue.
         _commandQueue = new Queue<Cerberus.CerberusCommand>();
     }
@@ -235,6 +235,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
         if (gameplayEnabled)
         {
             var nextMoveNeedsToStart = false;
+            currentCerberus.CheckInputForResetUndoOrCycle();
             var command = currentCerberus.ProcessInputIntoCommand();
             // If commanded to do something, send command to master client.
             if (command.doSomething)
@@ -254,8 +255,22 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
             {
                 var nextCommand = _commandQueue.Dequeue();
 
-                // TODO get correct cerberus and then perform all those checks.
-                currentCerberus.InterpretCommand(nextCommand);
+                if (nextCommand.cerberusId == 0 && _jack != null)
+                {
+                    _jack.InterpretCommand(nextCommand);
+                }
+                else if (nextCommand.cerberusId == 1 && _kahuna != null)
+                {
+                    _kahuna.InterpretCommand(nextCommand);
+                }
+                else if (nextCommand.cerberusId == 2 && _laguna != null)
+                {
+                    _laguna.InterpretCommand(nextCommand);
+                }
+                else if (nextCommand.cerberusId == 3 && _cerberusMajor != null)
+                {
+                    _cerberusMajor.InterpretCommand(nextCommand);
+                }
             }
 
 
@@ -632,7 +647,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
     {
         _commandQueue.Enqueue(command);
     }
-    
+
     [PunRPC]
     public void RPCSyncBoard(StateData[] stateDatas)
     {

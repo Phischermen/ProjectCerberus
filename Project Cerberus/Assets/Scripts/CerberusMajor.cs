@@ -85,6 +85,7 @@ public class CerberusMajor : Cerberus
     public override CerberusCommand ProcessInputIntoCommand()
     {
         var command = base.ProcessInputIntoCommand();
+        command.cerberusId = 3;
         if (input.undoPressed)
         {
             command.specialDeactivated = true;

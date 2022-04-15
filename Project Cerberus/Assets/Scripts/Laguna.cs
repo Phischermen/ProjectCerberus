@@ -26,6 +26,7 @@ public class Laguna : Cerberus
     public override CerberusCommand ProcessInputIntoCommand()
     {
         var command = base.ProcessInputIntoCommand();
+        command.cerberusId = 2;
         if (input.specialHeld || input.rightClicked)
         {
             if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y))
@@ -74,15 +75,11 @@ public class Laguna : Cerberus
                 command.moveLeft = true;
             }
         }
-
-
-
         return command;
     }
 
     public override void InterpretCommand(CerberusCommand command)
     {
-        base.InterpretCommand(command);
         base.InterpretCommand(command);
         if (command.specialUp)
         {
