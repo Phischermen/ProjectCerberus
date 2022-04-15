@@ -7,7 +7,9 @@
  * restoring previous states of the game. 
  */
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Priority_Queue;
 using UnityEngine;
@@ -263,6 +265,7 @@ public class PuzzleContainer : MonoBehaviour
             NZ.NotifyZach("You got to zero the puzzle container's transform!");
             transform.position = Vector3.zero;
         }
+
         // Get components
         tilemap = GetComponentInChildren<Tilemap>();
 
@@ -278,19 +281,16 @@ public class PuzzleContainer : MonoBehaviour
             }
         }
 
-        // Initialize Undo collections.
-        _undoables = new List<IUndoable>();
-        _undoStack = new Stack<List<StateData>>();
-
         // Initialize _entitiesToProcessWhenPlayerMakesMove collection
         _entitiesToProcessWhenPlayerMakesMove = new SimplePriorityQueue<PuzzleEntity>();
+        var tempUndoList = new List<(int, IUndoable)>();
 
         // Add Counters and GameManager to undoables.
         _manager = FindObjectOfType<GameManager>();
-        _undoables.Add(_manager);
+        tempUndoList.Add((1000 + _manager.transform.GetSiblingIndex(), _manager));
         foreach (var counter in FindObjectsOfType<Counter>())
         {
-            _undoables.Add(counter);
+            tempUndoList.Add((2000 + counter.transform.GetSiblingIndex(), counter));
         }
 
         // Setup tilemap for parsing by compressing bounds.
@@ -311,7 +311,7 @@ public class PuzzleContainer : MonoBehaviour
             // Add entity to undoables if necessary
             if (entity.GetType().GetCustomAttribute<GetUndoDataReturnsNull>() == null)
             {
-                _undoables.Add(entity);
+                tempUndoList.Add((3000 + entity.transform.GetSiblingIndex(), entity));
             }
 
             // Add entity to _entitiesToProcessWhenPlayerMakesMove if virtual method OnPlayerMadeMove is overridden
@@ -360,12 +360,17 @@ public class PuzzleContainer : MonoBehaviour
                         // expected to stay constant.
                         if (floorTileClone.GetType().GetCustomAttribute<GetUndoDataReturnsNull>() == null)
                         {
-                            _undoables.Add(floorTileClone);
+                            tempUndoList.Add((4000 + (bounds.xMax * i) + j, floorTileClone));
                         }
                     }
                 }
             }
         }
+        
+        // Initialize Undo collections.
+        _undoables = new List<IUndoable>();
+        tempUndoList.OrderBy(tuple => tuple.Item1).ToList().ForEach(tuple => _undoables.Add(tuple.Item2));
+        _undoStack = new Stack<List<StateData>>();
     }
 
     public void ProcessEntitiesInResponseToPlayerMove()
@@ -465,6 +470,31 @@ public class PuzzleContainer : MonoBehaviour
 
             // Refresh tiles.
             tilemap.RefreshAllTiles();
+        }
+    }
+
+    public StateData[] GetStateDataFromUndoables()
+    {
+        var data = new StateData[_undoables.Count];
+        var index = 0;
+        foreach (var undoable in _undoables)
+        {
+            data[index] = undoable.GetUndoData();
+            index += 1;
+        }
+
+        return data;
+    }
+
+    public void SyncBoardWithData(StateData[] stateDatas)
+    {
+        var index = 0;
+        foreach (var undoable in _undoables)
+        {
+            var myStateData = undoable.GetUndoData();
+            myStateData.Copy(stateDatas[index]);
+            myStateData.Load();
+            index += 1;
         }
     }
 }

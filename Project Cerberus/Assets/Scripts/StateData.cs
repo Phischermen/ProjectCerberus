@@ -10,9 +10,11 @@ public class StateData
     {
         PhotonPeer.RegisterType(typeof(StateData), (byte) 'S', Serialize, Deserialize);
     }
-    
+
     public bool[] booleans = new bool[8]; //1 Byte
+
     public byte myByte; //1 byte
+
     //public float myFloat; //4 bytes
     public Vector2Int myVector2Int; // 2 bytes
 
@@ -33,10 +35,11 @@ public class StateData
             // Double db. 1 -> 2 -> 4 -> ... -> 128
             db += db;
         }
+
         // Serialize Vector2Int
-        var byte2 = (byte)stateData.myVector2Int.x;
-        var byte3 = (byte)stateData.myVector2Int.y;
-        return new byte[] {byte1, stateData.myByte, byte2, byte3};
+        var byte3 = (byte) stateData.myVector2Int.x;
+        var byte4 = (byte) stateData.myVector2Int.y;
+        return new byte[] {byte1, stateData.myByte, byte3, byte4};
     }
 
     public static object Deserialize(byte[] data)
@@ -50,7 +53,14 @@ public class StateData
 
         stateData.myByte = data[1];
         stateData.myVector2Int.x = data[2];
-        stateData.myVector2Int.x = data[3];
+        stateData.myVector2Int.y = data[3];
         return stateData;
+    }
+
+    public void Copy(StateData stateData)
+    {
+        booleans = stateData.booleans;
+        myByte = stateData.myByte;
+        myVector2Int = stateData.myVector2Int;
     }
 }

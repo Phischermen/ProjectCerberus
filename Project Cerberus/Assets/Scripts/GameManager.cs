@@ -60,11 +60,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
                 _gameManager._timerRunning = true;
             }
 
-            _gameManager.cerberusFormed = _cerberusFormed;
-            _gameManager.joinAndSplitEnabled = _joinSplitEnabled;
+            _gameManager.cerberusFormed = cerberusFormed;
+            _gameManager.joinAndSplitEnabled = joinSplitEnabled;
             // Repopulate available cerberus
-            _gameManager.RepopulateAvailableCerberus(!_cerberusFormed);
-            _gameManager.collectedStar = _collectedStar;
+            _gameManager.RepopulateAvailableCerberus(!cerberusFormed);
+            _gameManager.collectedStar = collectedStar;
         }
     }
 
@@ -423,6 +423,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
         if (_timerRunning)
         {
             timer += Time.deltaTime;
+            if (PhotonNetwork.IsMasterClient && Time.frameCount % 960 == 0)
+            {
+                object[] objectArray = _puzzleContainer.GetStateDataFromUndoables();
+                photonView.RPC(nameof(RPCSyncBoard), RpcTarget.AllViaServer, objectArray as object);
+            }
         }
     }
 
@@ -626,6 +631,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
     public void RPCEnqueueCommand(Cerberus.CerberusCommand command)
     {
         _commandQueue.Enqueue(command);
+    }
+    
+    [PunRPC]
+    public void RPCSyncBoard(StateData[] stateDatas)
+    {
+        _puzzleContainer.SyncBoardWithData(stateDatas);
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

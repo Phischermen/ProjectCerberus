@@ -6,6 +6,4 @@ public interface IUndoable
 {
     //method instantiates StateData and returns it
     StateData GetUndoData();
-
-
 }
