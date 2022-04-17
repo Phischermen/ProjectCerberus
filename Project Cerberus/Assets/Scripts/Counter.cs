@@ -14,12 +14,14 @@ public class Counter : MonoBehaviour, IUndoable
         {
             _counter = counter;
             // NOTE: In order not to ruin serialization of counter, I am not refactoring the type of "count."
-            myByte = (byte)count;
+            // Preserve sign by first casting to a signed 8bit int and then to unsigned 8bit.
+            myByte = (byte) (sbyte)count;
         }
 
         public override void Load()
         {
-            _counter.count = count;
+            // Restore sign of count.
+            _counter.count = (sbyte)count;
         }
     }
     
