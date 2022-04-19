@@ -16,6 +16,7 @@ public class PuzzleUIPause : MonoBehaviour
         _gameManager.gameplayEnabled = true;
         Destroy(gameObject);
     }
+
     public void Retry()
     {
         _gameManager.ReplayLevel();
@@ -25,7 +26,11 @@ public class PuzzleUIPause : MonoBehaviour
 
     public void GoToMenu()
     {
-        SceneManager.LoadScene((int)Scenum.Scene.MainMenu);
+        //NOTE: LeaveRoom() will run logic to return to main menu.
+        if (!_gameManager.LeaveRoom())
+        {
+            SceneManager.LoadScene((int) Scenum.Scene.MainMenu);
+        }
     }
 
     private void OnDestroy()

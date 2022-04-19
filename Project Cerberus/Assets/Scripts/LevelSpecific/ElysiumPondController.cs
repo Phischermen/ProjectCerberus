@@ -61,6 +61,6 @@ public class ElysiumPondController : MonoBehaviour
             };
         }
         Gizmos.DrawIcon(new Vector3(0,1,0), "Film Marker");
-        Handles.Label(new Vector3(0,1,0), sequence.ToString(), _triggerStyle);
+        //Handles.Label(new Vector3(0,1,0), sequence.ToString(), _triggerStyle);
     }
 }

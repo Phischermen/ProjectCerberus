@@ -8,35 +8,39 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Photon.Pun;
+using Photon.Realtime;
+using Priority_Queue;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-public class GameManager : MonoBehaviour, IUndoable
+public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
 {
-    class GameManagerUndoData : UndoData
+    class GameManagerStateData : StateData
     {
         private GameManager _gameManager;
         private Cerberus _currentCerberus;
 
+        // These values are networked via IPunObservable.
         private int _move;
         private float _timer;
 
-        private bool _joinSplitEnabled;
-        private bool _cerberusFormed;
+        public bool joinSplitEnabled => booleans[0];
+        public bool cerberusFormed => booleans[1];
 
-        private bool _collectedStar;
+        public bool collectedStar => booleans[2];
 
-        public GameManagerUndoData(GameManager gameManager, int move, float timer, Cerberus currentCerberus,
+        public GameManagerStateData(GameManager gameManager, int move, float timer, Cerberus currentCerberus,
             bool cerberusFormed, bool joinSplitEnabled, bool collectedStar)
         {
             _gameManager = gameManager;
             _currentCerberus = currentCerberus;
             _move = move;
             _timer = timer;
-            _cerberusFormed = cerberusFormed;
-            _joinSplitEnabled = joinSplitEnabled;
-            _collectedStar = collectedStar;
+            booleans[0] = joinSplitEnabled;
+            booleans[1] = cerberusFormed;
+            booleans[2] = collectedStar;
         }
 
         public override void Load()
@@ -56,11 +60,11 @@ public class GameManager : MonoBehaviour, IUndoable
                 _gameManager._timerRunning = true;
             }
 
-            _gameManager.cerberusFormed = _cerberusFormed;
-            _gameManager.joinAndSplitEnabled = _joinSplitEnabled;
+            _gameManager.cerberusFormed = cerberusFormed;
+            _gameManager.joinAndSplitEnabled = joinSplitEnabled;
             // Repopulate available cerberus
-            _gameManager.RepopulateAvailableCerberus(!_cerberusFormed);
-            _gameManager.collectedStar = _collectedStar;
+            _gameManager.RepopulateAvailableCerberus(!cerberusFormed);
+            _gameManager.collectedStar = collectedStar;
         }
     }
 
@@ -122,8 +126,20 @@ public class GameManager : MonoBehaviour, IUndoable
 
     [HideInInspector] public bool gameOverEndCardDisplayed;
 
+    public Queue<Cerberus.CerberusCommand> _commandQueue;
+
     void Awake()
     {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            /* KF (4/14/2022) It is necessary to allocate a viewId, even though game manager is a scene object and it
+             should have it's viewId already allocated. But it does not for some reason. I am curious if I can hard code
+             a view id for my game manager, or if that would have unforeseen consequences.
+             */
+            //PhotonNetwork.AllocateViewID(photonView);
+            //PhotonNetwork.Instantiate("PhotonBootStrapper", Vector3.zero, Quaternion.identity);
+        }
+
         // Create UI
         Instantiate(_uiPrefab);
         // Load Level Sequence and get current world and level
@@ -202,6 +218,9 @@ public class GameManager : MonoBehaviour, IUndoable
         timer = 0;
         _timerRunning = false;
         gameplayEnabled = true;
+
+        // Initialize Command Queue.
+        _commandQueue = new Queue<Cerberus.CerberusCommand>();
     }
 
     void Update()
@@ -216,7 +235,45 @@ public class GameManager : MonoBehaviour, IUndoable
         if (gameplayEnabled)
         {
             var nextMoveNeedsToStart = false;
-            currentCerberus.ProcessMoveInput();
+            currentCerberus.CheckInputForResetUndoOrCycle();
+            var command = currentCerberus.ProcessInputIntoCommand();
+            // If commanded to do something, send command to master client.
+            if (command.doSomething)
+            {
+                if (PhotonNetwork.InRoom)
+                {
+                    photonView.RPC(nameof(RPCEnqueueCommand), RpcTarget.AllViaServer, command);
+                }
+                else
+                {
+                    _commandQueue.Enqueue(command);
+                }
+            }
+
+            // If there are commands, get the first one.
+            if (_commandQueue.Count > 0)
+            {
+                var nextCommand = _commandQueue.Dequeue();
+
+                if (nextCommand.cerberusId == 0 && _jack != null)
+                {
+                    _jack.InterpretCommand(nextCommand);
+                }
+                else if (nextCommand.cerberusId == 1 && _kahuna != null)
+                {
+                    _kahuna.InterpretCommand(nextCommand);
+                }
+                else if (nextCommand.cerberusId == 2 && _laguna != null)
+                {
+                    _laguna.InterpretCommand(nextCommand);
+                }
+                else if (nextCommand.cerberusId == 3 && _cerberusMajor != null)
+                {
+                    _cerberusMajor.InterpretCommand(nextCommand);
+                }
+            }
+
+
             // Check if cerberus made their move
             if (currentCerberus.doneWithMove)
             {
@@ -381,6 +438,11 @@ public class GameManager : MonoBehaviour, IUndoable
         if (_timerRunning)
         {
             timer += Time.deltaTime;
+            if (PhotonNetwork.IsMasterClient && Time.frameCount % 960 == 0)
+            {
+                object[] objectArray = _puzzleContainer.GetStateDataFromUndoables();
+                photonView.RPC(nameof(RPCSyncBoard), RpcTarget.AllViaServer, objectArray as object);
+            }
         }
     }
 
@@ -421,9 +483,9 @@ public class GameManager : MonoBehaviour, IUndoable
     }
 
     // Undo
-    public UndoData GetUndoData()
+    public StateData GetUndoData()
     {
-        var undoData = new GameManagerUndoData(this, move, timer, currentCerberus, cerberusFormed, joinAndSplitEnabled,
+        var undoData = new GameManagerStateData(this, move, timer, currentCerberus, cerberusFormed, joinAndSplitEnabled,
             collectedStar);
         return undoData;
     }
@@ -509,16 +571,17 @@ public class GameManager : MonoBehaviour, IUndoable
     {
         _puzzleContainer.UndoLastMove();
         gameplayEnabled = true;
-        // Note: Timer is reset via GameManagerUndoData.Load()
+        // Note: Timer is reset via GameManagerStateData.Load()
     }
 
     public void ReplayLevel()
     {
+        // TODO sync clients here.
         _puzzleContainer.UndoToFirstMove();
         gameplayEnabled = true;
         // Repopulate availableCerberus
         RepopulateAvailableCerberus();
-        // Note: Timer is reset via GameManagerUndoData.Load()
+        // Note: Timer is reset via GameManagerStateData.Load()
     }
 
     public void ProceedToNextLevel()
@@ -532,6 +595,76 @@ public class GameManager : MonoBehaviour, IUndoable
         {
             currentLevel += 1;
             SceneManager.LoadScene(nextScene);
+        }
+    }
+
+    // Multiplayer Callbacks + Methods
+    public override void OnLeftRoom()
+    {
+        SceneManager.LoadScene((int) Scenum.Scene.MainMenu);
+    }
+
+    public bool LeaveRoom()
+    {
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();
+            Debug.Log("Room left.");
+            return true;
+        }
+
+        return false;
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        Debug.LogFormat("OnPlayerEnteredRoom() {0}", newPlayer.NickName); // not seen if you're the player connecting
+
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}",
+                PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
+        }
+    }
+
+    public override void OnPlayerLeftRoom(Player other)
+    {
+        Debug.LogFormat("OnPlayerLeftRoom() {0}", other.NickName); // seen when other disconnects
+
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.LogFormat("OnPlayerLeftRoom IsMasterClient {0}",
+                PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
+        }
+    }
+
+    public AudioClip testAudio;
+
+    [PunRPC]
+    public void RPCEnqueueCommand(Cerberus.CerberusCommand command)
+    {
+        _commandQueue.Enqueue(command);
+    }
+
+    [PunRPC]
+    public void RPCSyncBoard(StateData[] stateDatas)
+    {
+        _puzzleContainer.SyncBoardWithData(stateDatas);
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting && PhotonNetwork.IsMasterClient)
+        {
+            stream.SendNext(timer);
+            stream.SendNext(move);
+        }
+        else if (stream.IsReading)
+        {
+            timer = (float) stream.ReceiveNext();
+            move = (int) stream.ReceiveNext();
         }
     }
 }

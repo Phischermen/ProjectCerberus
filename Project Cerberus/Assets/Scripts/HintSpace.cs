@@ -18,17 +18,17 @@ public class HintSpace : PuzzleEntity
     private bool _visited;
     private bool _currentlyOccupied;
 
-    public class HintSpaceUndoData : UndoData
+    public class HintSpaceStateData : StateData
     {
         public HintSpace hintSpace;
-        private bool _visited;
-        private bool _currentlyOccupied;
+        private bool _visited => booleans[0];
+        private bool _currentlyOccupied => booleans[1];
 
-        public HintSpaceUndoData(HintSpace hintSpace, bool visited, bool currentlyOccupied)
+        public HintSpaceStateData(HintSpace hintSpace, bool visited, bool currentlyOccupied)
         {
             this.hintSpace = hintSpace;
-            this._visited = visited;
-            this._currentlyOccupied = currentlyOccupied;
+            booleans[0] = visited;
+            booleans[1] = currentlyOccupied;
         }
 
         public override void Load()
@@ -119,9 +119,9 @@ public class HintSpace : PuzzleEntity
         spriteRenderer.sprite = _unvisitedSprite;
     }
 
-    public override UndoData GetUndoData()
+    public override StateData GetUndoData()
     {
-        var undoData = new HintSpaceUndoData(this, _visited, _currentlyOccupied);
+        var undoData = new HintSpaceStateData(this, _visited, _currentlyOccupied);
         return undoData;
     }
 }

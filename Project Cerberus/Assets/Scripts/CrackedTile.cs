@@ -6,15 +6,16 @@ using UnityEngine.Tilemaps;
 [CreateAssetMenu(menuName = "FloorTile/Cracked")]
 public class CrackedTile : FloorTile
 {
-    public class CrackedTileUndoData : UndoData
+    public class CrackedTileStateData : StateData
     {
         public CrackedTile tile;
-        public int stage;
+        public byte stage => myByte;
 
-        public CrackedTileUndoData(CrackedTile tile, int stage)
+        public CrackedTileStateData(CrackedTile tile, int stage)
         {
             this.tile = tile;
-            this.stage = stage;
+            // NOTE: In order not to ruin serialization of counter, I am not refactoring the type of "stage."
+            myByte = (byte)stage;
         }
 
         public override void Load()
@@ -124,8 +125,8 @@ public class CrackedTile : FloorTile
         // stopsPlayer = true;
     }
 
-    public override UndoData GetUndoData()
+    public override StateData GetUndoData()
     {
-        return new CrackedTileUndoData(this, stage);
+        return new CrackedTileStateData(this, stage);
     }
 }

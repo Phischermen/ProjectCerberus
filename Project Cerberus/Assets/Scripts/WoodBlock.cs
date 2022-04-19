@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class WoodBlock : BasicBlock
 {
-    public class WoodBlockUndoData : BasicBlockUndoData
+    public class WoodBlockStateData : BasicBlockStateData
     {
         public WoodBlock wood;
-        public bool burned;
+        public bool burned => booleans[0];
 
-        public WoodBlockUndoData(WoodBlock wood, Vector2Int position, bool burned, bool inHole) : base(wood, position, inHole)
+        public WoodBlockStateData(WoodBlock wood, Vector2Int position, bool burned, bool inHole) : base(wood, position, inHole)
         {
             this.wood = wood;
-            this.burned = burned;
+            booleans[0] = burned;
         }
 
         public override void Load()
@@ -87,9 +87,9 @@ public class WoodBlock : BasicBlock
         }
     }
 
-    public override UndoData GetUndoData()
+    public override StateData GetUndoData()
     {
-        var undoData = new WoodBlockUndoData(this, position, burned: !stopsPlayer, inHole);
+        var undoData = new WoodBlockStateData(this, position, burned: !stopsPlayer, inHole);
         return undoData;
     }
 }

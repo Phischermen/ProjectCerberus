@@ -4,22 +4,22 @@ using UnityEngine;
 
 public class BasicBlock : PuzzleEntity
 {
-    public class BasicBlockUndoData : UndoData
+    public class BasicBlockStateData : StateData
     {
         public BasicBlock block;
-        public Vector2Int position;
-        public bool inHole;
+        public Vector2Int position => myVector2Int;
+        public bool inHole => booleans[0];
 
-        public BasicBlockUndoData(BasicBlock block, Vector2Int position, bool inHole)
+        public BasicBlockStateData(BasicBlock block, Vector2Int position, bool inHole)
         {
             this.block = block;
-            this.position = position;
-            this.inHole = inHole;
+            myVector2Int = position;
+            booleans[0] = inHole;
         }
 
         public override void Load()
         {
-            block.inHole = inHole;
+            block.inHole = booleans[0];
             if (!inHole)
             {
                 block.MoveForUndo(position);
@@ -43,9 +43,9 @@ public class BasicBlock : PuzzleEntity
         jumpable = true;
     }
 
-    public override UndoData GetUndoData()
+    public override StateData GetUndoData()
     {
-        var undoData = new BasicBlockUndoData(this, position, inHole);
+        var undoData = new BasicBlockStateData(this, position, inHole);
         return undoData;
     }
 }

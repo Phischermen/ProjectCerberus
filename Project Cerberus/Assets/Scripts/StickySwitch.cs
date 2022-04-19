@@ -6,18 +6,18 @@ using UnityEngine;
 
 public class StickySwitch : Switch
 {
-    public class StickySwitchUndoData : SwitchUndoData
+    public class StickySwitchStateData : SwitchStateData
     {
         public StickySwitch stickySwitch;
-        public int movesElapsedSinceExit;
-        public bool entityHasExited;
+        public byte movesElapsedSinceExit => myByte;
+        public bool entityHasExited => booleans[0];
 
-        public StickySwitchUndoData(StickySwitch stickySwitch, bool flipped, int movesElapsedSinceExit, bool entityHasExited) : base(
+        public StickySwitchStateData(StickySwitch stickySwitch, bool flipped, int movesElapsedSinceExit, bool entityHasExited) : base(
             stickySwitch, flipped)
         {
             this.stickySwitch = stickySwitch;
-            this.movesElapsedSinceExit = movesElapsedSinceExit;
-            this.entityHasExited = entityHasExited;
+            myByte = (byte)movesElapsedSinceExit;
+            booleans[0] = entityHasExited;
         }
 
         public override void Load()
@@ -65,9 +65,9 @@ public class StickySwitch : Switch
         }
     }
 
-    public override UndoData GetUndoData()
+    public override StateData GetUndoData()
     {
-        var undoData = new StickySwitchUndoData(this, isPressed, movesElapsedSinceExit, entityHasExited);
+        var undoData = new StickySwitchStateData(this, isPressed, movesElapsedSinceExit, entityHasExited);
         return undoData;
     }
 }

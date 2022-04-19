@@ -10,7 +10,7 @@ public class CerberusMajor : Cerberus
     private GameObject[] _jumpArrows;
     private bool _goalIsOnJumpPath;
     public bool isJumping { get; protected set; }
-    
+
 
     public struct JumpInfo
     {
@@ -44,6 +44,7 @@ public class CerberusMajor : Cerberus
         }
     }
 
+    // TODO sync this with master client.
     public List<JumpInfo> jumpSpaces;
     private static int _maxJumpArrows = 32;
 
@@ -52,6 +53,7 @@ public class CerberusMajor : Cerberus
     public AudioSource splitSfx;
 
     public UnityEvent onSingleJumpCompleted;
+
     CerberusMajor()
     {
         isCerberusMajor = true;
@@ -75,15 +77,32 @@ public class CerberusMajor : Cerberus
         _goalIsOnJumpPath = false;
     }
 
-    public override void ProcessMoveInput()
+    public override void CheckInputForResetUndoOrCycle()
     {
-        base.ProcessMoveInput();
+        base.CheckInputForResetUndoOrCycle();
+    }
+
+    public override CerberusCommand ProcessInputIntoCommand()
+    {
+        var command = base.ProcessInputIntoCommand();
+        command.cerberusId = 3;
+        if (input.undoPressed)
+        {
+            command.specialDeactivated = true;
+        }
+
+        if (input.cycleCharacter)
+        {
+            command.specialDeactivated = true;
+        }
+
         if (isJumping)
         {
             if (input.specialPressed || input.upPressed || input.downPressed || input.leftPressed ||
                 input.rightPressed || input.leftClicked || input.rightClicked || input.cycleCharacter)
             {
-                FinishCurrentAnimation();
+                // TODO do not allow any commands to be processed until this animation is done on all clients.
+                command.skipCerberusJumpAnimation = true;
             }
         }
         else
@@ -94,42 +113,32 @@ public class CerberusMajor : Cerberus
                 if (input.upPressed || (input.clickedCell.x == lastJumpSpacePosition.x &&
                                         input.clickedCell.y > lastJumpSpacePosition.y))
                 {
-                    AddJumpSpace(Vector2Int.up, 90);
+                    command.specialUp = true;
                 }
 
                 else if (input.downPressed || (input.clickedCell.x == lastJumpSpacePosition.x &&
                                                input.clickedCell.y < lastJumpSpacePosition.y))
                 {
-                    AddJumpSpace(Vector2Int.down, 270);
+                    command.specialDown = true;
                 }
 
                 else if (input.rightPressed || (input.clickedCell.y == lastJumpSpacePosition.y &&
                                                 input.clickedCell.x > lastJumpSpacePosition.x))
                 {
-                    AddJumpSpace(Vector2Int.right, 0);
+                    command.specialRight = true;
                 }
 
                 else if (input.leftPressed || (input.clickedCell.y == lastJumpSpacePosition.y &&
                                                input.clickedCell.x < lastJumpSpacePosition.x))
                 {
-                    AddJumpSpace(Vector2Int.left, 180);
+                    command.specialLeft = true;
                 }
             }
             else if (input.specialReleased || (input.rightClicked && input.clickedCell == lastJumpSpacePosition))
             {
                 if (jumpSpaces.Count > 0)
                 {
-                    puzzle.PushToUndoStack();
-                    JumpInfo[] jumpInfoCopy = new JumpInfo[jumpSpaces.Count];
-                    jumpSpaces.CopyTo(0, jumpInfoCopy, 0, jumpSpaces.Count);
-                    // Travel across jump spaces
-                    PlayAnimation(JumpAlongPath(jumpInfoCopy, AnimationUtility.jumpSpeed));
-
-                    jumpSpaces.Clear();
-                    RenderJumpPath();
-                    
-                    // NOTE: Normally, DeclareDoneWithMove() would be called here, but it is actually called at the end
-                    // of JumpAlongPath() in order to keep bonus stars available, gates open, etc.
+                    command.specialPerformed = true;
                 }
             }
             else
@@ -137,54 +146,100 @@ public class CerberusMajor : Cerberus
                 if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y &&
                                         input.leftClicked))
                 {
-                    BasicMove(Vector2Int.up);
-                    jumpSpaces.Clear();
-                    RenderJumpPath();
+                    command.moveUp = true;
                 }
 
                 else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y &&
                                                input.leftClicked))
                 {
-                    BasicMove(Vector2Int.down);
-                    jumpSpaces.Clear();
-                    RenderJumpPath();
+                    command.moveDown = true;
                 }
 
                 else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x &&
                                                 input.leftClicked))
                 {
-                    BasicMove(Vector2Int.right);
-                    jumpSpaces.Clear();
-                    RenderJumpPath();
+                    command.moveRight = true;
                 }
 
                 else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x &&
                                                input.leftClicked))
                 {
-                    BasicMove(Vector2Int.left);
-                    jumpSpaces.Clear();
-                    RenderJumpPath();
+                    command.moveLeft = true;
                 }
             }
+        }
 
-            if (input.undoPressed)
+        return command;
+    }
+
+    public override void InterpretCommand(CerberusCommand command)
+    {
+        base.InterpretCommand(command);
+        if (command.skipCerberusJumpAnimation && isJumping)
+        {
+            FinishCurrentAnimation();
+        }
+        else
+        {
+            if (command.specialUp)
             {
-                if (jumpSpaces.Count > 0)
-                {
-                    jumpSpaces.Clear();
-                    RenderJumpPath();
-                }
-                else
-                {
-                    manager.wantsToUndo = true;
-                }
+                AddJumpSpace(Vector2Int.up, 90);
+            }
+            else if (command.specialDown)
+            {
+                AddJumpSpace(Vector2Int.down, 270);
+            }
+            else if (command.specialRight)
+            {
+                AddJumpSpace(Vector2Int.right, 0);
+            }
+            else if (command.specialLeft)
+            {
+                AddJumpSpace(Vector2Int.left, 180);
+            }
+            else if (command.moveUp)
+            {
+                BasicMove(Vector2Int.up);
+                jumpSpaces.Clear();
+                RenderJumpPath();
+            }
+            else if (command.moveDown)
+            {
+                BasicMove(Vector2Int.down);
+                jumpSpaces.Clear();
+                RenderJumpPath();
+            }
+            else if (command.moveRight)
+            {
+                BasicMove(Vector2Int.right);
+                jumpSpaces.Clear();
+                RenderJumpPath();
+            }
+            else if (command.moveLeft)
+            {
+                BasicMove(Vector2Int.left);
+                jumpSpaces.Clear();
+                RenderJumpPath();
+            }
+            else if (command.specialPerformed)
+            {
+                puzzle.PushToUndoStack();
+                JumpInfo[] jumpInfoCopy = new JumpInfo[jumpSpaces.Count];
+                jumpSpaces.CopyTo(0, jumpInfoCopy, 0, jumpSpaces.Count);
+                // Travel across jump spaces
+                PlayAnimation(JumpAlongPath(jumpInfoCopy, AnimationUtility.jumpSpeed));
+
+                jumpSpaces.Clear();
+                RenderJumpPath();
+
+                // NOTE: Normally, DeclareDoneWithMove() would be called here, but it is actually called at the end
+                // of JumpAlongPath() in order to keep bonus stars available, gates open, etc.
             }
 
-            if (input.cycleCharacter)
+            if (command.specialDeactivated)
             {
                 jumpSpaces.Clear();
                 RenderJumpPath();
-                manager.wantsToCycleCharacter = true;
             }
         }
     }
@@ -313,12 +368,13 @@ public class CerberusMajor : Cerberus
         animationMustStop = false;
         animationIsRunning = false;
         isJumping = false;
-        
+
         hasPerformedSpecial = true;
         if (points.Length == 1)
         {
             onSingleJumpCompleted.Invoke();
         }
+
         DeclareDoneWithMove();
     }
 }

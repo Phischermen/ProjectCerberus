@@ -12,6 +12,7 @@ public class Kahuna : Cerberus
     [SerializeField] private ParticleSystem explosionParticleSystem;
     [SerializeField] private AudioSource fireballSFX;
 
+    // TODO sync this across clients from master client.
     Vector2Int aim = Vector2Int.zero;
     private static int _fireballRange = 32;
     private bool _specialActive;
@@ -35,86 +36,9 @@ public class Kahuna : Cerberus
         explosionParticleSystem.Stop(true);
     }
 
-    public override void ProcessMoveInput()
+    public override void CheckInputForResetUndoOrCycle()
     {
-        base.ProcessMoveInput();
-        fireArrow.SetActive(false);
-        var wantsToFire = false;
-        if (input.specialPressed)
-        {
-            aim = Vector2Int.zero;
-            _specialActive = true;
-        }
-
-        if ((input.specialReleased && _specialActive) || input.rightClicked)
-        {
-            _specialActive = false;
-            wantsToFire = true;
-        }
-
-        if (_specialActive || input.rightClicked)
-        {
-            fireArrow.SetActive(aim != Vector2Int.zero);
-            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y))
-            {
-                fireArrow.transform.eulerAngles = new Vector3(0, 0, 90);
-                aim = Vector2Int.up;
-            }
-
-            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y))
-            {
-                fireArrow.transform.eulerAngles = new Vector3(0, 0, 270);
-                aim = Vector2Int.down;
-            }
-
-            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x))
-            {
-                fireArrow.transform.eulerAngles = new Vector3(0, 0, 0);
-                aim = Vector2Int.right;
-            }
-
-            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x))
-            {
-                fireArrow.transform.eulerAngles = new Vector3(0, 0, 180);
-                aim = Vector2Int.left;
-            }
-        }
-        else
-        {
-            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y &&
-                                    input.leftClicked))
-            {
-                BasicMove(Vector2Int.up);
-            }
-
-            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y &&
-                                           input.leftClicked))
-            {
-                BasicMove(Vector2Int.down);
-            }
-
-            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x &&
-                                            input.leftClicked))
-            {
-                BasicMove(Vector2Int.right);
-            }
-
-            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x &&
-                                           input.leftClicked))
-            {
-                BasicMove(Vector2Int.left);
-            }
-        }
-
-        if (wantsToFire)
-        {
-            if (aim != Vector2Int.zero)
-            {
-                FireBall(aim);
-            }
-            aim = Vector2Int.zero;
-        }
-
+        base.CheckInputForResetUndoOrCycle();
         if (input.cycleCharacter)
         {
             _specialActive = false;
@@ -131,6 +55,155 @@ public class Kahuna : Cerberus
             else
             {
                 manager.wantsToUndo = true;
+            }
+        }
+    }
+
+    public override CerberusCommand ProcessInputIntoCommand()
+    {
+        var command = base.ProcessInputIntoCommand();
+        command.cerberusId = 1;
+        if (input.specialPressed)
+        {
+            command.specialActivated = true;
+        }
+
+        if (input.undoPressed)
+        {
+            command.specialDeactivated = true;
+        }
+
+        if ((input.specialReleased && _specialActive) || input.rightClicked)
+        {
+            command.specialPerformed = true;
+        }
+
+        if (_specialActive || input.rightClicked)
+        {
+            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y))
+            {
+                command.specialUp = true;
+            }
+
+            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y))
+            {
+                command.specialDown = true;
+            }
+
+            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x))
+            {
+                command.specialRight = true;
+            }
+
+            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x))
+            {
+                command.specialLeft = true;
+            }
+        }
+        else
+        {
+            if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y &&
+                                    input.leftClicked))
+            {
+                command.moveUp = true;
+            }
+
+            else if (input.downPressed || (input.clickedCell.x == position.x && input.clickedCell.y < position.y &&
+                                           input.leftClicked))
+            {
+                command.moveDown = true;
+            }
+
+            else if (input.rightPressed || (input.clickedCell.y == position.y && input.clickedCell.x > position.x &&
+                                            input.leftClicked))
+            {
+                command.moveRight = true;
+            }
+
+            else if (input.leftPressed || (input.clickedCell.y == position.y && input.clickedCell.x < position.x &&
+                                           input.leftClicked))
+            {
+                command.moveLeft = true;
+            }
+        }
+
+        return command;
+    }
+
+    public override void InterpretCommand(CerberusCommand command)
+    {
+        base.InterpretCommand(command);
+        fireArrow.SetActive(false);
+        var wantsToFire = false;
+        if (command.specialActivated)
+        {
+            aim = Vector2Int.zero;
+            _specialActive = true;
+        }
+
+        if (command.specialDeactivated)
+        {
+            _specialActive = false;
+        }
+
+        if (_specialActive)
+        {
+            fireArrow.SetActive(aim != Vector2Int.zero);
+            if (command.specialUp)
+            {
+                fireArrow.transform.eulerAngles = new Vector3(0, 0, 90);
+                aim = Vector2Int.up;
+            }
+
+            else if (command.specialDown)
+            {
+                fireArrow.transform.eulerAngles = new Vector3(0, 0, 270);
+                aim = Vector2Int.down;
+            }
+
+            else if (command.specialRight)
+            {
+                fireArrow.transform.eulerAngles = new Vector3(0, 0, 0);
+                aim = Vector2Int.right;
+            }
+
+            else if (command.specialLeft)
+            {
+                fireArrow.transform.eulerAngles = new Vector3(0, 0, 180);
+                aim = Vector2Int.left;
+            }
+        }
+        else
+        {
+            if (command.moveUp)
+            {
+                BasicMove(Vector2Int.up);
+            }
+
+            else if (command.moveDown)
+            {
+                BasicMove(Vector2Int.down);
+            }
+
+            else if (command.moveRight)
+            {
+                BasicMove(Vector2Int.right);
+            }
+
+            else if (command.moveLeft)
+            {
+                BasicMove(Vector2Int.left);
+            }
+        }
+
+        if (command.specialPerformed)
+        {
+            // TODO read command.specialUp/down/whatever to fire the fireball.
+            if (aim != Vector2Int.zero)
+            {
+                FireBall(aim);
+                _specialActive = false;
+                fireArrow.SetActive(false);
             }
         }
     }
@@ -182,7 +255,7 @@ public class Kahuna : Cerberus
                     AnimationUtility.fireBallAcceleration, distanceToTravel));
                 // Interact with entity
                 entityToPushOrInteractWith.OnShotByKahuna();
-                
+
                 hasPerformedSpecial = true;
                 DeclareDoneWithMove();
             }
@@ -211,7 +284,7 @@ public class Kahuna : Cerberus
                     PlayAnimation(LaunchFireball(destinationPosition, AnimationUtility.initialFireballSpeed,
                         AnimationUtility.fireBallAcceleration, distanceToTravel));
                     entityToPushOrInteractWith.Move(pushCoord);
-                    
+
                     hasPerformedSpecial = true;
                     DeclareDoneWithMove();
                 }

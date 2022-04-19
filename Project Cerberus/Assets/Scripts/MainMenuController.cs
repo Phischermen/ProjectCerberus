@@ -21,6 +21,10 @@ public class MainMenuController : MonoBehaviour
     public GameObject worldContainer;
     public GameObject levelChoicePanel;
     public GameObject mainPanel;
+    public GameObject multiplayerPanel;
+
+    public GameObject multiplayerConnectionPanel;
+    public GameObject multiplayerControlsPanel;
 
     public int displayedWorld = 0;
     public int maxWorld = 0;
@@ -72,6 +76,7 @@ public class MainMenuController : MonoBehaviour
         nextWorldButton.interactable = true;
         // Level selection panel is ready, but it's not the initial screen. Deactivate it.
         levelChoicePanel.SetActive(false);
+        multiplayerPanel.SetActive(false);
     }
 
     private void Start()
@@ -113,6 +118,12 @@ public class MainMenuController : MonoBehaviour
         maxWorld = levelSequence.worlds.Count - 1;
     }
 
+    public void ShowLevelSelectPanelForMultiplayer()
+    {
+        multiplayerPanel.SetActive(false);
+        levelChoicePanel.SetActive(true);
+    }
+
     // Menu actions
     // Main
 
@@ -120,6 +131,13 @@ public class MainMenuController : MonoBehaviour
     {
         mainPanel.SetActive(false);
         levelChoicePanel.SetActive(true);
+    }
+
+    public void MultiplayerPressed()
+    {
+        mainPanel.SetActive(false);
+        multiplayerPanel.SetActive(true);
+        // TODO Show multiplayer panel.
     }
 
     // Level Select
