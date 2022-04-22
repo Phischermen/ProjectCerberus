@@ -80,6 +80,19 @@ public class CerberusMajor : Cerberus
     public override void CheckInputForResetUndoOrCycle()
     {
         base.CheckInputForResetUndoOrCycle();
+
+        if (input.undoPressed)
+        {
+            if (jumpSpaces.Count > 0)
+            {
+                jumpSpaces.RemoveAt(jumpSpaces.Count);
+                RenderJumpPath();
+            }
+            else
+            {
+                manager.wantsToUndo = true;
+            }
+        }
     }
 
     public override CerberusCommand ProcessInputIntoCommand()
@@ -174,6 +187,7 @@ public class CerberusMajor : Cerberus
 
     public override void InterpretCommand(CerberusCommand command)
     {
+        // NOTE: base class "Cerberus" handles split command, and might potentially clear the jump path.
         base.InterpretCommand(command);
         if (command.skipCerberusJumpAnimation && isJumping)
         {

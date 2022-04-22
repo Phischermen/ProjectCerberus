@@ -22,7 +22,7 @@ public class Cerberus : PuzzleEntity
     public class CerberusCommand
     {
         public byte cerberusId;
-        public bool[] commands = new bool[12];
+        public bool[] commands = new bool[13];
 
         public bool moveUp
         {
@@ -92,14 +92,14 @@ public class Cerberus : PuzzleEntity
 
         public bool mergeOrSplit
         {
-            get => commands[10];
-            set => commands[10] = value;
+            get => commands[11];
+            set => commands[11] = value;
         }
 
         public bool skipCerberusJumpAnimation
         {
-            get => commands[11];
-            set => commands[11] = value;
+            get => commands[12];
+            set => commands[12] = value;
         }
 
         public static byte[] Serialize(object o)
