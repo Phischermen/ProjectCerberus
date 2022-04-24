@@ -255,7 +255,7 @@ public class PuzzleContainer : MonoBehaviour
     private List<IUndoable> _undoables;
 
     private SimplePriorityQueue<PuzzleEntity> _entitiesToProcessWhenPlayerMakesMove;
-    private GameManager _manager;
+    private GameManager _gameManager;
 
     void Awake()
     {
@@ -286,8 +286,8 @@ public class PuzzleContainer : MonoBehaviour
         var tempUndoList = new List<(int, IUndoable)>();
 
         // Add Counters and GameManager to undoables.
-        _manager = FindObjectOfType<GameManager>();
-        tempUndoList.Add((1000 + _manager.transform.GetSiblingIndex(), _manager));
+        _gameManager = FindObjectOfType<GameManager>();
+        tempUndoList.Add((1000 + _gameManager.transform.GetSiblingIndex(), _gameManager));
         foreach (var counter in FindObjectsOfType<Counter>())
         {
             tempUndoList.Add((2000 + counter.transform.GetSiblingIndex(), counter));
@@ -366,7 +366,7 @@ public class PuzzleContainer : MonoBehaviour
                 }
             }
         }
-        
+
         // Initialize Undo collections.
         _undoables = new List<IUndoable>();
         tempUndoList.OrderBy(tuple => tuple.Item1).ToList().ForEach(tuple => _undoables.Add(tuple.Item2));
@@ -422,7 +422,7 @@ public class PuzzleContainer : MonoBehaviour
     // Undo system
     public void PushToUndoStack()
     {
-        if (_manager.gameplayEnabled)
+        if (_gameManager.gameplayEnabled)
         {
             // Get undo data from every undoable, so board state can be recreated.
             var undoList = new List<StateData>();
@@ -442,6 +442,7 @@ public class PuzzleContainer : MonoBehaviour
         if (_undoStack.Count > 0)
         {
             var undoList = _undoStack.Pop();
+            _gameManager.SendRPCSyncBoard(undoList.ToArray());
             foreach (var undoData in undoList)
             {
                 undoData.Load();
@@ -463,6 +464,7 @@ public class PuzzleContainer : MonoBehaviour
             }
 
             var undoList = _undoStack.Pop();
+            _gameManager.SendRPCSyncBoard(undoList.ToArray());
             foreach (var undoData in undoList)
             {
                 undoData.Load();
@@ -491,10 +493,15 @@ public class PuzzleContainer : MonoBehaviour
         var index = 0;
         foreach (var undoable in _undoables)
         {
+            // NOTE: _undoables is sorted the same way across clients, enabling this loop to function.
             var myStateData = undoable.GetUndoData();
-            myStateData.Copy(stateDatas[index]);
+            // Copy data sent from client. Then load.
+            myStateData.CopyData(stateDatas[index]);
             myStateData.Load();
             index += 1;
         }
+
+        // Refresh tiles.
+        tilemap.RefreshAllTiles();
     }
 }

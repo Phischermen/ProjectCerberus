@@ -57,7 +57,7 @@ public class StateData
         return stateData;
     }
 
-    public void Copy(StateData stateData)
+    public void CopyData(StateData stateData)
     {
         booleans = stateData.booleans;
         myByte = stateData.myByte;

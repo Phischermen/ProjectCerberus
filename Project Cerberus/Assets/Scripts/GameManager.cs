@@ -15,14 +15,14 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
+public class GameManager : MonoBehaviourPunCallbacks, IUndoable
 {
     class GameManagerStateData : StateData
     {
         private GameManager _gameManager;
         private Cerberus _currentCerberus;
 
-        // These values are networked via IPunObservable.
+        // These values are networked via an RPC.
         private int _move;
         private float _timer;
 
@@ -50,21 +50,16 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
             _currentCerberus.StartMove();
             _gameManager.move = _move;
             _gameManager.timer = _timer;
+            
             // Stop timer if first move. Otherwise run timer.
-            if (_move == 0)
-            {
-                _gameManager._timerRunning = false;
-            }
-            else
-            {
-                _gameManager._timerRunning = true;
-            }
+            _gameManager._timerRunning = _move != 0;
 
             _gameManager.cerberusFormed = cerberusFormed;
             _gameManager.joinAndSplitEnabled = joinSplitEnabled;
+
+            _gameManager.collectedStar = collectedStar;
             // Repopulate available cerberus
             _gameManager.RepopulateAvailableCerberus(!cerberusFormed);
-            _gameManager.collectedStar = collectedStar;
         }
     }
 
@@ -130,16 +125,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
 
     void Awake()
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            /* KF (4/14/2022) It is necessary to allocate a viewId, even though game manager is a scene object and it
-             should have it's viewId already allocated. But it does not for some reason. I am curious if I can hard code
-             a view id for my game manager, or if that would have unforeseen consequences.
-             */
-            //PhotonNetwork.AllocateViewID(photonView);
-            //PhotonNetwork.Instantiate("PhotonBootStrapper", Vector3.zero, Quaternion.identity);
-        }
-
         // Create UI
         Instantiate(_uiPrefab);
         // Load Level Sequence and get current world and level
@@ -240,14 +225,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
             // If commanded to do something, send command to master client.
             if (command.doSomething)
             {
-                if (PhotonNetwork.InRoom)
-                {
-                    photonView.RPC(nameof(RPCEnqueueCommand), RpcTarget.AllViaServer, command);
-                }
-                else
-                {
-                    _commandQueue.Enqueue(command);
-                }
+                SendRPCEnqueueCommand(command);
             }
 
             // If there are commands, get the first one.
@@ -440,8 +418,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
             timer += Time.deltaTime;
             if (PhotonNetwork.IsMasterClient && Time.frameCount % 960 == 0)
             {
-                object[] objectArray = _puzzleContainer.GetStateDataFromUndoables();
-                photonView.RPC(nameof(RPCSyncBoard), RpcTarget.AllViaServer, objectArray as object);
+                var objectArray = _puzzleContainer.GetStateDataFromUndoables();
+                SendRPCSyncBoard(objectArray);
             }
         }
     }
@@ -625,6 +603,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
         {
             Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}",
                 PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
+            SendRPCSyncBoard(_puzzleContainer.GetStateDataFromUndoables());
         }
     }
 
@@ -642,29 +621,38 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable, IPunObservable
 
     public AudioClip testAudio;
 
+    public void SendRPCEnqueueCommand(Cerberus.CerberusCommand command)
+    {
+        if (PhotonNetwork.InRoom)
+        {
+            photonView.RPC(nameof(RPCEnqueueCommand), RpcTarget.All, command);
+        }
+        else
+        {
+            RPCEnqueueCommand(command);
+        }
+    }
+
     [PunRPC]
     public void RPCEnqueueCommand(Cerberus.CerberusCommand command)
     {
         _commandQueue.Enqueue(command);
     }
 
-    [PunRPC]
-    public void RPCSyncBoard(StateData[] stateDatas)
+    public void SendRPCSyncBoard(StateData[] objectArray)
     {
-        _puzzleContainer.SyncBoardWithData(stateDatas);
+        if (PhotonNetwork.IsConnected)
+        {
+            photonView.RPC(nameof(RPCSyncBoard), RpcTarget.Others, objectArray, timer, move);
+        }
+        // No reason to sync board if there's only one client.
     }
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    [PunRPC]
+    public void RPCSyncBoard(StateData[] stateDatas, float pTimer, int pMove)
     {
-        if (stream.IsWriting && PhotonNetwork.IsMasterClient)
-        {
-            stream.SendNext(timer);
-            stream.SendNext(move);
-        }
-        else if (stream.IsReading)
-        {
-            timer = (float) stream.ReceiveNext();
-            move = (int) stream.ReceiveNext();
-        }
+        _puzzleContainer.SyncBoardWithData(stateDatas);
+        timer = pTimer;
+        move = pMove;
     }
 }
