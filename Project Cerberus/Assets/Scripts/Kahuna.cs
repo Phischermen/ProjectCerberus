@@ -76,8 +76,31 @@ public class Kahuna : Cerberus
         if ((input.specialReleased && _specialActive) || input.rightClicked)
         {
             command.specialPerformed = true;
+            if (input.specialReleased)
+            {
+                // Specify which direction shot should go based on the client's preview arrow.
+                if (aim == Vector2Int.up)
+                {
+                    command.specialUp = true;
+                }
+            
+                else if (aim == Vector2Int.down)
+                {
+                    command.specialDown = true;
+                }
+            
+                else if (aim == Vector2Int.right)
+                {
+                    command.specialRight = true;
+                }
+            
+                else if (aim == Vector2Int.left)
+                {
+                    command.specialLeft = true;
+                }
+            }
         }
-
+        
         if (_specialActive || input.rightClicked)
         {
             if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y))
@@ -134,7 +157,7 @@ public class Kahuna : Cerberus
     {
         base.InterpretCommand(command);
         fireArrow.SetActive(false);
-        var wantsToFire = false;
+        //var wantsToFire = false;
         if (command.specialActivated)
         {
             aim = Vector2Int.zero;
@@ -146,9 +169,8 @@ public class Kahuna : Cerberus
             _specialActive = false;
         }
 
-        if (_specialActive)
+        if (_specialActive || command.specialPerformed)
         {
-            fireArrow.SetActive(aim != Vector2Int.zero);
             if (command.specialUp)
             {
                 fireArrow.transform.eulerAngles = new Vector3(0, 0, 90);
@@ -172,6 +194,7 @@ public class Kahuna : Cerberus
                 fireArrow.transform.eulerAngles = new Vector3(0, 0, 180);
                 aim = Vector2Int.left;
             }
+            fireArrow.SetActive(aim != Vector2Int.zero);
         }
         else
         {
