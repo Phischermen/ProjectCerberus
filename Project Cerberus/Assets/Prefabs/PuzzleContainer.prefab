@@ -5338,6 +5338,7 @@ MonoBehaviour:
   collectedStar: 0
   gameplayEnabled: 0
   gameOverEndCardDisplayed: 0
+  playMusicAtStart: 0
   testAudio: {fileID: 8300000, guid: 50c1edd9c0d0c454ba38b3fe9d53a202, type: 3}
 --- !u!114 &2814524327749792703
 MonoBehaviour:
@@ -5358,7 +5359,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 0
   ObservedComponents:
-  - {fileID: 2715384113343177923}
+  - {fileID: 0}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

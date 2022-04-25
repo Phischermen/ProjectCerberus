@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class DialoguePanel : MonoBehaviour
+public class DialoguePanel : MonoBehaviourPun
 {
     public static DialoguePanel i;
     public static int charPerSecond = 37;
+    private static int dialoguePanelViewId = 2001;
 
     [FormerlySerializedAs("text")] public Text textDisplay;
     public CanvasGroup canvasGroup;
@@ -17,6 +19,7 @@ public class DialoguePanel : MonoBehaviour
     private WaitForSeconds _waitForSeconds;
     private WaitUntil _waitUntilDismissed;
     private WaitUntil _waitUntilDismissedOrTimeUp;
+    public int networkedDismissalRequests;
 
     private float timeLastCharPrinted;
 
@@ -27,12 +30,13 @@ public class DialoguePanel : MonoBehaviour
     void Start()
     {
         i = this;
+        photonView.ViewID = dialoguePanelViewId;
         _input = FindObjectOfType<PuzzleGameplayInput>();
         _gameManager = FindObjectOfType<GameManager>();
         _waitForSeconds = new WaitForSeconds(1f / charPerSecond);
-        _waitUntilDismissed = new WaitUntil(() => _input.dialogueDismissed);
+        _waitUntilDismissed = new WaitUntil(IsDismissalRequested);
         _waitUntilDismissedOrTimeUp =
-            new WaitUntil(() => _input.dialogueDismissed || (Time.time - timeLastCharPrinted) > (1f / charPerSecond));
+            new WaitUntil(() => IsDismissalRequested() || (Time.time - timeLastCharPrinted) > (1f / charPerSecond));
         canvasGroup.alpha = 0;
     }
 
@@ -59,8 +63,9 @@ public class DialoguePanel : MonoBehaviour
             timeLastCharPrinted = Time.time;
             yield return _waitUntilDismissedOrTimeUp;
             // Display full message if player is obviously trying to skip.
-            if (_input.dialogueDismissed)
+            if (IsDismissalRequested())
             {
+                InterpretAndHandleDismissal();
                 break;
             }
         }
@@ -70,6 +75,7 @@ public class DialoguePanel : MonoBehaviour
         // Wait one frame before allowing message dismissal.
         yield return null;
         yield return _waitUntilDismissed;
+        InterpretAndHandleDismissal();
         displayingMessage = false;
         canvasGroup.alpha = 0;
     }
@@ -81,6 +87,7 @@ public class DialoguePanel : MonoBehaviour
         {
             yield return DisplayDialogue(new Vector2Int(sceneKey.x, sceneKey.y));
         }
+
         EndConversation();
     }
 
@@ -94,5 +101,38 @@ public class DialoguePanel : MonoBehaviour
         }
 
         EndConversation();
+    }
+
+    private bool IsDismissalRequested()
+    {
+        return _input.dialogueDismissed || networkedDismissalRequests > 0;
+    }
+
+    private void DecrementNetworkedDismissalRequests()
+    {
+        if (networkedDismissalRequests > 0)
+        {
+            networkedDismissalRequests -= 1;
+        }
+    }
+
+    private void InterpretAndHandleDismissal()
+    {
+        if (networkedDismissalRequests > 0)
+        {
+            networkedDismissalRequests -= 1;
+        }
+        else if (_input.dialogueDismissed)
+        {
+            // Make other clients dismiss their typing.
+            photonView.RPC(nameof(RPCDismissDialogue), RpcTarget.Others, typing);
+        }
+    }
+
+    [PunRPC]
+    public void RPCDismissDialogue(bool dismissTyping)
+    {
+        if (dismissTyping && !typing) return;
+        networkedDismissalRequests += 1;
     }
 }
