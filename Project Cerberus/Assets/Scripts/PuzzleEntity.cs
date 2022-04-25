@@ -296,7 +296,7 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         }
     }
 
-    public abstract UndoData GetUndoData();
+    public abstract StateData GetUndoData();
 
     // Sound effects
     /* KF 9/7/21 I am considering using Wwise for our project because even implementing basic pitch shifting is kind of

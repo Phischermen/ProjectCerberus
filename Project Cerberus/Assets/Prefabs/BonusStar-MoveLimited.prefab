@@ -123,4 +123,7 @@ MonoBehaviour:
   unavailableColor: {r: 0.4901961, g: 0.30588236, b: 0, a: 1}
   collected: 0
   unavailable: 0
-  movesUntilUnavailable: 8
+  customBonusStarMessageAvailable: 
+  customBonusStarMessageUnavailable: Bonus star can no longer be obtained.
+  startUnavailable: 0
+  movesUntilUnavailable: 13

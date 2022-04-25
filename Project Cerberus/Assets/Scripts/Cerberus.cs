@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using ExitGames.Client.Photon;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -9,25 +12,196 @@ using Random = UnityEngine.Random;
 
 public class Cerberus : PuzzleEntity
 {
-    class CerberusUndoData : UndoData
+    [RuntimeInitializeOnLoadMethod]
+    static void OnRuntimeMethodLoad()
+    {
+        PhotonPeer.RegisterType(typeof(CerberusCommand), (byte) 'C', CerberusCommand.Serialize,
+            CerberusCommand.Deserialize);
+    }
+
+    public class CerberusCommand
+    {
+        public byte cerberusId;
+        public bool[] commands = new bool[13];
+
+        public bool moveUp
+        {
+            get => commands[0];
+            set => commands[0] = value;
+        }
+
+        public bool moveDown
+        {
+            get => commands[1];
+            set => commands[1] = value;
+        }
+
+        public bool moveLeft
+        {
+            get => commands[2];
+            set => commands[2] = value;
+        }
+
+        public bool moveRight
+        {
+            get => commands[3];
+            set => commands[3] = value;
+        }
+
+        public bool specialUp
+        {
+            get => commands[4];
+            set => commands[4] = value;
+        }
+
+        public bool specialDown
+        {
+            get => commands[5];
+            set => commands[5] = value;
+        }
+
+        public bool specialLeft
+        {
+            get => commands[6];
+            set => commands[6] = value;
+        }
+
+        public bool specialRight
+        {
+            get => commands[7];
+            set => commands[7] = value;
+        }
+
+        public bool specialActivated
+        {
+            get => commands[8];
+            set => commands[8] = value;
+        }
+
+        public bool specialDeactivated
+        {
+            get => commands[9];
+            set => commands[9] = value;
+        }
+
+        public bool specialPerformed
+        {
+            get => commands[10];
+            set => commands[10] = value;
+        }
+
+        public bool mergeOrSplit
+        {
+            get => commands[11];
+            set => commands[11] = value;
+        }
+
+        public bool skipCerberusJumpAnimation
+        {
+            get => commands[12];
+            set => commands[12] = value;
+        }
+
+        public static byte[] Serialize(object o)
+        {
+            var command = (CerberusCommand) o;
+            byte moveAndSpecialByte = 0;
+            // Serialize move & special
+            if (command.specialUp) moveAndSpecialByte += 1;
+            if (command.specialDown) moveAndSpecialByte += 2;
+            if (command.specialRight) moveAndSpecialByte += 4;
+            if (command.specialLeft) moveAndSpecialByte += 8;
+            if (command.moveUp) moveAndSpecialByte += 16;
+            if (command.moveDown) moveAndSpecialByte += 32;
+            if (command.moveRight) moveAndSpecialByte += 64;
+            if (command.moveLeft) moveAndSpecialByte += 128;
+            // Serialize special status and Id
+            byte statusAndId = 0;
+            if (command.specialActivated) statusAndId += 1;
+            if (command.specialDeactivated) statusAndId += 2;
+            if (command.specialPerformed) statusAndId += 4;
+            if (command.mergeOrSplit) statusAndId += 8;
+            if (command.skipCerberusJumpAnimation) statusAndId += 16;
+            if (command.cerberusId == 1) statusAndId += 32;
+            if (command.cerberusId == 2) statusAndId += 64;
+            if (command.cerberusId == 3) statusAndId += 128;
+            return new[] {moveAndSpecialByte, statusAndId};
+        }
+
+        public static object Deserialize(byte[] data)
+        {
+            var command = new CerberusCommand();
+            var bitArray = new BitArray(data);
+
+            // Deserialize move & special
+            command.specialUp = bitArray[0];
+            command.specialDown = bitArray[1];
+            command.specialRight = bitArray[2];
+            command.specialLeft = bitArray[3];
+            command.moveUp = bitArray[4];
+            command.moveDown = bitArray[5];
+            command.moveRight = bitArray[6];
+            command.moveLeft = bitArray[7];
+
+            // Deserialize special status and Id
+            command.specialActivated = bitArray[8 + 0];
+            command.specialDeactivated = bitArray[8 + 1];
+            command.specialPerformed = bitArray[8 + 2];
+            command.mergeOrSplit = bitArray[8 + 3];
+            command.skipCerberusJumpAnimation = bitArray[8 + 4];
+            if (bitArray[8 + 5])
+            {
+                command.cerberusId = 1;
+            }
+
+            if (bitArray[8 + 6])
+            {
+                command.cerberusId = 2;
+            }
+
+            if (bitArray[8 + 7])
+            {
+                command.cerberusId = 3;
+            }
+            
+            return command;
+        }
+
+        public bool doSomething =>
+            moveUp ||
+            moveDown ||
+            moveLeft ||
+            moveRight ||
+            specialUp ||
+            specialDown ||
+            specialLeft ||
+            specialRight ||
+            specialActivated ||
+            specialDeactivated ||
+            specialPerformed ||
+            mergeOrSplit ||
+            skipCerberusJumpAnimation;
+    }
+
+    class CerberusStateData : StateData
     {
         public Cerberus cerberus;
-        public Vector2Int position;
-        public bool inHole;
-        public bool onTopOfGoal;
-        public bool collisionDisabledAndPentagramDisplayed;
-        public bool hasPerformedSpecial;
+        public Vector2Int position => myVector2Int;
+        public bool inHole => booleans[0];
+        public bool onTopOfGoal => booleans[1];
+        public bool collisionDisabledAndPentagramDisplayed => booleans[2];
+        public bool hasPerformedSpecial => booleans[3];
 
-        public CerberusUndoData(Cerberus cerberus, Vector2Int position, bool inHole,
+        public CerberusStateData(Cerberus cerberus, Vector2Int position, bool inHole,
             bool collisionDisabledAndPentagramDisplayed,
             bool onTopOfGoal, bool hasPerformedSpecial)
         {
             this.cerberus = cerberus;
-            this.position = position;
-            this.onTopOfGoal = onTopOfGoal;
-            this.hasPerformedSpecial = hasPerformedSpecial;
-            this.inHole = inHole;
-            this.collisionDisabledAndPentagramDisplayed = collisionDisabledAndPentagramDisplayed;
+            myVector2Int = position;
+            booleans[0] = inHole;
+            booleans[1] = onTopOfGoal;
+            booleans[2] = collisionDisabledAndPentagramDisplayed;
+            booleans[3] = hasPerformedSpecial;
         }
 
         public override void Load()
@@ -72,7 +246,7 @@ public class Cerberus : PuzzleEntity
     public AnimationCurve talkAnimationCurve;
 
     public UnityEvent onStandardMove;
-    
+
     protected override void Awake()
     {
         base.Awake();
@@ -80,22 +254,51 @@ public class Cerberus : PuzzleEntity
         _cerberusSprite = GetComponent<SpriteRenderer>().sprite;
     }
 
-    public override UndoData GetUndoData()
+    public override StateData GetUndoData()
     {
-        var undoData = new CerberusUndoData(this, position, inHole,
+        var undoData = new CerberusStateData(this, position, inHole,
             collisionDisabledAndPentagramDisplayed: manager.cerberusFormed != isCerberusMajor, onTopOfGoal,
             hasPerformedSpecial);
         return undoData;
     }
 
-    public virtual void ProcessMoveInput()
+    // NOTE: The input checked in the following method is not networked, or is conditionally networked.
+    public virtual void CheckInputForResetUndoOrCycle()
     {
         if (input.resetPressed)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            if (PhotonNetwork.InRoom)
+            {
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    manager.ReplayLevel();
+                }
+                else
+                {
+                    // TODO display message that says that only the host may reset the level.
+                }
+            }
+            else
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+        }
+    }
+
+    public virtual CerberusCommand ProcessInputIntoCommand()
+    {
+        var command = new CerberusCommand();
+        if (input.mergeOrSplit && manager.joinAndSplitEnabled)
+        {
+            command.mergeOrSplit = true;
         }
 
-        if (input.mergeOrSplit && manager.joinAndSplitEnabled)
+        return command;
+    }
+
+    public virtual void InterpretCommand(CerberusCommand command)
+    {
+        if (command.mergeOrSplit)
         {
             if (this is CerberusMajor cerberusMajor)
             {

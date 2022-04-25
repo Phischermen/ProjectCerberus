@@ -3,16 +3,16 @@
 
 public class OneJumpBonusStar : BonusStar
 {
-    public class OneJumpBonusStarUndoData : BonusStarUndoData
+    public class OneJumpBonusStarStateData : BonusStarStateData
     {
         private OneJumpBonusStar _oneJumpBonusStar;
-        private bool _oneJumpChanceAboutToBeMissed;
+        private bool _oneJumpChanceAboutToBeMissed => booleans[0];
 
-        public OneJumpBonusStarUndoData(OneJumpBonusStar bonusStar, bool collected, bool unavailable,
+        public OneJumpBonusStarStateData(OneJumpBonusStar bonusStar, bool collected, bool unavailable,
             bool oneJumpChanceAboutToBeMissed) : base(bonusStar, collected, unavailable)
         {
             _oneJumpBonusStar = bonusStar;
-            _oneJumpChanceAboutToBeMissed = oneJumpChanceAboutToBeMissed;
+            booleans[0] = oneJumpChanceAboutToBeMissed;
         }
 
         public override void Load()
@@ -29,9 +29,9 @@ public class OneJumpBonusStar : BonusStar
         entityRules = "A bonus bonusStar. Disappears after CerberusMajor moves.";
     }
 
-    public override UndoData GetUndoData()
+    public override StateData GetUndoData()
     {
-        return new OneJumpBonusStarUndoData(this, collected, unavailable, _oneJumpChanceAboutToBeMissed);
+        return new OneJumpBonusStarStateData(this, collected, unavailable, _oneJumpChanceAboutToBeMissed);
     }
 
     public override string GetStatusMessageForUI()

@@ -5,17 +5,17 @@ using UnityEngine;
 
 public class Gate : PuzzleEntity
 {
-    public class GateUndoData : UndoData
+    public class GateStateData : StateData
     {
         public Gate gate;
-        public bool open;
-        public bool wantsToClose;
+        public bool open => booleans[0];
+        public bool wantsToClose => booleans[1];
 
-        public GateUndoData(Gate gate, bool open, bool wantsToClose)
+        public GateStateData(Gate gate, bool open, bool wantsToClose)
         {
             this.gate = gate;
-            this.open = open;
-            this.wantsToClose = wantsToClose;
+            booleans[0] = open;
+            booleans[1] = wantsToClose;
         }
 
         public override void Load()
@@ -62,9 +62,9 @@ public class Gate : PuzzleEntity
         isStatic = true;
     }
 
-    public override UndoData GetUndoData()
+    public override StateData GetUndoData()
     {
-        var undoData = new GateUndoData(this, open, _wantsToClose);
+        var undoData = new GateStateData(this, open, _wantsToClose);
         return undoData;
     }
 

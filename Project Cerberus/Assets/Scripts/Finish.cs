@@ -37,7 +37,7 @@ public class Finish : PuzzleEntity
         }
     }
 
-    public override UndoData GetUndoData()
+    public override StateData GetUndoData()
     {
         return null;
     }
