@@ -125,6 +125,13 @@ public class DialoguePanel : MonoBehaviourPun
         else if (_input.dialogueDismissed)
         {
             // Make other clients dismiss their typing.
+        }
+    }
+
+    public void SendRPCDismissDialogue()
+    {
+        if (PhotonNetwork.IsConnected)
+        {
             photonView.RPC(nameof(RPCDismissDialogue), RpcTarget.Others, typing);
         }
     }
