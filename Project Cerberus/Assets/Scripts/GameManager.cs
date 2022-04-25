@@ -651,18 +651,19 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
 
     public void SendRPCSyncBoard(StateData[] objectArray)
     {
-        if (PhotonNetwork.IsConnected)
+        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC(nameof(RPCSyncBoard), RpcTarget.Others, objectArray, timer, move);
+            photonView.RPC(nameof(RPCSyncBoard), RpcTarget.Others, objectArray, timer, move, currentLevel);
         }
         // No reason to sync board if there's only one client.
     }
 
     [PunRPC]
-    public void RPCSyncBoard(StateData[] stateDatas, float pTimer, int pMove)
+    public void RPCSyncBoard(StateData[] stateDatas, float pTimer, int pMove, int pCurrentLevel)
     {
         _puzzleContainer.SyncBoardWithData(stateDatas);
         timer = pTimer;
         move = pMove;
+        currentLevel = pCurrentLevel;
     }
 }
