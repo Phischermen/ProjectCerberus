@@ -52,6 +52,7 @@ public class LevelChoice : MonoBehaviour
         MainMenuController.chosenLevelSequence.GetSceneBuildIndexForLevel(levelIdx, andPlayMusic: true);
         if (PhotonNetwork.InRoom)
         {
+            FindObjectOfType<MainMenuController>().SendRPCSyncLobbySettings();
             PhotonNetwork.LoadLevel(sceneIdx);
         }
         else

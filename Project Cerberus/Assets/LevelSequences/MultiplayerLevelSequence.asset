@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worlds:
   - levels:
+    - {x: 32, y: 35}
     - {x: 6, y: 9}
     - {x: 8, y: 11}
     - {x: 9, y: 12}

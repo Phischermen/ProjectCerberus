@@ -11,7 +11,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class MainMenuController : MonoBehaviour
+public class MainMenuController : MonoBehaviourPun
 {
     public static LevelSequence chosenLevelSequence;
     public static int availableLevels = 0;
@@ -156,7 +156,7 @@ public class MainMenuController : MonoBehaviour
         chosenLevelSequence = CustomProjectSettings.i.multiplayerLevelSequence;
         multiplayerPanel.SetActive(true);
     }
-    
+
     public void ShowLevelSelectPanelForMultiplayer()
     {
         multiplayerPanel.SetActive(false);
@@ -220,5 +220,20 @@ public class MainMenuController : MonoBehaviour
         PlayerPrefs.SetInt("SilenceStory", value ? 1 : 0);
         PlayerPrefs.Save();
         silenceStory = value;
+    }
+
+    public void SendRPCSyncLobbySettings()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC(nameof(RPCSyncLobbySettings), RpcTarget.Others, silenceStory, silenceTutorials);
+        }
+    }
+
+    [PunRPC]
+    public void RPCSyncLobbySettings(bool pSilenceStory, bool pSilenceTutorials)
+    {
+        silenceStory = pSilenceStory;
+        silenceTutorials = pSilenceTutorials;
     }
 }
