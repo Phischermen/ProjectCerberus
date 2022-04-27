@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: CustomProjectSettings
   m_EditorClassIdentifier: 
   mainLevelSequence: {fileID: 11400000, guid: 69d0841d38644974eb8633580cef0755, type: 2}
+  multiplayerLevelSequence: {fileID: 11400000, guid: dbc08bcd4121fea4198b51fb7509c417,
+    type: 2}
   puzzleContainerPrefab: {fileID: 2715384113237483527, guid: eef179ac3b38ba642b88743486b798b3,
     type: 3}
   puzzleLevelIncludes:

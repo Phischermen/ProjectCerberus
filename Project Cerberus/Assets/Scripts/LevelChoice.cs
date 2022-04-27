@@ -49,7 +49,7 @@ public class LevelChoice : MonoBehaviour
     private void ButtonPressed()
     {
         //Play music.
-        CustomProjectSettings.i.mainLevelSequence.GetSceneBuildIndexForLevel(levelIdx, andPlayMusic: true);
+        MainMenuController.chosenLevelSequence.GetSceneBuildIndexForLevel(levelIdx, andPlayMusic: true);
         if (PhotonNetwork.InRoom)
         {
             PhotonNetwork.LoadLevel(sceneIdx);

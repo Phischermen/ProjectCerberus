@@ -28,6 +28,7 @@ namespace Editor
         {
             // Add property field to set mainLevelSequence
             EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.mainLevelSequence)));
+            EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.multiplayerLevelSequence)));
             EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.dialogueDatabaseAsset)));
             EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.defaultTalkAnimationCurve)));
             EditorGUILayout.LabelField("Prefabs");

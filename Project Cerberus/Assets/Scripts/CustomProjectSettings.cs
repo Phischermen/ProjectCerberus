@@ -10,6 +10,7 @@ using UnityEngine;
 public class CustomProjectSettings : ScriptableObject
 {
     public LevelSequence mainLevelSequence;
+    public LevelSequence multiplayerLevelSequence;
     public GameObject puzzleContainerPrefab;
 
     public GameObject[] puzzleLevelIncludes;

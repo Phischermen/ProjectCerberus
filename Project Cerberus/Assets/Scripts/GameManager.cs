@@ -131,9 +131,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         // Create UI
         Instantiate(_uiPrefab);
         // Load Level Sequence and get current world and level
-        if (levelSequence == null)
+        if (levelSequence != MainMenuController.chosenLevelSequence)
         {
-            levelSequence = CustomProjectSettings.i.mainLevelSequence;
+            levelSequence = MainMenuController.chosenLevelSequence;
             currentLevel = levelSequence.FindCurrentLevelSequence(SceneManager.GetActiveScene().buildIndex);
             playMusicAtStart = true;
         }
@@ -144,7 +144,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         if (playMusicAtStart)
         {
             // Play music in case user plays a level at the beginning of the game.
-            CustomProjectSettings.i.mainLevelSequence.GetSceneBuildIndexForLevel(currentLevel, andPlayMusic: true);
+            levelSequence.GetSceneBuildIndexForLevel(currentLevel, andPlayMusic: true);
         }
 
         // Get objects
@@ -664,6 +664,5 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         _puzzleContainer.SyncBoardWithData(stateDatas);
         timer = pTimer;
         move = pMove;
-        currentLevel = pCurrentLevel;
     }
 }

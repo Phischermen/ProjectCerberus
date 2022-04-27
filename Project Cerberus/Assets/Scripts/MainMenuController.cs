@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -12,6 +13,7 @@ using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
+    public static LevelSequence chosenLevelSequence;
     public static int availableLevels = 0;
     public static bool silenceTutorials;
     public static bool silenceStory;
@@ -32,6 +34,7 @@ public class MainMenuController : MonoBehaviour
     private List<GameObject> _worldContainers;
     public Button nextWorldButton;
     public Button prevWorldButton;
+    public Button backToMenuButton;
     public Toggle silenceTutorialsToggle;
     public Toggle silenceStoryToggle;
 
@@ -43,7 +46,8 @@ public class MainMenuController : MonoBehaviour
         {
             for (var index = 0; index < 100; index++)
             {
-                PlayerPrefs.DeleteKey(index.ToString());
+                PlayerPrefs.DeleteKey(CustomProjectSettings.i.mainLevelSequence.name + index);
+                PlayerPrefs.DeleteKey(CustomProjectSettings.i.multiplayerLevelSequence.name + index);
                 PlayerPrefs.Save();
             }
         }
@@ -58,22 +62,12 @@ public class MainMenuController : MonoBehaviour
 
     private void Awake()
     {
+        // Initialize containers.
+        _worldContainers = new List<GameObject>();
         // Load saved data.
-        availableLevels = PlayerPrefs.GetInt("AvailableLevels", 0);
         silenceTutorials = silenceTutorialsToggle.isOn = PlayerPrefs.GetInt("SilenceTutorials", 1) == 1;
         silenceStory = silenceStoryToggle.isOn = PlayerPrefs.GetInt("SilenceTutorials", 1) == 1;
-        // Initialize Level Select Panel
-        InitializeLevelSelectPanel();
-        // Deactivate all but the first world container.
-        foreach (var container in _worldContainers)
-        {
-            container.SetActive(false);
-        }
 
-        _worldContainers[0].SetActive(true);
-        // Initialize remaining UI components for Level Select Panel.
-        prevWorldButton.interactable = false;
-        nextWorldButton.interactable = true;
         // Level selection panel is ready, but it's not the initial screen. Deactivate it.
         levelChoicePanel.SetActive(false);
         multiplayerPanel.SetActive(false);
@@ -85,11 +79,36 @@ public class MainMenuController : MonoBehaviour
         DiskJockey.PlayTrack(mainMenuMusic);
     }
 
-    private void InitializeLevelSelectPanel()
+    public void DestroyLevelSelectPanel()
+    {
+        foreach (var container in _worldContainers)
+        {
+            Destroy(container);
+        }
+    }
+
+    public void BuildLevelSelectPanel(LevelSequence levelSequence)
+    {
+        chosenLevelSequence = levelSequence;
+        // Load Saved Data
+        availableLevels = PlayerPrefs.GetInt(levelSequence.name + "AvailableLevels", 0);
+        // Initialize Level Select Panel
+        InstantiateWorldsAndLevelChoiceButtons(levelSequence);
+        // Deactivate all but the first world container.
+        foreach (var container in _worldContainers)
+        {
+            container.SetActive(false);
+        }
+
+        _worldContainers[0].SetActive(true);
+        // Initialize remaining UI components for Level Select Panel.
+        prevWorldButton.interactable = false;
+        nextWorldButton.interactable = true;
+    }
+
+    private void InstantiateWorldsAndLevelChoiceButtons(LevelSequence levelSequence)
     {
         var idx = 0;
-        // Load main level sequence.
-        var levelSequence = CustomProjectSettings.i.mainLevelSequence;
         // Initialize container.
         _worldContainers = new List<GameObject>();
         // Create a container for the levels in each world.
@@ -107,7 +126,7 @@ public class MainMenuController : MonoBehaviour
                 // Set fields for LevelChoice.
                 choice.levelIdx = idx;
                 choice.sceneIdx = level.x;
-                choice.settings = PlayerPrefs.GetString(level.ToString(), TrophyData.initialTrophyCode);
+                choice.settings = PlayerPrefs.GetString(levelSequence.name + level.x, TrophyData.initialTrophyCode);
                 choice.ApplySettings();
                 choice.GetComponentInChildren<Text>().text = (idx).ToString();
                 // Increment current level index.
@@ -118,26 +137,31 @@ public class MainMenuController : MonoBehaviour
         maxWorld = levelSequence.worlds.Count - 1;
     }
 
-    public void ShowLevelSelectPanelForMultiplayer()
-    {
-        multiplayerPanel.SetActive(false);
-        levelChoicePanel.SetActive(true);
-    }
-
     // Menu actions
     // Main
 
     public void PlayPressed()
     {
         mainPanel.SetActive(false);
+        chosenLevelSequence = CustomProjectSettings.i.mainLevelSequence;
+        BuildLevelSelectPanel(CustomProjectSettings.i.mainLevelSequence);
         levelChoicePanel.SetActive(true);
     }
 
     public void MultiplayerPressed()
     {
         mainPanel.SetActive(false);
+        // Take this opportunity to set the right level sequence. This is hacky, but it's fine as long as there's just
+        // one level sequence for multiplayer (no plans to make DLC).
+        chosenLevelSequence = CustomProjectSettings.i.multiplayerLevelSequence;
         multiplayerPanel.SetActive(true);
-        // TODO Show multiplayer panel.
+    }
+    
+    public void ShowLevelSelectPanelForMultiplayer()
+    {
+        multiplayerPanel.SetActive(false);
+        BuildLevelSelectPanel(CustomProjectSettings.i.multiplayerLevelSequence);
+        levelChoicePanel.SetActive(true);
     }
 
     // Level Select
@@ -175,13 +199,22 @@ public class MainMenuController : MonoBehaviour
         nextWorldButton.interactable = true;
     }
 
+    public void BackToMenuPressed()
+    {
+        PhotonNetwork.Disconnect();
+        mainPanel.SetActive(true);
+        DestroyLevelSelectPanel();
+        levelChoicePanel.SetActive(false);
+        multiplayerPanel.SetActive(false);
+    }
+
     public void SilenceTutorialsToggled(bool value)
     {
         PlayerPrefs.SetInt("SilenceTutorials", value ? 1 : 0);
         PlayerPrefs.Save();
         silenceTutorials = value;
     }
-    
+
     public void SilenceStoryToggled(bool value)
     {
         PlayerPrefs.SetInt("SilenceStory", value ? 1 : 0);

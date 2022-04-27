@@ -81,7 +81,6 @@ public class Switch : PuzzleEntity
 
     public override void OnEnterCollisionWithEntity(PuzzleEntity other)
     {
-        // TODO don't imediately do these call backs. Double check in late update.
         if (isPressed || other.ignoresSwitch) return;
         isPressed = true;
         
@@ -89,7 +88,6 @@ public class Switch : PuzzleEntity
 
     public override void OnExitCollisionWithEntity(PuzzleEntity other)
     {
-        // TODO don't imediately do these call backs. Double check in late update.
         if (!isPressed || other.ignoresSwitch) return;
         isPressed = false;
         

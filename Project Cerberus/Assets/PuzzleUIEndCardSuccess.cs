@@ -72,11 +72,11 @@ public class PuzzleUIEndCardSuccess : MonoBehaviour
         // Store the displayed trophies in a string.
         var data =
             $"{codeOfTimeTrophyToDisplay}{codeOfMoveTrophyToDisplay}{(codeOfBonusStarTrophyToDisplay)}";
-        PlayerPrefs.SetString(currentLevelBuildIndex, data);
+        PlayerPrefs.SetString(GameManager.levelSequence.name + currentLevelBuildIndex, data);
         // Unlock the next level for level select screen.
         if (GameManager.currentLevel >= MainMenuController.availableLevels)
         {
-            PlayerPrefs.SetInt("AvailableLevels", GameManager.currentLevel + 1);
+            PlayerPrefs.SetInt(GameManager.levelSequence.name + "AvailableLevels", GameManager.currentLevel + 1);
         }
 
         // Save data to PlayerPrefs
