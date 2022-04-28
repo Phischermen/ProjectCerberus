@@ -239,6 +239,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
             }
 
             // If there are commands, get the first one.
+            var cerberusDoneWithMove = false;
             if (_commandQueue.Count > 0)
             {
                 var nextCommand = _commandQueue.Dequeue();
@@ -246,24 +247,29 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
                 if (nextCommand.cerberusId == 0 && _jack != null)
                 {
                     _jack.InterpretCommand(nextCommand);
+                    cerberusDoneWithMove = _jack.doneWithMove;
                 }
                 else if (nextCommand.cerberusId == 1 && _kahuna != null)
                 {
                     _kahuna.InterpretCommand(nextCommand);
+                    cerberusDoneWithMove = _kahuna.doneWithMove;
                 }
                 else if (nextCommand.cerberusId == 2 && _laguna != null)
                 {
                     _laguna.InterpretCommand(nextCommand);
+                    cerberusDoneWithMove = _laguna.doneWithMove;
                 }
                 else if (nextCommand.cerberusId == 3 && _cerberusMajor != null)
                 {
                     _cerberusMajor.InterpretCommand(nextCommand);
+                    cerberusDoneWithMove = _cerberusMajor.doneWithMove;
                 }
+                
             }
 
 
             // Check if cerberus made their move
-            if (currentCerberus.doneWithMove)
+            if (cerberusDoneWithMove)
             {
                 // Start timer
                 _timerRunning = true;
