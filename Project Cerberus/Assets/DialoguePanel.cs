@@ -108,14 +108,6 @@ public class DialoguePanel : MonoBehaviourPun
         return _input.dialogueDismissed || networkedDismissalRequests > 0;
     }
 
-    private void DecrementNetworkedDismissalRequests()
-    {
-        if (networkedDismissalRequests > 0)
-        {
-            networkedDismissalRequests -= 1;
-        }
-    }
-
     private void InterpretAndHandleDismissal()
     {
         if (networkedDismissalRequests > 0)
@@ -125,6 +117,7 @@ public class DialoguePanel : MonoBehaviourPun
         else if (_input.dialogueDismissed)
         {
             // Make other clients dismiss their typing.
+            SendRPCDismissDialogue();
         }
     }
 
