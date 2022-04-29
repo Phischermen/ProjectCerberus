@@ -855,6 +855,8 @@ MonoBehaviour:
   moveTrophyData: {fileID: 11400000, guid: e3f26c5d94df88846925fa9abd8a8a68, type: 2}
   bonusStarTrophyData: {fileID: 11400000, guid: 3855bad0768e56245aebef8f815929cd,
     type: 2}
+  proceedButton: {fileID: 8397052631272024819}
+  replayButton: {fileID: 6757011024985295152}
 --- !u!1 &6780494605709641794
 GameObject:
   m_ObjectHideFlags: 0

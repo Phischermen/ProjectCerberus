@@ -9,6 +9,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
@@ -47,6 +48,9 @@ public class PuzzleUIEndCardSuccess : MonoBehaviour
     //     Bronze = 'c',
     //     Nope = 'd'
     // }
+
+    public Button proceedButton;
+    public Button replayButton;
 
     private void Awake()
     {
@@ -92,6 +96,21 @@ public class PuzzleUIEndCardSuccess : MonoBehaviour
         // Display moves
         moveText.text = $"Moves\n{_gameManager.move + 1}";
         moveText.color = _gameManager.move < _gameManager.maxMovesBeforeStarLoss ? Color.yellow : Color.white;
+    }
+
+    private void Update()
+    {
+        // Configure buttons
+        if (PhotonNetwork.InRoom && !PhotonNetwork.IsMasterClient)
+        {
+            proceedButton.interactable = false;
+            replayButton.interactable = false;
+        }
+        else
+        {
+            proceedButton.interactable = true;
+            replayButton.interactable = true;
+        }
     }
 
     // Trophy helper function

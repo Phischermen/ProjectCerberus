@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Photon.Pun;
 using Photon.Realtime;
 using Priority_Queue;
@@ -50,7 +51,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
             _currentCerberus.StartMove();
             _gameManager.move = _move;
             _gameManager.timer = _timer;
-            
+
             // Stop timer if first move. Otherwise run timer.
             _gameManager._timerRunning = _move != 0;
 
@@ -120,7 +121,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
     [HideInInspector] public bool gameplayEnabled;
 
     [HideInInspector] public bool gameOverEndCardDisplayed;
-    
+
     [HideInInspector] public bool playMusicAtStart;
 
     public Queue<Cerberus.CerberusCommand> _commandQueue;
@@ -264,7 +265,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
                     _cerberusMajor.InterpretCommand(nextCommand);
                     cerberusDoneWithMove = _cerberusMajor.doneWithMove;
                 }
-                
             }
 
 
@@ -365,11 +365,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
                 nextMoveNeedsToStart = true;
             }
 
-            // Handle request to undo
-            if (wantsToUndo)
+            // Handle request to undo. Must be master client if connected
+            if (wantsToUndo && (!PhotonNetwork.InRoom ||
+                                PhotonNetwork.InRoom && PhotonNetwork.IsMasterClient))
             {
                 wantsToUndo = false;
                 _puzzleContainer.UndoLastMove();
+                SendRPCUndoLastMove();
             }
 
             // Handle request to cycle character
@@ -570,8 +572,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
 
     public void ReplayLevel()
     {
-        // TODO sync clients here.
         _puzzleContainer.UndoToFirstMove();
+        // NOTE: Only master client can send the following command.
+        SendRPCReplayLevel();
         gameplayEnabled = true;
         // Repopulate availableCerberus
         RepopulateAvailableCerberus();
@@ -670,5 +673,51 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         _puzzleContainer.SyncBoardWithData(stateDatas);
         timer = pTimer;
         move = pMove;
+    }
+
+    public void SendRPCReplayLevel()
+    {
+        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC(nameof(RPCReplayLevel), RpcTarget.Others);
+        }
+    }
+
+    [PunRPC]
+    public void RPCReplayLevel()
+    {
+        ReplayLevel();
+        DestroyEndcardUI();
+    }
+
+    public void SendRPCUndoLastMove()
+    {
+        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC(nameof(RPCUndoLastMove), RpcTarget.Others);
+        }
+    }
+
+    [PunRPC]
+    public void RPCUndoLastMove()
+    {
+        UndoLastMove();
+        DestroyEndcardUI();
+    }
+
+    public void DestroyEndcardUI()
+    {
+        // Destroy endcard UI that may or may not be present.
+        var puzzleUIEndCardSuccess = FindObjectOfType<PuzzleUIEndCardSuccess>();
+        if (puzzleUIEndCardSuccess != null)
+        {
+            Destroy(puzzleUIEndCardSuccess);
+        }
+
+        var puzzleUIEndCardFailure = FindObjectOfType<PuzzleUIEndCardFailure>();
+        if (puzzleUIEndCardFailure != null)
+        {
+            Destroy(puzzleUIEndCardFailure);
+        }
     }
 }
