@@ -1,5 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿/*
+ * DialoguePanel displays text in a panel for the purposes of a cutscene or tutorial. The mehtods, 'StartConversation()'
+ * and 'EndConversation()' should sandwhich all calls to method 'DisplayDialogue().' This will ensure that gameplay is
+ * disabled and that no new players can join while a cutscene is playing (cutscenes are not properly networked).
+ */
+using System.Collections;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -43,11 +47,19 @@ public class DialoguePanel : MonoBehaviourPun
     public void StartConversation()
     {
         _gameManager.gameplayEnabled = false;
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.CurrentRoom.IsOpen = false;
+        }
     }
 
     public void EndConversation()
     {
         _gameManager.gameplayEnabled = true;
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.CurrentRoom.IsOpen = true;
+        }
     }
 
     public IEnumerator DisplayDialogue(Vector2Int dialogueKey)
