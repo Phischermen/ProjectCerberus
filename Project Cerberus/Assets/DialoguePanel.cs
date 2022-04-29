@@ -1,5 +1,5 @@
 ﻿/*
- * DialoguePanel displays text in a panel for the purposes of a cutscene or tutorial. The mehtods, 'StartConversation()'
+ * DialoguePanel displays text in a panel for the purposes of a cutscene or tutorial. The methods, 'StartConversation()'
  * and 'EndConversation()' should sandwhich all calls to method 'DisplayDialogue().' This will ensure that gameplay is
  * disabled and that no new players can join while a cutscene is playing (cutscenes are not properly networked).
  */
