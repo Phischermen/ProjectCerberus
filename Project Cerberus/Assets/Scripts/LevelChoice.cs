@@ -4,6 +4,7 @@
  */
 
 using System;
+using Multiplayer;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -52,8 +53,7 @@ public class LevelChoice : MonoBehaviour
         MainMenuController.chosenLevelSequence.GetSceneBuildIndexForLevel(levelIdx, andPlayMusic: true);
         if (PhotonNetwork.InRoom)
         {
-            FindObjectOfType<MainMenuController>().SendRPCSyncLobbySettings();
-            PhotonNetwork.LoadLevel(sceneIdx);
+            FindObjectOfType<Launcher>().LevelSelectedForMultiplayer(sceneIdx);
         }
         else
         {

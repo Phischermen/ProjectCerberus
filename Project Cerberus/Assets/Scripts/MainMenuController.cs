@@ -5,6 +5,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Multiplayer;
 using Photon.Pun;
 using UnityEditor;
 using UnityEngine;
@@ -17,11 +19,14 @@ public class MainMenuController : MonoBehaviourPun
     public static int availableLevels = 0;
     public static bool silenceTutorials;
     public static bool silenceStory;
+    public static int defaultDog;
+    public static int chosenLevelSceneIndex;
 
     public AudioClip mainMenuMusic;
     public GameObject levelChoiceButton;
     public GameObject worldContainer;
     public GameObject levelChoicePanel;
+    public GameObject dogSelectPanel;
     public GameObject mainPanel;
     public GameObject multiplayerPanel;
 
@@ -35,9 +40,15 @@ public class MainMenuController : MonoBehaviourPun
     public Button nextWorldButton;
     public Button prevWorldButton;
     public Button backToMenuButton;
+    public Button jackButton;
+    public Button kahunaButton;
+    public Button lagunaButton;
+    public Button dogSelectPlayButton;
+    [HideInInspector] public Button[] dogButtons;
     public Toggle silenceTutorialsToggle;
     public Toggle silenceStoryToggle;
 
+    public int[] userToDogMap;
 
     //#if UNITY_EDITOR
     private void OnGUI()
@@ -62,14 +73,18 @@ public class MainMenuController : MonoBehaviourPun
 
     private void Awake()
     {
+        defaultDog = -1;
         // Initialize containers.
         _worldContainers = new List<GameObject>();
+        dogButtons = new[] {jackButton, kahunaButton, lagunaButton};
+        userToDogMap = new[] {-1, -1, -1};
         // Load saved data.
         silenceTutorials = silenceTutorialsToggle.isOn = PlayerPrefs.GetInt("SilenceTutorials", 1) == 1;
         silenceStory = silenceStoryToggle.isOn = PlayerPrefs.GetInt("SilenceTutorials", 1) == 1;
 
         // Level selection panel is ready, but it's not the initial screen. Deactivate it.
         levelChoicePanel.SetActive(false);
+        dogSelectPanel.SetActive(false);
         multiplayerPanel.SetActive(false);
     }
 
@@ -222,6 +237,24 @@ public class MainMenuController : MonoBehaviourPun
         silenceStory = value;
     }
 
+    // Dog Select Screen
+    public void DogSelected(int dogIdx)
+    {
+        SendRPCSelectDog(defaultDog, dogIdx, PhotonNetwork.LocalPlayer.ActorNumber);
+        defaultDog = dogIdx;
+    }
+
+    public void PlayPressedOnDogSelectScreen()
+    {
+        FindObjectOfType<MainMenuController>().SendRPCSyncLobbySettings();
+        PhotonNetwork.LoadLevel(chosenLevelSceneIndex);
+    }
+
+    public void BackToLevelsPressed()
+    {
+        FindObjectOfType<Launcher>().GoBackToLevelSelection();
+    }
+
     public void SendRPCSyncLobbySettings()
     {
         if (PhotonNetwork.IsMasterClient)
@@ -235,5 +268,24 @@ public class MainMenuController : MonoBehaviourPun
     {
         silenceStory = pSilenceStory;
         silenceTutorials = pSilenceTutorials;
+    }
+
+    public void SendRPCSelectDog(int oldDog, int newDog, int actorId)
+    {
+        photonView.RPC(nameof(RPCSelectDog), RpcTarget.All, oldDog, newDog, actorId);
+    }
+
+    [PunRPC]
+    public void RPCSelectDog(int oldDog, int newDog, int actorId)
+    {
+        if (oldDog != -1)
+        {
+            dogButtons[oldDog].interactable = true;
+            userToDogMap[newDog] = -1;
+        }
+
+        dogButtons[newDog].interactable = false;
+        userToDogMap[newDog] = actorId;
+        dogSelectPlayButton.interactable = dogButtons.Count(button => !button.interactable) == PhotonNetwork.PlayerList.Length;
     }
 }

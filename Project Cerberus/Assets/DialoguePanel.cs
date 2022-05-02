@@ -58,6 +58,7 @@ public class DialoguePanel : MonoBehaviourPun
         _gameManager.gameplayEnabled = true;
         if (PhotonNetwork.IsMasterClient)
         {
+            // TODO: Don't just set to true. Check preferences.
             PhotonNetwork.CurrentRoom.IsOpen = true;
         }
     }

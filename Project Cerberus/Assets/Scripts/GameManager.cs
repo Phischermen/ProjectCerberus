@@ -194,7 +194,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
             cerberusFormed = true;
         }
 
-        currentCerberus = availableCerberus[0];
+        if (!PhotonNetwork.InRoom)
+        {
+            currentCerberus = availableCerberus[0];
+        }
+        else
+        {
+            // All Multiplayer rooms should have all three dogs, so this should be safe.
+            currentCerberus = availableCerberus[MainMenuController.defaultDog];
+        }
 
         // Setup camera.
         _cameraController.SetCameraMode(startInFixedCameraMode
