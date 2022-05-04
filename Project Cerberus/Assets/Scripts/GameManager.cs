@@ -102,6 +102,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
     private Kahuna _kahuna;
     private CerberusMajor _cerberusMajor;
     public List<Cerberus> availableCerberus { get; protected set; }
+    public int[] cerberusToUserMap { get; protected set; }
     [HideInInspector] public Cerberus currentCerberus;
     private PuzzleContainer _puzzleContainer;
     private PuzzleGameplayInput _input;
