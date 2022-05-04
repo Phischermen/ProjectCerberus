@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using Random = UnityEngine.Random;
 
 public class Kahuna : Cerberus
@@ -8,8 +9,9 @@ public class Kahuna : Cerberus
     [SerializeField] private GameObject fireArrow;
     [SerializeField] private GameObject fireBall;
     [SerializeField] private GameObject explosion;
-    [SerializeField] private ParticleSystem fireBallParticleSystem;
-    [SerializeField] private ParticleSystem explosionParticleSystem;
+    private ParticleSystem _fireBallParticleSystem;
+    private ParticleSystem _explosionParticleSystem;
+    [SerializeField] private ParticleSystem fireAuraParticleSystem;
     [SerializeField] private AudioSource fireballSFX;
 
     // TODO sync this across clients from master client.
@@ -28,12 +30,29 @@ public class Kahuna : Cerberus
         fireArrow.SetActive(false);
         // Instantiate fireball prefab for VFX. Setup emitter.
         fireBall = Instantiate(fireBall);
-        fireBallParticleSystem = fireBall.GetComponentInChildren<ParticleSystem>();
-        fireBallParticleSystem.Stop(true);
+        _fireBallParticleSystem = fireBall.GetComponentInChildren<ParticleSystem>();
+        _fireBallParticleSystem.Stop(true);
         // Instantiate fireball prefab for VFX. Setup emitter.
         explosion = Instantiate(explosion);
-        explosionParticleSystem = explosion.GetComponentInChildren<ParticleSystem>();
-        explosionParticleSystem.Stop(true);
+        _explosionParticleSystem = explosion.GetComponentInChildren<ParticleSystem>();
+        _explosionParticleSystem.Stop(true);
+    }
+
+    protected new void Update()
+    {
+        base.Update();
+        if (_specialActive != fireAuraParticleSystem.isPlaying)
+        {
+            if (_specialActive)
+            {
+                fireAuraParticleSystem.Play();
+            }
+            else
+            {
+                fireAuraParticleSystem.Stop();
+                //fireAuraParticleSystem.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+            }
+        }
     }
 
     public override void CheckInputForResetUndoOrCycle()
@@ -83,24 +102,24 @@ public class Kahuna : Cerberus
                 {
                     command.specialUp = true;
                 }
-            
+
                 else if (aim == Vector2Int.down)
                 {
                     command.specialDown = true;
                 }
-            
+
                 else if (aim == Vector2Int.right)
                 {
                     command.specialRight = true;
                 }
-            
+
                 else if (aim == Vector2Int.left)
                 {
                     command.specialLeft = true;
                 }
             }
         }
-        
+
         if (_specialActive || input.rightClicked)
         {
             if (input.upPressed || (input.clickedCell.x == position.x && input.clickedCell.y > position.y))
@@ -194,6 +213,7 @@ public class Kahuna : Cerberus
                 fireArrow.transform.eulerAngles = new Vector3(0, 0, 180);
                 aim = Vector2Int.left;
             }
+
             fireArrow.SetActive(aim != Vector2Int.zero);
         }
         else
@@ -222,10 +242,10 @@ public class Kahuna : Cerberus
         if (command.specialPerformed)
         {
             // TODO read command.specialUp/down/whatever to fire the fireball.
+            _specialActive = false;
             if (aim != Vector2Int.zero)
             {
                 FireBall(aim);
-                _specialActive = false;
                 fireArrow.SetActive(false);
             }
         }
@@ -344,8 +364,8 @@ public class Kahuna : Cerberus
         var distanceTraveled = 0f;
         var speed = initialSpeed;
         fireBall.transform.position = startingPosition;
-        fireBallParticleSystem.Play(true);
-        fireBallParticleSystem.transform.rotation = fireArrow.transform.rotation;
+        _fireBallParticleSystem.Play(true);
+        _fireBallParticleSystem.transform.rotation = fireArrow.transform.rotation;
         while (distanceTraveled < distanceToTravel && animationMustStop == false)
         {
             // Increment speed
@@ -361,10 +381,10 @@ public class Kahuna : Cerberus
 
         fireBall.transform.position = destinationPosition;
         // Stop the fireball particle system emission, but only clear the fireball and not the sparks. 
-        fireBallParticleSystem.Clear(false);
-        fireBallParticleSystem.Stop(true);
+        _fireBallParticleSystem.Clear(false);
+        _fireBallParticleSystem.Stop(true);
         explosion.transform.position = destinationPosition;
-        explosionParticleSystem.Play(true);
+        _explosionParticleSystem.Play(true);
         animationIsRunning = false;
         animationMustStop = false;
     }
