@@ -5,13 +5,10 @@
  * next scene.
  */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using Photon.Pun;
 using Photon.Realtime;
-using Priority_Queue;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -103,6 +100,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
     private CerberusMajor _cerberusMajor;
     public List<Cerberus> availableCerberus { get; protected set; }
     public int[] cerberusToUserMap { get; protected set; }
+    public int idxOfLastControlledDog;
     [HideInInspector] public Cerberus currentCerberus;
     private PuzzleContainer _puzzleContainer;
     private PuzzleGameplayInput _input;
@@ -393,47 +391,49 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
                 // Get index of currentCerberus before sorting.
                 var oldIdx = availableCerberus.IndexOf(currentCerberus);
                 // Cull the one possessed by the other client, then sort availableCerberus, from north-west most to south-east most.
-                var availableCerberusSorted = availableCerberus
+                var availableCerberusSortedAndCulled = availableCerberus
                     .Where((cerberus, i) => cerberusToUserMap[i] == -1 || cerberus == currentCerberus)
                     .OrderBy(CompareCerberusByPosition).ToList();
                 // Get index of currentCerberus after sorting the list.
-                var currentIdxInSorted = availableCerberusSorted.IndexOf(currentCerberus);
+                var currentIdxInSorted = availableCerberusSortedAndCulled.IndexOf(currentCerberus);
                 if (_input.cycleCharacterForward)
                 {
                     // Switch to Cerberus south-east of current Cerberus.
-                    var idx = (currentIdxInSorted + 1) % availableCerberusSorted.Count;
-                    currentCerberus = availableCerberusSorted[idx];
+                    var idx = (currentIdxInSorted + 1) % availableCerberusSortedAndCulled.Count;
+                    currentCerberus = availableCerberusSortedAndCulled[idx];
                 }
                 else if (_input.cycleCharacterBackward)
                 {
                     // Switch to Cerberus north-west of current Cerberus.
                     // Note: To avoid getting a negative index from % operator, I add the array length to currentIndex. 
-                    var idx = ((currentIdxInSorted - 1 + availableCerberusSorted.Count) %
-                               availableCerberusSorted.Count);
-                    currentCerberus = availableCerberusSorted[idx];
+                    var idx = ((currentIdxInSorted - 1 + availableCerberusSortedAndCulled.Count) %
+                               availableCerberusSortedAndCulled.Count);
+                    currentCerberus = availableCerberusSortedAndCulled[idx];
                 }
                 // TODO: Check if those specific characters are controlled.
-                else if (_input.cycleCharacter0 && availableCerberus.Count > 0)
+                else if (_input.cycleCharacter0 && availableCerberus.Count > 0 && cerberusToUserMap[0] == -1)
                 {
-                    // Switch to Cerberus at far north-west.
+                    // Switch to first available cerberus. 
                     currentCerberus = availableCerberus[0];
                 }
-                else if (_input.cycleCharacter1 && availableCerberus.Count > 1)
+                else if (_input.cycleCharacter1 && availableCerberus.Count > 1 && cerberusToUserMap[1] == -1)
                 {
-                    // Switch to the Cerberus between Cerberus.
+                    // Switch to second available cerberus.
                     currentCerberus = availableCerberus[1];
                 }
-                else if (_input.cycleCharacter2 && availableCerberus.Count > 2)
+                else if (_input.cycleCharacter2 && availableCerberus.Count > 2 && cerberusToUserMap[2] == -1)
                 {
-                    // Switch to Cerberus at far south-east.
+                    // Switch to third available cerberus.
                     currentCerberus = availableCerberus[2];
                 }
-                else if (_input.clickedCerberus != null)
+                else if (_input.clickedCerberus != null &&
+                         availableCerberusSortedAndCulled.Contains(_input.clickedCerberus))
                 {
                     currentCerberus = _input.clickedCerberus;
                 }
 
                 var newIdx = availableCerberus.IndexOf(currentCerberus);
+                idxOfLastControlledDog = newIdx;
                 SendRPCCycleCharacter(oldIdx, newIdx);
                 nextMoveNeedsToStart = true;
             }
@@ -548,10 +548,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         if (_input.clickedCerberus != null)
         {
             currentCerberus = _input.clickedCerberus;
+            if (PhotonNetwork.InRoom)
+            {
+                var newIdx = availableCerberus.IndexOf(currentCerberus);
+                SendRPCCycleCharacter(idxOfLastControlledDog, newIdx);
+            }
         }
         else
         {
-            currentCerberus = _jack;
+            currentCerberus = availableCerberus[idxOfLastControlledDog];
         }
     }
 
@@ -769,5 +774,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         }
 
         cerberusToUserMap[newDog] = actorId;
+        // Validate my idxOfLastControlledDog.
+        idxOfLastControlledDog = cerberusToUserMap.ToList().IndexOf(PhotonNetwork.LocalPlayer.ActorNumber);
     }
 }
