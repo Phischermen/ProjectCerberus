@@ -13,7 +13,7 @@ using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviourPun
 {
-    public static LevelSequence chosenLevelSequence;
+    public static LevelSequence chosenLevelSequence = CustomProjectSettings.i.mainLevelSequence;
     public static int availableLevels = 0;
     public static bool silenceTutorials;
     public static bool silenceStory;
@@ -60,6 +60,12 @@ public class MainMenuController : MonoBehaviourPun
     }
 //#endif
 
+    // [RuntimeInitializeOnLoadMethod]
+    // static void OnRuntimeMethodLoad()
+    // {
+    //     chosenLevelSequence = CustomProjectSettings.i.mainLevelSequence;
+    // }
+    
     private void Awake()
     {
         // Initialize containers.
