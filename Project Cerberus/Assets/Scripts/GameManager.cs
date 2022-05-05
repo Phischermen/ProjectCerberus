@@ -5,13 +5,10 @@
  * next scene.
  */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using Photon.Pun;
 using Photon.Realtime;
-using Priority_Queue;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -102,6 +99,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
     private Kahuna _kahuna;
     private CerberusMajor _cerberusMajor;
     public List<Cerberus> availableCerberus { get; protected set; }
+    public int[] cerberusToUserMap { get; protected set; }
+    public int idxOfLastControlledDog;
     [HideInInspector] public Cerberus currentCerberus;
     private PuzzleContainer _puzzleContainer;
     private PuzzleGameplayInput _input;
@@ -168,6 +167,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
 
         // Initialize availableCerberus
         availableCerberus = new List<Cerberus>();
+        cerberusToUserMap = new[] {-1, -1, -1};
         if (_jack)
         {
             availableCerberus.Add(_jack);
@@ -194,7 +194,17 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
             cerberusFormed = true;
         }
 
-        currentCerberus = availableCerberus[0];
+        if (!PhotonNetwork.InRoom)
+        {
+            currentCerberus = availableCerberus[0];
+        }
+        else
+        {
+            // All Multiplayer rooms should have all three dogs, so this should be safe.
+            currentCerberus = availableCerberus[MainMenuController.defaultDog];
+            // Sync this setting.
+            SendRPCCycleCharacter(-1, MainMenuController.defaultDog);
+        }
 
         // Setup camera.
         _cameraController.SetCameraMode(startInFixedCameraMode
@@ -375,46 +385,56 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
             }
 
             // Handle request to cycle character
-            if (wantsToCycleCharacter && !cerberusFormed)
+            if (wantsToCycleCharacter && !cerberusFormed && PhotonNetwork.PlayerList.Length != 3)
             {
                 wantsToCycleCharacter = false;
-                // Sort availableCerberus, from north-west most to south-east most.
-                var availableCerberusSorted = availableCerberus.OrderBy(CompareCerberusByPosition).ToList();
+                // Get index of currentCerberus before sorting.
+                var oldIdx = availableCerberus.IndexOf(currentCerberus);
+                // Cull the one possessed by the other client, then sort availableCerberus, from north-west most to south-east most.
+                var availableCerberusSortedAndCulled = availableCerberus
+                    .Where((cerberus, i) => cerberusToUserMap[i] == -1 || cerberus == currentCerberus)
+                    .OrderBy(CompareCerberusByPosition).ToList();
                 // Get index of currentCerberus after sorting the list.
-                var currentIdx = availableCerberusSorted.IndexOf(currentCerberus);
+                var currentIdxInSorted = availableCerberusSortedAndCulled.IndexOf(currentCerberus);
                 if (_input.cycleCharacterForward)
                 {
                     // Switch to Cerberus south-east of current Cerberus.
-                    var idx = (currentIdx + 1) % availableCerberusSorted.Count;
-                    currentCerberus = availableCerberusSorted[idx];
+                    var idx = (currentIdxInSorted + 1) % availableCerberusSortedAndCulled.Count;
+                    currentCerberus = availableCerberusSortedAndCulled[idx];
                 }
                 else if (_input.cycleCharacterBackward)
                 {
                     // Switch to Cerberus north-west of current Cerberus.
                     // Note: To avoid getting a negative index from % operator, I add the array length to currentIndex. 
-                    var idx = ((currentIdx - 1 + availableCerberusSorted.Count) % availableCerberusSorted.Count);
-                    currentCerberus = availableCerberusSorted[idx];
+                    var idx = ((currentIdxInSorted - 1 + availableCerberusSortedAndCulled.Count) %
+                               availableCerberusSortedAndCulled.Count);
+                    currentCerberus = availableCerberusSortedAndCulled[idx];
                 }
-                else if (_input.cycleCharacter0 && availableCerberus.Count > 0)
+                // TODO: Check if those specific characters are controlled.
+                else if (_input.cycleCharacter0 && availableCerberus.Count > 0 && cerberusToUserMap[0] == -1)
                 {
-                    // Switch to Cerberus at far north-west.
+                    // Switch to first available cerberus. 
                     currentCerberus = availableCerberus[0];
                 }
-                else if (_input.cycleCharacter1 && availableCerberus.Count > 1)
+                else if (_input.cycleCharacter1 && availableCerberus.Count > 1 && cerberusToUserMap[1] == -1)
                 {
-                    // Switch to the Cerberus between Cerberus.
+                    // Switch to second available cerberus.
                     currentCerberus = availableCerberus[1];
                 }
-                else if (_input.cycleCharacter2 && availableCerberus.Count > 2)
+                else if (_input.cycleCharacter2 && availableCerberus.Count > 2 && cerberusToUserMap[2] == -1)
                 {
-                    // Switch to Cerberus at far south-east.
+                    // Switch to third available cerberus.
                     currentCerberus = availableCerberus[2];
                 }
-                else if (_input.clickedCerberus != null)
+                else if (_input.clickedCerberus != null &&
+                         availableCerberusSortedAndCulled.Contains(_input.clickedCerberus))
                 {
                     currentCerberus = _input.clickedCerberus;
                 }
 
+                var newIdx = availableCerberus.IndexOf(currentCerberus);
+                idxOfLastControlledDog = newIdx;
+                SendRPCCycleCharacter(oldIdx, newIdx);
                 nextMoveNeedsToStart = true;
             }
 
@@ -524,13 +544,19 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         availableCerberus.Add(_jack);
         availableCerberus.Add(_kahuna);
         availableCerberus.Add(_laguna);
+        // Todo verify clicked cerberus, or just switch to previously controlled character.
         if (_input.clickedCerberus != null)
         {
             currentCerberus = _input.clickedCerberus;
+            if (PhotonNetwork.InRoom)
+            {
+                var newIdx = availableCerberus.IndexOf(currentCerberus);
+                SendRPCCycleCharacter(idxOfLastControlledDog, newIdx);
+            }
         }
         else
         {
-            currentCerberus = _jack;
+            currentCerberus = availableCerberus[idxOfLastControlledDog];
         }
     }
 
@@ -662,17 +688,24 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
     {
         if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC(nameof(RPCSyncBoard), RpcTarget.Others, objectArray, timer, move, currentLevel);
+            photonView.RPC(nameof(RPCSyncBoard), RpcTarget.Others, objectArray, timer, move, currentLevel,
+                cerberusToUserMap);
         }
         // No reason to sync board if there's only one client.
     }
 
     [PunRPC]
-    public void RPCSyncBoard(StateData[] stateDatas, float pTimer, int pMove, int pCurrentLevel)
+    public void RPCSyncBoard(StateData[] stateDatas, float pTimer, int pMove, int pCurrentLevel, int[] map)
     {
         _puzzleContainer.SyncBoardWithData(stateDatas);
         timer = pTimer;
         move = pMove;
+        currentLevel = pCurrentLevel;
+        cerberusToUserMap = map;
+        // Ensure correct cerberus is possessed.
+        currentCerberus = cerberusFormed
+            ? _cerberusMajor
+            : availableCerberus[cerberusToUserMap.ToList().IndexOf(PhotonNetwork.LocalPlayer.ActorNumber)];
     }
 
     public void SendRPCReplayLevel()
@@ -719,5 +752,29 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         {
             Destroy(puzzleUIEndCardFailure);
         }
+    }
+
+    public void SendRPCCycleCharacter(int oldDog, int newDog)
+    {
+        if (oldDog == newDog) return;
+        if (PhotonNetwork.InRoom)
+        {
+            photonView.RPC(nameof(RPCCycleCharacter), RpcTarget.All, oldDog, newDog,
+                PhotonNetwork.LocalPlayer.ActorNumber);
+        }
+    }
+
+    [PunRPC]
+    public void RPCCycleCharacter(int oldDog, int newDog, int actorId)
+    {
+        // Swap old and new.
+        if (oldDog != -1)
+        {
+            cerberusToUserMap[oldDog] = cerberusToUserMap[newDog];
+        }
+
+        cerberusToUserMap[newDog] = actorId;
+        // Validate my idxOfLastControlledDog.
+        idxOfLastControlledDog = cerberusToUserMap.ToList().IndexOf(PhotonNetwork.LocalPlayer.ActorNumber);
     }
 }
