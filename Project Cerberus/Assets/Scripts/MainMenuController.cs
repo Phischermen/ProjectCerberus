@@ -15,7 +15,7 @@ using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviourPun
 {
-    public static LevelSequence chosenLevelSequence = CustomProjectSettings.i.mainLevelSequence;
+    public static LevelSequence chosenLevelSequence;
     public static int availableLevels = 0;
     public static bool silenceTutorials;
     public static bool silenceStory;
@@ -71,11 +71,11 @@ public class MainMenuController : MonoBehaviourPun
     }
 //#endif
 
-    // [RuntimeInitializeOnLoadMethod]
-    // static void OnRuntimeMethodLoad()
-    // {
-    //     chosenLevelSequence = CustomProjectSettings.i.mainLevelSequence;
-    // }
+    [RuntimeInitializeOnLoadMethod]
+    static void OnRuntimeMethodLoad()
+    {
+        chosenLevelSequence = CustomProjectSettings.i.mainLevelSequence;
+    }
     
     private void Awake()
     {
