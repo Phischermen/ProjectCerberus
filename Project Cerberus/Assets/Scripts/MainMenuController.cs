@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ExitGames.Client.Photon;
 using Multiplayer;
 using Photon.Pun;
 using UnityEditor;
@@ -49,6 +50,7 @@ public class MainMenuController : MonoBehaviourPun
     public Toggle silenceStoryToggle;
 
     public int[] userToDogMap;
+    // TODO: What sort of keys are we going to get from room properties?
 
     //#if UNITY_EDITOR
     private void OnGUI()
@@ -76,7 +78,7 @@ public class MainMenuController : MonoBehaviourPun
     {
         chosenLevelSequence = CustomProjectSettings.i.mainLevelSequence;
     }
-    
+
     private void Awake()
     {
         defaultDog = -1;
@@ -254,6 +256,10 @@ public class MainMenuController : MonoBehaviourPun
     {
         FindObjectOfType<MainMenuController>().SendRPCSyncLobbySettings();
         PhotonNetwork.LoadLevel(chosenLevelSceneIndex);
+        // Set custom properties.
+        var table = new Hashtable
+            {{"Jack", userToDogMap[0] != -1}, {"Kahuna", userToDogMap[1] != -1}, {"Laguna", userToDogMap[2] != -1}};
+        PhotonNetwork.CurrentRoom.SetCustomProperties(table);
     }
 
     public void BackToLevelsPressed()
@@ -292,6 +298,7 @@ public class MainMenuController : MonoBehaviourPun
 
         dogButtons[newDog].interactable = false;
         userToDogMap[newDog] = actorId;
-        dogSelectPlayButton.interactable = dogButtons.Count(button => !button.interactable) == PhotonNetwork.PlayerList.Length;
+        dogSelectPlayButton.interactable =
+            dogButtons.Count(button => !button.interactable) == PhotonNetwork.PlayerList.Length;
     }
 }

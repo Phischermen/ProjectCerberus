@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
@@ -68,6 +69,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         {
             ProceedToNextLevel();
         }
+
+        GUILayout.BeginVertical();
+        foreach (var i in cerberusToUserMap)
+        {
+            GUILayout.Label(i.ToString());
+        }
+
+        GUILayout.EndVertical();
     }
 #endif
 
@@ -98,13 +107,17 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
     private Jack _jack;
     private Kahuna _kahuna;
     private CerberusMajor _cerberusMajor;
+
     public List<Cerberus> availableCerberus { get; protected set; }
-    public int[] cerberusToUserMap { get; protected set; }
+
+    // TODO: change this map to something way more useful. Dict<int,Cerberus>?
+    public List<int> cerberusToUserMap { get; protected set; }
     public int idxOfLastControlledDog;
     [HideInInspector] public Cerberus currentCerberus;
     private PuzzleContainer _puzzleContainer;
     private PuzzleGameplayInput _input;
     private PuzzleCameraController _cameraController;
+    private DogTracker[] _dogTrackers;
 
     [HideInInspector] public bool joinAndSplitEnabled;
     public bool cerberusFormed { get; protected set; }
@@ -165,9 +178,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         _laguna = FindObjectOfType<Laguna>();
         _cerberusMajor = FindObjectOfType<CerberusMajor>();
 
+        _dogTrackers = FindObjectsOfType<DogTracker>();
+        RepopulateDogTrackers();
+
         // Initialize availableCerberus
         availableCerberus = new List<Cerberus>();
-        cerberusToUserMap = new[] {-1, -1, -1};
+        cerberusToUserMap = new List<int>() {-1, -1, -1};
         if (_jack)
         {
             availableCerberus.Add(_jack);
@@ -200,6 +216,16 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         }
         else
         {
+            if (MainMenuController.defaultDog < 0 || MainMenuController.defaultDog > availableCerberus.Count)
+            {
+                SetDefaultDogToAvailableCharacter();
+                // // Something is wrong. Player should not be here when defaultDog is not set right.
+                // NZ.NotifyZach(
+                //     $"defaultDog was set to: {MainMenuController.defaultDog}. Disconnecting, and setting to 0.");
+                // PhotonNetwork.Disconnect();
+                // MainMenuController.defaultDog = 0;
+            }
+
             // All Multiplayer rooms should have all three dogs, so this should be safe.
             currentCerberus = availableCerberus[MainMenuController.defaultDog];
             // Sync this setting.
@@ -454,10 +480,18 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         if (_timerRunning)
         {
             timer += Time.deltaTime;
-            if (PhotonNetwork.IsMasterClient && Time.frameCount % 960 == 0)
+            if (PhotonNetwork.IsMasterClient)
             {
-                var objectArray = _puzzleContainer.GetStateDataFromUndoables();
-                SendRPCSyncBoard(objectArray);
+                if (Time.frameCount % 960 == 0)
+                {
+                    var objectArray = _puzzleContainer.GetStateDataFromUndoables();
+                    SendRPCSyncBoard(objectArray);
+                }
+
+                if (Time.frameCount % 120 == 0)
+                {
+                    ValidateAndSendRPCSyncCerberusMap();
+                }
             }
         }
     }
@@ -525,6 +559,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         availableCerberus.Clear();
         availableCerberus.Add(_cerberusMajor);
         currentCerberus = _cerberusMajor;
+        foreach (var tracker in _dogTrackers)
+        {
+            tracker.TrackDog(_cerberusMajor);
+        }
     }
 
     public void SplitCerberusMajor()
@@ -544,7 +582,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         availableCerberus.Add(_jack);
         availableCerberus.Add(_kahuna);
         availableCerberus.Add(_laguna);
-        // Todo verify clicked cerberus, or just switch to previously controlled character.
         if (_input.clickedCerberus != null)
         {
             currentCerberus = _input.clickedCerberus;
@@ -558,6 +595,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         {
             currentCerberus = availableCerberus[idxOfLastControlledDog];
         }
+
+        UpdateDogTrackers();
     }
 
     // Available Cerberus Management
@@ -631,6 +670,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
     {
         if (PhotonNetwork.InRoom)
         {
+            // Set dog as available for people that may join later.
+            var keys = new[] {"Jack", "Kahuna", "Laguna"};
+            PhotonNetwork.CurrentRoom.SetCustomProperties(
+                new Hashtable() {{keys[MainMenuController.defaultDog], false}});
             PhotonNetwork.LeaveRoom();
             Debug.Log("Room left.");
             return true;
@@ -639,10 +682,29 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         return false;
     }
 
+    public void SetDefaultDogToAvailableCharacter()
+    {
+        var currentRoom = PhotonNetwork.CurrentRoom;
+        var customProperties = currentRoom.CustomProperties;
+        // Client will be syncing scene momentarily. Take this opportunity to assign them their dog.
+        var keysToCheck = new[] {"Jack", "Kahuna", "Laguna"};
+        for (var i = 0; i < keysToCheck.Length; i++)
+        {
+            var s = keysToCheck[i];
+            if ((bool) customProperties[s]) continue;
+            // A free character has been found.
+            MainMenuController.defaultDog = i;
+            // Claim it.
+            currentRoom.SetCustomProperties(new Hashtable() {{s, true}});
+            break;
+        }
+    }
+
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         Debug.LogFormat("OnPlayerEnteredRoom() {0}", newPlayer.NickName); // not seen if you're the player connecting
-
+        // Reset to the dog I controlled at the start.
+        SendRPCCycleCharacter(-1, MainMenuController.defaultDog);
 
         if (PhotonNetwork.IsMasterClient)
         {
@@ -662,6 +724,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
             Debug.LogFormat("OnPlayerLeftRoom IsMasterClient {0}",
                 PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
         }
+
+        cerberusToUserMap[cerberusToUserMap.IndexOf(other.ActorNumber)] = -1;
+
+        RepopulateDogTrackers();
     }
 
     public AudioClip testAudio;
@@ -688,24 +754,51 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
     {
         if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC(nameof(RPCSyncBoard), RpcTarget.Others, objectArray, timer, move, currentLevel,
-                cerberusToUserMap);
+            photonView.RPC(nameof(RPCSyncBoard), RpcTarget.Others, objectArray, timer, move, currentLevel);
         }
         // No reason to sync board if there's only one client.
     }
 
     [PunRPC]
-    public void RPCSyncBoard(StateData[] stateDatas, float pTimer, int pMove, int pCurrentLevel, int[] map)
+    public void RPCSyncBoard(StateData[] stateDatas, float pTimer, int pMove, int pCurrentLevel)
     {
         _puzzleContainer.SyncBoardWithData(stateDatas);
         timer = pTimer;
         move = pMove;
         currentLevel = pCurrentLevel;
-        cerberusToUserMap = map;
+    }
+
+    public void ValidateAndSendRPCSyncCerberusMap()
+    {
+        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
+        {
+            // Validate cerberusToUserMap.
+            var duplicate = cerberusToUserMap.GroupBy(x => x).Any(g => g.Count() > 1);
+            if (duplicate)
+            {
+                // Reset cerberus map.
+                cerberusToUserMap = new List<int>() {-1, -1, -1};
+                var playerList = PhotonNetwork.PlayerList;
+                for (int i = 0; i < playerList.Length; i++)
+                {
+                    cerberusToUserMap[i] = playerList[i].ActorNumber;
+                }
+            }
+
+            photonView.RPC(nameof(RPCSyncCerberusMap), RpcTarget.All, cerberusToUserMap.ToArray());
+        }
+        // No reason to sync board if there's only one client.
+    }
+
+    [PunRPC]
+    public void RPCSyncCerberusMap(int[] map)
+    {
+        cerberusToUserMap = new List<int>(map);
         // Ensure correct cerberus is possessed.
         currentCerberus = cerberusFormed
             ? _cerberusMajor
-            : availableCerberus[cerberusToUserMap.ToList().IndexOf(PhotonNetwork.LocalPlayer.ActorNumber)];
+            : availableCerberus[cerberusToUserMap.IndexOf(PhotonNetwork.LocalPlayer.ActorNumber)];
+        UpdateDogTrackers();
     }
 
     public void SendRPCReplayLevel()
@@ -775,6 +868,70 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
 
         cerberusToUserMap[newDog] = actorId;
         // Validate my idxOfLastControlledDog.
-        idxOfLastControlledDog = cerberusToUserMap.ToList().IndexOf(PhotonNetwork.LocalPlayer.ActorNumber);
+        idxOfLastControlledDog = cerberusToUserMap.IndexOf(PhotonNetwork.LocalPlayer.ActorNumber);
+        UpdateDogTrackers();
+    }
+
+    private void UpdateDogTrackers()
+    {
+        // Update dog trackers.
+        if (cerberusFormed)
+        {
+            foreach (var tracker in _dogTrackers)
+            {
+                tracker.TrackDog(_cerberusMajor);
+            }
+        }
+        else
+        {
+            for (var i = 0; i < cerberusToUserMap.Count; i++)
+            {
+                var userId = cerberusToUserMap[i];
+                if (userId == -1) continue;
+                var tracker1 = _dogTrackers.ToList().Find(tracker => tracker.trackedActor == userId);
+                if (tracker1 != null)
+                {
+                    tracker1.TrackDog(availableCerberus[i]);
+                }
+                else
+                {
+                    RepopulateDogTrackers();
+                    UpdateDogTrackers();
+                }
+            }
+        }
+
+        // foreach (var tracker in _dogTrackers)
+        // {
+        //     // TODO THis is probably the culprit. Fix this.
+        //     var idx = cerberusToUserMap.IndexOf(tracker.trackedActor);
+        //     if (idx >= 0 && idx < availableCerberus.Count)
+        //     {
+        //         tracker.gameObject.SetActive(true);
+        //         tracker.TrackDog(availableCerberus[idx]);
+        //     }
+        //     else
+        //     {
+        //         tracker.gameObject.SetActive(false);
+        //     }
+        // }
+    }
+
+    private void RepopulateDogTrackers()
+    {
+        var playerList = PhotonNetwork.PlayerListOthers.Append(PhotonNetwork.LocalPlayer).ToArray();
+        for (var i = 0; i < _dogTrackers.Length; i++)
+        {
+            var tracker = _dogTrackers[i];
+            if (i >= playerList.Length)
+            {
+                tracker.gameObject.SetActive(false);
+            }
+            else
+            {
+                tracker.gameObject.SetActive(true);
+                tracker.trackedActor = playerList[i].ActorNumber;
+            }
+        }
     }
 }

@@ -2,6 +2,7 @@
  * DogTracker follows the currently controlled dog, and manages its own particle system.
  */
 
+using Photon.Pun;
 using UnityEngine;
 
 public class DogTracker : MonoBehaviour
@@ -33,8 +34,9 @@ public class DogTracker : MonoBehaviour
     private ParticleSystem _particleSystem;
     private TrailRenderer _trailRenderer;
     private Cerberus _trackedDog;
+    public int trackedActor;
 
-    void Start()
+    void Awake()
     {
         _manager = FindObjectOfType<GameManager>();
         _particleSystem = GetComponent<ParticleSystem>();
@@ -48,12 +50,12 @@ public class DogTracker : MonoBehaviour
 
     void Update()
     {
+        if (_trackedDog == null) return;
         // Check to see if player has cycled dog.
-        if (_manager.currentCerberus != _trackedDog)
+        // If we're in a room, then GameManager will keep track of the trackedDOg.
+        if (!PhotonNetwork.InRoom && _manager.currentCerberus != _trackedDog)
         {
-            _trackedDog = _manager.currentCerberus;
-            _inTransit = true;
-            SetFieldsToCyclePreset();
+            TrackDog(_manager.currentCerberus);
         }
 
         // Ease in to trackedDog's position.
@@ -103,5 +105,13 @@ public class DogTracker : MonoBehaviour
         _emissionModule.rateOverDistance = 0f;
 
         _trailRenderer.time = timeForFollowPreset;
+    }
+
+    public void TrackDog(Cerberus dog)
+    {
+        if (_trackedDog == dog) return;
+        _trackedDog = dog;
+        _inTransit = true;
+        SetFieldsToCyclePreset();
     }
 }

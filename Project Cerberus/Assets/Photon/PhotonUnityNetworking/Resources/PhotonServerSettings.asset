@@ -49,6 +49,7 @@ MonoBehaviour:
   - RPCUndoLastMove
   - RPCSelectDog
   - RPCCycleCharacter
+  - RPCSyncCerberusMap
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

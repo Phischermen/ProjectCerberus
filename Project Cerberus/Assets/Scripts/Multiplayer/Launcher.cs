@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.UI;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 namespace Multiplayer
 {
@@ -48,6 +50,8 @@ namespace Multiplayer
 
         public override void OnConnectedToMaster()
         {
+            
+            
             Debug.Log("PUN Basics Tutorial/Launcher: OnConnectedToMaster() was called by PUN");
             if (isConnecting)
             {
@@ -77,11 +81,21 @@ namespace Multiplayer
         public override void OnJoinedRoom()
         {
             Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+            var currentRoom = PhotonNetwork.CurrentRoom;
             if (PhotonNetwork.IsMasterClient)
             {
+                // Initialize custom properties.
+                currentRoom.SetCustomProperties(new Hashtable()
+                    {{"Jack", false}, {"Kahuna", false}, {"Laguna", false}});
+                // Goto next screen.
                 gameStartSequenceStep = Step.selectingLevel;
                 DisplayMenuForStep(Step.selectingLevel);
             }
+        }
+
+        public override void OnPlayerEnteredRoom(Player newPlayer)
+        {
+            DisplayMenuForStep(gameStartSequenceStep);
         }
 
         public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -166,6 +180,8 @@ namespace Multiplayer
                         {
                             dogButton.interactable = true;
                         }
+
+                        dogSelectPlayButton.interactable = false;
                     }
 
                     break;
@@ -190,7 +206,7 @@ namespace Multiplayer
                     }
                 }
 
-                stream.SendNext(_mainMenuController.userToDogMap);
+                stream.SendNext(map);
             }
             else if (stream.IsReading)
             {
@@ -210,6 +226,7 @@ namespace Multiplayer
                         }
                     }
                 }
+
                 dogSelectPlayButton.interactable = inactiveButtons == PhotonNetwork.PlayerList.Length;
                 _mainMenuController.userToDogMap = map;
             }
