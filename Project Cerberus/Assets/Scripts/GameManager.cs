@@ -126,6 +126,10 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
     {
         // Create UI
         Instantiate(_uiPrefab);
+    }
+
+    void Start()
+    {
         // Load Level Sequence and get current world and level
         if (levelSequence != MainMenuController.chosenLevelSequence)
         {
@@ -133,10 +137,6 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
             currentLevel = levelSequence.FindCurrentLevelSequence(SceneManager.GetActiveScene().buildIndex);
             playMusicAtStart = true;
         }
-    }
-
-    void Start()
-    {
         if (playMusicAtStart)
         {
             // Play music in case user plays a level at the beginning of the game.
@@ -202,11 +202,6 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
             if (MainMenuController.defaultDog < 0 || MainMenuController.defaultDog > availableCerberus.Count)
             {
                 SetDefaultDogToAvailableCharacter();
-                // // Something is wrong. Player should not be here when defaultDog is not set right.
-                // NZ.NotifyZach(
-                //     $"defaultDog was set to: {MainMenuController.defaultDog}. Disconnecting, and setting to 0.");
-                // PhotonNetwork.Disconnect();
-                // MainMenuController.defaultDog = 0;
             }
 
             // All Multiplayer rooms should have all three dogs, so this should be safe.
@@ -745,18 +740,25 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
 
     private void RepopulateDogTrackers()
     {
-        var playerList = PhotonNetwork.PlayerListOthers.Append(PhotonNetwork.LocalPlayer).ToArray();
-        for (var i = 0; i < _dogTrackers.Length; i++)
+        if (!PhotonNetwork.InRoom)
         {
-            var tracker = _dogTrackers[i];
-            if (i >= playerList.Length)
+            _dogTrackers[0].gameObject.SetActive(true);
+        }
+        else
+        {
+            var playerList = PhotonNetwork.PlayerListOthers.Append(PhotonNetwork.LocalPlayer).ToArray();
+            for (var i = 0; i < _dogTrackers.Length; i++)
             {
-                tracker.gameObject.SetActive(false);
-            }
-            else
-            {
-                tracker.gameObject.SetActive(true);
-                tracker.trackedActor = playerList[i].ActorNumber;
+                var tracker = _dogTrackers[i];
+                if (i >= playerList.Length)
+                {
+                    tracker.gameObject.SetActive(false);
+                }
+                else
+                {
+                    tracker.gameObject.SetActive(true);
+                    tracker.trackedActor = playerList[i].ActorNumber;
+                }
             }
         }
     }
