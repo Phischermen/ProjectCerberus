@@ -469,6 +469,7 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
                 if (Time.frameCount % 120 == 0)
                 {
                     ValidateAndSendRPCSyncCerberusMap();
+                    SendRPCSyncGameplayState();
                 }
             }
         }

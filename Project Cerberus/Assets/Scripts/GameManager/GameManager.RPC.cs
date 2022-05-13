@@ -42,6 +42,25 @@ public partial class GameManager
             move = pMove;
             currentLevel = pCurrentLevel;
         }
+        
+        public void SendRPCSyncGameplayState()
+        {
+            if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
+            {
+                photonView.RPC(nameof(RPCSyncGameplayState), RpcTarget.Others, gameplayEnabled, gameOverEndCardDisplayed);
+            }
+            // No reason to sync board if there's only one client.
+        }
+    
+        [PunRPC]
+        public void RPCSyncGameplayState(bool pGameplayEnabled, bool pEndcardDisplayed)
+        {
+            gameplayEnabled = pGameplayEnabled;
+            if (pEndcardDisplayed != gameOverEndCardDisplayed)
+            {
+                DestroyEndcardUI();
+            }
+        }
     
         public void ValidateAndSendRPCSyncCerberusMap()
         {
@@ -112,13 +131,13 @@ public partial class GameManager
             var puzzleUIEndCardSuccess = FindObjectOfType<PuzzleUIEndCardSuccess>();
             if (puzzleUIEndCardSuccess != null)
             {
-                Destroy(puzzleUIEndCardSuccess);
+                Destroy(puzzleUIEndCardSuccess.gameObject);
             }
     
             var puzzleUIEndCardFailure = FindObjectOfType<PuzzleUIEndCardFailure>();
             if (puzzleUIEndCardFailure != null)
             {
-                Destroy(puzzleUIEndCardFailure);
+                Destroy(puzzleUIEndCardFailure.gameObject);
             }
         }
     
