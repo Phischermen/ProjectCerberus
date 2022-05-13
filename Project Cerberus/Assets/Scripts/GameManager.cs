@@ -14,7 +14,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-public class GameManager : MonoBehaviourPunCallbacks, IUndoable
+public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
 {
     class GameManagerStateData : StateData
     {
@@ -62,23 +62,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         }
     }
 
-#if DEBUG
-    private void OnGUI()
-    {
-        if (GUI.Button(new Rect(200, 0, 200, 20), "Skip level"))
-        {
-            ProceedToNextLevel();
-        }
-
-        GUILayout.BeginVertical();
-        foreach (var i in cerberusToUserMap)
-        {
-            GUILayout.Label(i.ToString());
-        }
-
-        GUILayout.EndVertical();
-    }
-#endif
 
     public static LevelSequence levelSequence;
     public static int currentLevel = -1;
@@ -114,13 +97,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
     public List<int> cerberusToUserMap { get; protected set; }
     public int idxOfLastControlledDog;
     [HideInInspector] public Cerberus currentCerberus;
+
+
     private PuzzleContainer _puzzleContainer;
     private PuzzleGameplayInput _input;
     private PuzzleCameraController _cameraController;
     private DogTracker[] _dogTrackers;
 
-    [HideInInspector] public bool joinAndSplitEnabled;
-    public bool cerberusFormed { get; protected set; }
 
     [HideInInspector] public bool wantsToJoin;
     [HideInInspector] public bool wantsToSplit;
@@ -128,12 +111,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
     [HideInInspector] public bool wantsToUndo;
 
     private int _cerberusThatMustReachGoal;
+
+    [HideInInspector] public bool joinAndSplitEnabled;
+    public bool cerberusFormed { get; protected set; }
     [HideInInspector] public bool collectedStar;
-
     [HideInInspector] public bool gameplayEnabled;
-
     [HideInInspector] public bool gameOverEndCardDisplayed;
-
     [HideInInspector] public bool playMusicAtStart;
 
     public Queue<Cerberus.CerberusCommand> _commandQueue;
@@ -496,10 +479,28 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         }
     }
 
+#if DEBUG
+    private void OnGUI()
+    {
+        if (GUI.Button(new Rect(200, 0, 200, 20), "Skip level"))
+        {
+            ProceedToNextLevel();
+        }
+
+        GUILayout.BeginVertical();
+        foreach (var i in cerberusToUserMap)
+        {
+            GUILayout.Label(i.ToString());
+        }
+
+        GUILayout.EndVertical();
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.DrawIcon(new Vector3(0, 3, 0), "Gears");
     }
+#endif
 
     // Gameover
     public void EndGameWithFailureStatus()
@@ -627,39 +628,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         }
     }
 
-    // Replay Level/Proceed Game
-    public void UndoLastMove()
-    {
-        _puzzleContainer.UndoLastMove();
-        gameplayEnabled = true;
-        // Note: Timer is reset via GameManagerStateData.Load()
-    }
-
-    public void ReplayLevel()
-    {
-        _puzzleContainer.UndoToFirstMove();
-        // NOTE: Only master client can send the following command.
-        SendRPCReplayLevel();
-        gameplayEnabled = true;
-        // Repopulate availableCerberus
-        RepopulateAvailableCerberus();
-        // Note: Timer is reset via GameManagerStateData.Load()
-    }
-
-    public void ProceedToNextLevel()
-    {
-        var nextScene = levelSequence.GetSceneBuildIndexForLevel(currentLevel + 1, andPlayMusic: true);
-        if (nextScene == -1)
-        {
-            Debug.Log($"Could not find next level {currentLevel + 1}");
-        }
-        else
-        {
-            currentLevel += 1;
-            SceneManager.LoadScene(nextScene);
-        }
-    }
-
     // Multiplayer Callbacks + Methods
     public override void OnLeftRoom()
     {
@@ -728,148 +696,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IUndoable
         cerberusToUserMap[cerberusToUserMap.IndexOf(other.ActorNumber)] = -1;
 
         RepopulateDogTrackers();
-    }
-
-    public AudioClip testAudio;
-
-    public void SendRPCEnqueueCommand(Cerberus.CerberusCommand command)
-    {
-        if (PhotonNetwork.InRoom)
-        {
-            photonView.RPC(nameof(RPCEnqueueCommand), RpcTarget.All, command);
-        }
-        else
-        {
-            RPCEnqueueCommand(command);
-        }
-    }
-
-    [PunRPC]
-    public void RPCEnqueueCommand(Cerberus.CerberusCommand command)
-    {
-        _commandQueue.Enqueue(command);
-    }
-
-    public void SendRPCSyncBoard(StateData[] objectArray)
-    {
-        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
-        {
-            photonView.RPC(nameof(RPCSyncBoard), RpcTarget.Others, objectArray, timer, move, currentLevel);
-        }
-        // No reason to sync board if there's only one client.
-    }
-
-    [PunRPC]
-    public void RPCSyncBoard(StateData[] stateDatas, float pTimer, int pMove, int pCurrentLevel)
-    {
-        _puzzleContainer.SyncBoardWithData(stateDatas);
-        timer = pTimer;
-        move = pMove;
-        currentLevel = pCurrentLevel;
-    }
-
-    public void ValidateAndSendRPCSyncCerberusMap()
-    {
-        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
-        {
-            // Validate cerberusToUserMap.
-            var duplicate = cerberusToUserMap.GroupBy(x => x).Any(g => g.Count() > 1);
-            if (duplicate)
-            {
-                // Reset cerberus map.
-                cerberusToUserMap = new List<int>() {-1, -1, -1};
-                var playerList = PhotonNetwork.PlayerList;
-                for (int i = 0; i < playerList.Length; i++)
-                {
-                    cerberusToUserMap[i] = playerList[i].ActorNumber;
-                }
-            }
-
-            photonView.RPC(nameof(RPCSyncCerberusMap), RpcTarget.All, cerberusToUserMap.ToArray());
-        }
-        // No reason to sync board if there's only one client.
-    }
-
-    [PunRPC]
-    public void RPCSyncCerberusMap(int[] map)
-    {
-        cerberusToUserMap = new List<int>(map);
-        // Ensure correct cerberus is possessed.
-        currentCerberus = cerberusFormed
-            ? _cerberusMajor
-            : availableCerberus[cerberusToUserMap.IndexOf(PhotonNetwork.LocalPlayer.ActorNumber)];
-        UpdateDogTrackers();
-    }
-
-    public void SendRPCReplayLevel()
-    {
-        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
-        {
-            photonView.RPC(nameof(RPCReplayLevel), RpcTarget.Others);
-        }
-    }
-
-    [PunRPC]
-    public void RPCReplayLevel()
-    {
-        ReplayLevel();
-        DestroyEndcardUI();
-    }
-
-    public void SendRPCUndoLastMove()
-    {
-        if (PhotonNetwork.IsConnected && PhotonNetwork.IsMasterClient)
-        {
-            photonView.RPC(nameof(RPCUndoLastMove), RpcTarget.Others);
-        }
-    }
-
-    [PunRPC]
-    public void RPCUndoLastMove()
-    {
-        UndoLastMove();
-        DestroyEndcardUI();
-    }
-
-    public void DestroyEndcardUI()
-    {
-        // Destroy endcard UI that may or may not be present.
-        var puzzleUIEndCardSuccess = FindObjectOfType<PuzzleUIEndCardSuccess>();
-        if (puzzleUIEndCardSuccess != null)
-        {
-            Destroy(puzzleUIEndCardSuccess);
-        }
-
-        var puzzleUIEndCardFailure = FindObjectOfType<PuzzleUIEndCardFailure>();
-        if (puzzleUIEndCardFailure != null)
-        {
-            Destroy(puzzleUIEndCardFailure);
-        }
-    }
-
-    public void SendRPCCycleCharacter(int oldDog, int newDog)
-    {
-        if (oldDog == newDog) return;
-        if (PhotonNetwork.InRoom)
-        {
-            photonView.RPC(nameof(RPCCycleCharacter), RpcTarget.All, oldDog, newDog,
-                PhotonNetwork.LocalPlayer.ActorNumber);
-        }
-    }
-
-    [PunRPC]
-    public void RPCCycleCharacter(int oldDog, int newDog, int actorId)
-    {
-        // Swap old and new.
-        if (oldDog != -1)
-        {
-            cerberusToUserMap[oldDog] = cerberusToUserMap[newDog];
-        }
-
-        cerberusToUserMap[newDog] = actorId;
-        // Validate my idxOfLastControlledDog.
-        idxOfLastControlledDog = cerberusToUserMap.IndexOf(PhotonNetwork.LocalPlayer.ActorNumber);
-        UpdateDogTrackers();
     }
 
     private void UpdateDogTrackers()
