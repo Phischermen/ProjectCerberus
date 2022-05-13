@@ -50,12 +50,14 @@ public class DogTracker : MonoBehaviour
 
     void Update()
     {
-        if (_trackedDog == null) return;
         // Check to see if player has cycled dog.
         // If we're in a room, then GameManager will keep track of the trackedDOg.
         if (!PhotonNetwork.InRoom && _manager.currentCerberus != _trackedDog)
         {
             TrackDog(_manager.currentCerberus);
+        }else if (_trackedDog == null)
+        {
+            return;
         }
 
         // Ease in to trackedDog's position.
