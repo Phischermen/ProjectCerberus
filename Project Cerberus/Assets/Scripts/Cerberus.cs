@@ -230,6 +230,9 @@ public class Cerberus : PuzzleEntity
         pushableByJacksMultiPush = true;
         pushableByFireball = true;
         jumpable = true;
+        // Hades must be able to reach Cerberus, so this must be set as 0.
+        // CerberusMajor is incapable of landing on itself anyway. 
+        landableScore = 0;
     }
 
     [HideInInspector] public bool doneWithMove;
@@ -392,7 +395,6 @@ public class Cerberus : PuzzleEntity
         pushableByJacksSuperPush = !disableAndShowPentagram;
         pullable = !disableAndShowPentagram;
         jumpable = !disableAndShowPentagram;
-        landableScore = disableAndShowPentagram ? 0 : -1;
         GetComponent<SpriteRenderer>().sprite = disableAndShowPentagram ? pentagramMarker : _cerberusSprite;
     }
 }
