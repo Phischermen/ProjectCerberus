@@ -295,7 +295,7 @@ MonoBehaviour:
     - id: ct12
       speaker: 0
       line: That means to beat this level, you need to get Cerberus to this goal.
-  - expandedInInspector: 1
+  - expandedInInspector: 0
     sceneTitle: PlayerKeepsDoingSingleJumps
     dialogues:
     - id: cj01
@@ -313,3 +313,36 @@ MonoBehaviour:
       speaker: 0
       line: Later puzzles exploit chain jumping, so be sure to get your practice
         in now!
+  - expandedInInspector: 0
+    sceneTitle: Cerberus Reaches Elysium
+    dialogues:
+    - id: cre1
+      speaker: 0
+      line: When we reach that bush, we need to continue straight then...
+    - id: cre2
+      speaker: 3
+      line: Ah ha! Do not...
+    - id: cre3
+      speaker: 2
+      line: Ah! How? How did he...
+    - id: cre4
+      speaker: 1
+      line: Not important right now, turn back, turn back!
+    - id: cre5
+      speaker: 0
+      line: Urgh. Plans changed, everyone run!
+  - expandedInInspector: 1
+    sceneTitle: Hades Screams In Agony
+    dialogues:
+    - id: hsa1
+      speaker: 3
+      line: AHHHHHH!
+    - id: hsa2
+      speaker: 3
+      line: I can't LIVE like this anymore!
+    - id: hsa3
+      speaker: 3
+      line: Hop around here forever, I don't care anymore!
+    - id: hsa4
+      speaker: 0
+      line: Hooray!

@@ -96,4 +96,15 @@ public static class DialogueDatabase
 	public static Vector2Int cj02 = new Vector2Int(10,1);
 	public static Vector2Int cj03 = new Vector2Int(10,2);
 	public static Vector2Int cj04 = new Vector2Int(10,3);
+	//Cerberus Reaches Elysium
+	public static Vector2Int cre1 = new Vector2Int(11,0);
+	public static Vector2Int cre2 = new Vector2Int(11,1);
+	public static Vector2Int cre3 = new Vector2Int(11,2);
+	public static Vector2Int cre4 = new Vector2Int(11,3);
+	public static Vector2Int cre5 = new Vector2Int(11,4);
+	//Hades Screams In Agony
+	public static Vector2Int hsa1 = new Vector2Int(12,0);
+	public static Vector2Int hsa2 = new Vector2Int(12,1);
+	public static Vector2Int hsa3 = new Vector2Int(12,2);
+	public static Vector2Int hsa4 = new Vector2Int(12,3);
 }
