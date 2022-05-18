@@ -18,6 +18,7 @@ public class LevelSequence : ScriptableObject
         // I'd prefer to use a tuple, but tuples are not serializable in Unity.
         // X: index for instancing
         // Y: index for display
+        // TODO: Add bool to flag levels that are book levels.
         public List<Vector2Int> levels;
         public AudioClip music;
         public bool expandedInInspector;

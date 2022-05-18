@@ -140,6 +140,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ElysiumPond.unity
     guid: 48ea18860c3096049aaffd4e01f37e4a
+  - enabled: 1
+    path: Assets/Scenes/EpilogueAndCredits.unity
+    guid: 9e23cca1420424f4193e4b810594c197
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 90dfd16557c9de34499995dab2adeb9a,
       type: 2}
