@@ -318,7 +318,8 @@ MonoBehaviour:
     dialogues:
     - id: cre1
       speaker: 0
-      line: When we reach that bush, we need to continue straight then...
+      line: When we reach that bush, we need to continue straight and then we're
+        home free!
     - id: cre2
       speaker: 3
       line: Ah ha! Do not...
