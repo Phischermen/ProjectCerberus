@@ -115,7 +115,7 @@ namespace Editor
                         var scene = world.levels[j];
                         // Each level has a row of controls. Start building here.
                         GUILayout.BeginHorizontal();
-                        var buildSettingsScene = EditorBuildSettings.scenes[scene.y];
+                        var buildSettingsScene = EditorBuildSettings.scenes[scene.idxForDisplay];
                         var path = buildSettingsScene.path;
                         var enabled = buildSettingsScene.enabled;
                         var sceneExists = File.Exists(path);
@@ -175,6 +175,11 @@ namespace Editor
 
                         // End row of buttons.
                         GUILayout.EndHorizontal();
+                        // Add toggle for gameplay levels.
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Space(20f);
+                        scene.isGameplay = GUILayout.Toggle(scene.isGameplay, "Is Gameplay");
+                        GUILayout.EndHorizontal();
                     }
                 } // End of displaying level controls.
 
@@ -226,15 +231,11 @@ namespace Editor
                 {
                     var level = world.levels[j];
                     // Bound check level.y
-                    level.y = Mathf.Clamp(level.y, 0, EditorBuildSettings.scenes.Length);
+                    level.idxForDisplay = Mathf.Clamp(level.idxForDisplay, 0, EditorBuildSettings.scenes.Length);
                     // Verify level.x is the actual index to to instance scene.
                     var actualIndexToInstanceScene = EditorBuildSettings.scenes
-                        .Where((scene, i1) => scene.enabled && i1 < level.y).Count();
-                    if (level.x != actualIndexToInstanceScene)
-                    {
-                        level.x = actualIndexToInstanceScene;
-                    }
-
+                        .Where((scene, i1) => scene.enabled && i1 < level.idxForDisplay).Count();
+                    level.idxForInstancing = actualIndexToInstanceScene;
                     world.levels[j] = level;
                 }
             }
@@ -258,7 +259,7 @@ namespace Editor
                     name = name.Remove(0, name.LastIndexOf('/') + 1);
                     // Add the item to the menu. OnSelectScene is the callback.
                     menu.AddItem(new GUIContent(name), false, OnSelectScene,
-                        new Vector2Int(indexToInstanceScene, index));
+                        new LevelSequence.Level(indexToInstanceScene, index));
                     indexToInstanceScene += 1;
                 }
             }
@@ -271,10 +272,10 @@ namespace Editor
         {
             // Cast objects.
             var levelSequence = (LevelSequence) target;
-            var tuple = (Vector2Int) userdata;
+            var level = (LevelSequence.Level) userdata;
             // Insert the selected scene into the edited field.
             levelSequence.worlds[_editedWorld].levels
-                .Insert(_editedLevel, tuple);
+                .Insert(_editedLevel, level);
         }
     }
 }

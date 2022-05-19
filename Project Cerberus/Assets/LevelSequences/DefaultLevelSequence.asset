@@ -14,55 +14,131 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worlds:
   - levels:
-    - {x: 32, y: 35}
-    - {x: 33, y: 36}
-    - {x: 27, y: 30}
-    - {x: 28, y: 31}
-    - {x: 26, y: 29}
-    - {x: 34, y: 37}
-    - {x: 30, y: 33}
-    - {x: 29, y: 32}
-    - {x: 31, y: 34}
+    - idxForInstancing: 32
+      idxForDisplay: 35
+      isGameplay: 1
+    - idxForInstancing: 33
+      idxForDisplay: 36
+      isGameplay: 1
+    - idxForInstancing: 27
+      idxForDisplay: 30
+      isGameplay: 1
+    - idxForInstancing: 28
+      idxForDisplay: 31
+      isGameplay: 1
+    - idxForInstancing: 26
+      idxForDisplay: 29
+      isGameplay: 1
+    - idxForInstancing: 34
+      idxForDisplay: 37
+      isGameplay: 1
+    - idxForInstancing: 30
+      idxForDisplay: 33
+      isGameplay: 1
+    - idxForInstancing: 29
+      idxForDisplay: 32
+      isGameplay: 1
+    - idxForInstancing: 31
+      idxForDisplay: 34
+      isGameplay: 1
     music: {fileID: 0}
     expandedInInspector: 1
   - levels:
-    - {x: 5, y: 8}
-    - {x: 22, y: 25}
-    - {x: 18, y: 21}
-    - {x: 17, y: 20}
-    - {x: 14, y: 17}
-    - {x: 16, y: 19}
-    - {x: 35, y: 38}
-    - {x: 4, y: 7}
-    - {x: 15, y: 18}
-    - {x: 13, y: 16}
+    - idxForInstancing: 5
+      idxForDisplay: 8
+      isGameplay: 1
+    - idxForInstancing: 22
+      idxForDisplay: 25
+      isGameplay: 1
+    - idxForInstancing: 18
+      idxForDisplay: 21
+      isGameplay: 1
+    - idxForInstancing: 17
+      idxForDisplay: 20
+      isGameplay: 1
+    - idxForInstancing: 14
+      idxForDisplay: 17
+      isGameplay: 1
+    - idxForInstancing: 16
+      idxForDisplay: 19
+      isGameplay: 1
+    - idxForInstancing: 35
+      idxForDisplay: 38
+      isGameplay: 1
+    - idxForInstancing: 4
+      idxForDisplay: 7
+      isGameplay: 1
+    - idxForInstancing: 15
+      idxForDisplay: 18
+      isGameplay: 1
+    - idxForInstancing: 13
+      idxForDisplay: 16
+      isGameplay: 1
     music: {fileID: 8300000, guid: 0485359b657705b438b5526cd30c0cf9, type: 3}
     expandedInInspector: 1
   - levels:
-    - {x: 21, y: 24}
-    - {x: 19, y: 22}
-    - {x: 20, y: 23}
-    - {x: 8, y: 11}
-    - {x: 36, y: 39}
-    - {x: 12, y: 15}
+    - idxForInstancing: 21
+      idxForDisplay: 24
+      isGameplay: 1
+    - idxForInstancing: 19
+      idxForDisplay: 22
+      isGameplay: 1
+    - idxForInstancing: 20
+      idxForDisplay: 23
+      isGameplay: 1
+    - idxForInstancing: 8
+      idxForDisplay: 11
+      isGameplay: 1
+    - idxForInstancing: 36
+      idxForDisplay: 39
+      isGameplay: 1
+    - idxForInstancing: 12
+      idxForDisplay: 15
+      isGameplay: 1
     music: {fileID: 8300000, guid: 395d5f66d0912e842a0e4971c1f378e2, type: 3}
     expandedInInspector: 1
   - levels:
-    - {x: 40, y: 43}
-    - {x: 37, y: 40}
-    - {x: 39, y: 42}
-    - {x: 38, y: 41}
-    - {x: 9, y: 12}
-    - {x: 10, y: 13}
-    - {x: 2, y: 2}
-    - {x: 6, y: 9}
-    - {x: 23, y: 26}
-    - {x: 25, y: 28}
+    - idxForInstancing: 40
+      idxForDisplay: 43
+      isGameplay: 1
+    - idxForInstancing: 37
+      idxForDisplay: 40
+      isGameplay: 1
+    - idxForInstancing: 39
+      idxForDisplay: 42
+      isGameplay: 1
+    - idxForInstancing: 38
+      idxForDisplay: 41
+      isGameplay: 1
+    - idxForInstancing: 9
+      idxForDisplay: 12
+      isGameplay: 1
+    - idxForInstancing: 10
+      idxForDisplay: 13
+      isGameplay: 1
+    - idxForInstancing: 2
+      idxForDisplay: 2
+      isGameplay: 1
+    - idxForInstancing: 6
+      idxForDisplay: 9
+      isGameplay: 1
+    - idxForInstancing: 23
+      idxForDisplay: 26
+      isGameplay: 1
+    - idxForInstancing: 25
+      idxForDisplay: 28
+      isGameplay: 1
     music: {fileID: 8300000, guid: 093a3330e42fc874a9d23d5ad57e59fd, type: 3}
     expandedInInspector: 1
   - levels:
-    - {x: 41, y: 44}
-    - {x: 42, y: 45}
-    - {x: 11, y: 14}
+    - idxForInstancing: 41
+      idxForDisplay: 44
+      isGameplay: 1
+    - idxForInstancing: 42
+      idxForDisplay: 45
+      isGameplay: 0
+    - idxForInstancing: 11
+      idxForDisplay: 14
+      isGameplay: 0
     music: {fileID: 8300000, guid: 490d1e1935bc94793b72f79fa279accd, type: 3}
     expandedInInspector: 1

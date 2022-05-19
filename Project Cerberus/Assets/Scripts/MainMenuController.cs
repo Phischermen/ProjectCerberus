@@ -143,15 +143,20 @@ public class MainMenuController : MonoBehaviourPun
             // Create a level choice foreach level in each world.
             foreach (var level in world.levels)
             {
-                // Instantiate the level choice.
-                var newLevelChoice = Instantiate(levelChoiceButton, newWorldContainer.transform);
-                var choice = newLevelChoice.GetComponent<LevelChoice>();
-                // Set fields for LevelChoice.
-                choice.levelIdx = idx;
-                choice.sceneIdx = level.x;
-                choice.settings = PlayerPrefs.GetString(levelSequence.name + level.x, TrophyData.initialTrophyCode);
-                choice.ApplySettings();
-                choice.GetComponentInChildren<Text>().text = (idx).ToString();
+                if (level.isGameplay)
+                {
+                    // Instantiate the level choice.
+                    var newLevelChoice = Instantiate(levelChoiceButton, newWorldContainer.transform);
+                    var choice = newLevelChoice.GetComponent<LevelChoice>();
+                    // Set fields for LevelChoice.
+                    choice.levelIdx = idx;
+                    choice.sceneIdx = level.idxForInstancing;
+                    choice.settings = PlayerPrefs.GetString(levelSequence.name + level.idxForInstancing,
+                        TrophyData.initialTrophyCode);
+                    choice.ApplySettings();
+                    choice.GetComponentInChildren<Text>().text = (idx).ToString();
+                }
+
                 // Increment current level index.
                 idx += 1;
             }

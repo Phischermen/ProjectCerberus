@@ -13,20 +13,33 @@ using UnityEngine;
 public class LevelSequence : ScriptableObject
 {
     [Serializable]
+    public class Level
+    {
+        public int idxForInstancing;
+        public int idxForDisplay;
+        public bool isGameplay;
+
+        public Level(int idxForInstancing, int idxForDisplay)
+        {
+            this.idxForInstancing = idxForInstancing;
+            this.idxForDisplay = idxForDisplay;
+        }
+    }
+    [Serializable]
     public class World
     {
         // I'd prefer to use a tuple, but tuples are not serializable in Unity.
         // X: index for instancing
         // Y: index for display
         // TODO: Add bool to flag levels that are book levels.
-        public List<Vector2Int> levels;
+        public List<Level> levels;
         public AudioClip music;
         public bool expandedInInspector;
 
         public World()
         {
             expandedInInspector = true;
-            levels = new List<Vector2Int>();
+            levels = new List<Level>();
         }
     }
 
@@ -59,7 +72,7 @@ public class LevelSequence : ScriptableObject
         // Search through each world's level list for scene via build index.
         for (int i = 0; i < worlds.Count; i++)
         {
-            var levelSequence = worlds[i].levels.FindIndex((idx) => idx.x == sceneBuildIndex);
+            var levelSequence = worlds[i].levels.FindIndex((level) => level.idxForInstancing == sceneBuildIndex);
             if (levelSequence == -1)
             {
                 numberOfLevelsInPreviousWorld += worlds[i].levels.Count;
@@ -89,7 +102,7 @@ public class LevelSequence : ScriptableObject
             {
                 // Music management is thrown in here just for its convenience.
                 if (andPlayMusic) DiskJockey.PlayTrack(worlds[i].music);
-                return levelsInCurrentWorld[levelSequence].x;
+                return levelsInCurrentWorld[levelSequence].idxForInstancing;
             }
         }
 
