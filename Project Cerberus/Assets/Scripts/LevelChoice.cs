@@ -9,16 +9,20 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Level = LevelSequence.Level;
 
 public class LevelChoice : MonoBehaviour
 {
     public int levelIdx;
-    public int sceneIdx;
+    public Level sceneIdx;
     public string settings;
 
     public Image timeTrophyImage;
     public Image moveTrophyImage;
     public Image bonusStarTrophyImage;
+    public Image bookImage;
+
+    public Text text;
 
     public TrophyData timeTrophyData;
     public TrophyData moveTrophyData;
@@ -26,6 +30,7 @@ public class LevelChoice : MonoBehaviour
 
     private void Start()
     {
+        // Setup button.
         var button = GetComponent<Button>();
         button.onClick.AddListener(ButtonPressed);
         // Make sure that the button is only interactable if the Player has reached this level.
@@ -41,10 +46,24 @@ public class LevelChoice : MonoBehaviour
 
     public void ApplySettings()
     {
-        // Display stars
-        timeTrophyImage.sprite = timeTrophyData.GetSpriteToDisplay(settings[0]);
-        moveTrophyImage.sprite = moveTrophyData.GetSpriteToDisplay(settings[1]);
-        bonusStarTrophyImage.sprite = bonusStarTrophyData.GetSpriteToDisplay(settings[2]);
+        // Display the correct set of ui elements.
+        if (sceneIdx.isGameplay)
+        {
+            // Display stars
+            timeTrophyImage.sprite = timeTrophyData.GetSpriteToDisplay(settings[0]);
+            moveTrophyImage.sprite = moveTrophyData.GetSpriteToDisplay(settings[1]);
+            bonusStarTrophyImage.sprite = bonusStarTrophyData.GetSpriteToDisplay(settings[2]);
+            text.text = levelIdx.ToString();
+        }
+        else
+        {
+            timeTrophyImage.gameObject.SetActive(false);
+            moveTrophyImage.gameObject.SetActive(false);
+            bonusStarTrophyImage.gameObject.SetActive(false);
+            text.gameObject.SetActive(false);
+            // Note: The book is hidden by default.
+            bookImage.gameObject.SetActive(true);
+        }
     }
 
     private void ButtonPressed()
@@ -53,11 +72,11 @@ public class LevelChoice : MonoBehaviour
         MainMenuController.chosenLevelSequence.GetSceneBuildIndexForLevel(levelIdx, andPlayMusic: true);
         if (PhotonNetwork.InRoom)
         {
-            FindObjectOfType<Launcher>().LevelSelectedForMultiplayer(sceneIdx);
+            FindObjectOfType<Launcher>().LevelSelectedForMultiplayer(sceneIdx.idxForInstancing);
         }
         else
         {
-            SceneManager.LoadScene(sceneIdx);
+            SceneManager.LoadScene(sceneIdx.idxForInstancing);
         }
     }
 }

@@ -22,7 +22,7 @@ MonoBehaviour:
     - id: M8F6
       speaker: 0
       line: Just like I do to your mom.
-  - expandedInInspector: 0
+  - expandedInInspector: 1
     sceneTitle: BasicsNarration
     dialogues:
     - id: W4H2
@@ -116,7 +116,7 @@ MonoBehaviour:
       speaker: 0
       line: You should know that it is not always possible to score all the trophies
         using one solution. Sometimes you will have to find alternate solutions.
-  - expandedInInspector: 0
+  - expandedInInspector: 1
     sceneTitle: JackOutdoors
     dialogues:
     - id: Jou1

@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worlds:
   - levels:
+    - idxForInstancing: 43
+      idxForDisplay: 46
+      isGameplay: 0
     - idxForInstancing: 32
       idxForDisplay: 35
       isGameplay: 1
@@ -32,6 +35,9 @@ MonoBehaviour:
     - idxForInstancing: 34
       idxForDisplay: 37
       isGameplay: 1
+    - idxForInstancing: 44
+      idxForDisplay: 47
+      isGameplay: 0
     - idxForInstancing: 30
       idxForDisplay: 33
       isGameplay: 1
@@ -41,7 +47,7 @@ MonoBehaviour:
     - idxForInstancing: 31
       idxForDisplay: 34
       isGameplay: 1
-    music: {fileID: 0}
+    music: {fileID: 8300000, guid: b09e4707dee549448811856dae80be07, type: 3}
     expandedInInspector: 1
   - levels:
     - idxForInstancing: 5

@@ -170,7 +170,7 @@ GameObject:
   - component: {fileID: 8672521118546205553}
   - component: {fileID: 8672521118546205558}
   m_Layer: 5
-  m_Name: BookCanvas
+  m_Name: Book
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -447,7 +447,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 22}
-  m_SizeDelta: {x: 1145.3928, y: 646.7505}
+  m_SizeDelta: {x: 1240, y: 700.1709}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8672521119116880980
 CanvasRenderer:
@@ -523,7 +523,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 8.599971, y: 70.500046}
-  m_SizeDelta: {x: 1382.5118, y: 924.5233}
+  m_SizeDelta: {x: 1600, y: 800}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8672521119608334468
 CanvasRenderer:

@@ -70,6 +70,15 @@ public class MainMenuController : MonoBehaviourPun
             PlayerPrefs.DeleteAll();
             PlayerPrefs.Save();
         }
+        
+        if (GUI.Button(new Rect(0, 40, 200, 20), "Unlock all levels"))
+        {
+            foreach (var levelChoice in FindObjectsOfType<LevelChoice>())
+            {
+                var button = levelChoice.GetComponentInChildren<Button>();
+                button.interactable = true;
+            }
+        }
     }
 //#endif
 
@@ -131,7 +140,7 @@ public class MainMenuController : MonoBehaviourPun
 
     private void InstantiateWorldsAndLevelChoiceButtons(LevelSequence levelSequence)
     {
-        var idx = 0;
+        var idx = 1;
         // Initialize container.
         _worldContainers = new List<GameObject>();
         // Create a container for the levels in each world.
@@ -143,22 +152,22 @@ public class MainMenuController : MonoBehaviourPun
             // Create a level choice foreach level in each world.
             foreach (var level in world.levels)
             {
+                // Do not include the scene that takes players to the main menu.
+                if (level.idxForInstancing == (int)Scenum.Scene.MainMenu) continue;
+                // Instantiate the level choice.
+                var newLevelChoice = Instantiate(levelChoiceButton, newWorldContainer.transform);
+                var choice = newLevelChoice.GetComponent<LevelChoice>();
+                // Set fields for LevelChoice.
+                choice.levelIdx = idx;
+                choice.sceneIdx = level;
+                choice.settings = PlayerPrefs.GetString(levelSequence.name + level.idxForInstancing,
+                    TrophyData.initialTrophyCode);
+                choice.ApplySettings();
                 if (level.isGameplay)
                 {
-                    // Instantiate the level choice.
-                    var newLevelChoice = Instantiate(levelChoiceButton, newWorldContainer.transform);
-                    var choice = newLevelChoice.GetComponent<LevelChoice>();
-                    // Set fields for LevelChoice.
-                    choice.levelIdx = idx;
-                    choice.sceneIdx = level.idxForInstancing;
-                    choice.settings = PlayerPrefs.GetString(levelSequence.name + level.idxForInstancing,
-                        TrophyData.initialTrophyCode);
-                    choice.ApplySettings();
-                    choice.GetComponentInChildren<Text>().text = (idx).ToString();
+                    // Increment current level index.
+                    idx += 1;
                 }
-
-                // Increment current level index.
-                idx += 1;
             }
         }
 

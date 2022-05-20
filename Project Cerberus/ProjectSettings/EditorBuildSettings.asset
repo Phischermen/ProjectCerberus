@@ -143,6 +143,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/EpilogueAndCredits.unity
     guid: 9e23cca1420424f4193e4b810594c197
+  - enabled: 1
+    path: Assets/Scenes/OpeningBook.unity
+    guid: 836ab12e8e2f6af4d97fb5a3393bbc0f
+  - enabled: 1
+    path: Assets/Scenes/AfterOpeningBook.unity
+    guid: 816bf0d7ea20231408da6dd7b002d615
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 90dfd16557c9de34499995dab2adeb9a,
       type: 2}

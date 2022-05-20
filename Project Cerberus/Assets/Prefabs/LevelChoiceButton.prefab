@@ -1,5 +1,79 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2652825257872960424
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7755195309797520334}
+  - component: {fileID: 424527318537288871}
+  - component: {fileID: 5061751668250042520}
+  m_Layer: 5
+  m_Name: Image (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &7755195309797520334
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2652825257872960424}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5812678743406251075}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -0.000027955, y: 0.000032425}
+  m_SizeDelta: {x: 69.544075, y: 56.44464}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &424527318537288871
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2652825257872960424}
+  m_CullTransparentMesh: 0
+--- !u!114 &5061751668250042520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2652825257872960424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: c4cff630653dbaf439f728c4345622db, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &5812678742825035565
 GameObject:
   m_ObjectHideFlags: 0
@@ -188,6 +262,7 @@ RectTransform:
   - {fileID: 5812678744634568573}
   - {fileID: 5812678742825035566}
   - {fileID: 5812678744082540979}
+  - {fileID: 7755195309797520334}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -289,11 +364,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelIdx: 0
-  sceneIdx: 0
+  sceneIdx:
+    idxForInstancing: 0
+    idxForDisplay: 0
+    isGameplay: 0
   settings: 
   timeTrophyImage: {fileID: 5812678744634568574}
   moveTrophyImage: {fileID: 5812678742825035567}
   bonusStarTrophyImage: {fileID: 5812678744082540988}
+  bookImage: {fileID: 5061751668250042520}
+  text: {fileID: 5812678743356912510}
   timeTrophyData: {fileID: 11400000, guid: bf03b789eb22b454d9606ac31c88ac37, type: 2}
   moveTrophyData: {fileID: 11400000, guid: e3f26c5d94df88846925fa9abd8a8a68, type: 2}
   bonusStarTrophyData: {fileID: 11400000, guid: 3855bad0768e56245aebef8f815929cd,
