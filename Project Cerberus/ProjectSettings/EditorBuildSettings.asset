@@ -149,6 +149,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/AfterOpeningBook.unity
     guid: 816bf0d7ea20231408da6dd7b002d615
+  - enabled: 1
+    path: Assets/ElysiumBook.unity
+    guid: 425c76088ec31de4f91c54518d3db649
+  - enabled: 1
+    path: Assets/Scenes/AsphodelBook.unity
+    guid: 1dfcfba092ec69948a70974e0bfbc218
+  - enabled: 1
+    path: Assets/TartarusBook.unity
+    guid: c752b8719e667ea459d25de81e9a7677
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 90dfd16557c9de34499995dab2adeb9a,
       type: 2}

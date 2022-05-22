@@ -50,6 +50,9 @@ MonoBehaviour:
     music: {fileID: 8300000, guid: b09e4707dee549448811856dae80be07, type: 3}
     expandedInInspector: 1
   - levels:
+    - idxForInstancing: 46
+      idxForDisplay: 49
+      isGameplay: 0
     - idxForInstancing: 5
       idxForDisplay: 8
       isGameplay: 1
@@ -83,6 +86,9 @@ MonoBehaviour:
     music: {fileID: 8300000, guid: 0485359b657705b438b5526cd30c0cf9, type: 3}
     expandedInInspector: 1
   - levels:
+    - idxForInstancing: 47
+      idxForDisplay: 50
+      isGameplay: 0
     - idxForInstancing: 21
       idxForDisplay: 24
       isGameplay: 1
@@ -104,6 +110,9 @@ MonoBehaviour:
     music: {fileID: 8300000, guid: 395d5f66d0912e842a0e4971c1f378e2, type: 3}
     expandedInInspector: 1
   - levels:
+    - idxForInstancing: 45
+      idxForDisplay: 48
+      isGameplay: 0
     - idxForInstancing: 40
       idxForDisplay: 43
       isGameplay: 1

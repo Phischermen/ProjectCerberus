@@ -3205,7 +3205,7 @@ PrefabInstance:
     - target: {fileID: 2715384113343177923, guid: eef179ac3b38ba642b88743486b798b3,
         type: 3}
       propertyPath: maxMovesBeforeStarLoss
-      value: 23
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 2715384113343177923, guid: eef179ac3b38ba642b88743486b798b3,
         type: 3}

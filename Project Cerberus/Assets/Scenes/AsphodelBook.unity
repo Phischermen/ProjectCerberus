@@ -563,49 +563,25 @@ PrefabInstance:
     - target: {fileID: 8672521118546205558, guid: 6a3ddc6a7d2348f4e98f25b2a573745f,
         type: 3}
       propertyPath: pages.Array.size
-      value: 7
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8672521118546205558, guid: 6a3ddc6a7d2348f4e98f25b2a573745f,
         type: 3}
       propertyPath: pages.Array.data[0]
       value: 
-      objectReference: {fileID: -2419398218034870177, guid: 0635295df17e9814995e9fcf196627d0,
+      objectReference: {fileID: 5787862351022042356, guid: a86ab2920c96386459ed45c99818b6e6,
         type: 3}
     - target: {fileID: 8672521118546205558, guid: 6a3ddc6a7d2348f4e98f25b2a573745f,
         type: 3}
       propertyPath: pages.Array.data[1]
       value: 
-      objectReference: {fileID: -4444589098351138453, guid: 0635295df17e9814995e9fcf196627d0,
+      objectReference: {fileID: -1539154727513752544, guid: a86ab2920c96386459ed45c99818b6e6,
         type: 3}
     - target: {fileID: 8672521118546205558, guid: 6a3ddc6a7d2348f4e98f25b2a573745f,
         type: 3}
       propertyPath: pages.Array.data[2]
       value: 
-      objectReference: {fileID: -4022702279552519063, guid: 0635295df17e9814995e9fcf196627d0,
-        type: 3}
-    - target: {fileID: 8672521118546205558, guid: 6a3ddc6a7d2348f4e98f25b2a573745f,
-        type: 3}
-      propertyPath: pages.Array.data[3]
-      value: 
-      objectReference: {fileID: 1668239751245014928, guid: 0635295df17e9814995e9fcf196627d0,
-        type: 3}
-    - target: {fileID: 8672521118546205558, guid: 6a3ddc6a7d2348f4e98f25b2a573745f,
-        type: 3}
-      propertyPath: pages.Array.data[4]
-      value: 
-      objectReference: {fileID: -65574426024988277, guid: 0635295df17e9814995e9fcf196627d0,
-        type: 3}
-    - target: {fileID: 8672521118546205558, guid: 6a3ddc6a7d2348f4e98f25b2a573745f,
-        type: 3}
-      propertyPath: pages.Array.data[5]
-      value: 
-      objectReference: {fileID: 5598395745511825067, guid: 0635295df17e9814995e9fcf196627d0,
-        type: 3}
-    - target: {fileID: 8672521118546205558, guid: 6a3ddc6a7d2348f4e98f25b2a573745f,
-        type: 3}
-      propertyPath: pages.Array.data[6]
-      value: 
-      objectReference: {fileID: -372119692961527933, guid: 0635295df17e9814995e9fcf196627d0,
+      objectReference: {fileID: 7749653697102409949, guid: 7de6c592d214e504ea84e44f8c69079b,
         type: 3}
     - target: {fileID: 8672521118546205559, guid: 6a3ddc6a7d2348f4e98f25b2a573745f,
         type: 3}
