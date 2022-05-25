@@ -137,6 +137,7 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
             currentLevel = levelSequence.FindCurrentLevelSequence(SceneManager.GetActiveScene().buildIndex);
             playMusicAtStart = true;
         }
+
         if (playMusicAtStart)
         {
             // Play music in case user plays a level at the beginning of the game.
@@ -279,6 +280,10 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
                     _cerberusMajor.InterpretCommand(nextCommand);
                     cerberusDoneWithMove = _cerberusMajor.doneWithMove;
                 }
+            }
+            else if (currentCerberus == _cerberusMajor)
+            {
+                cerberusDoneWithMove = _cerberusMajor.doneWithMove;
             }
 
 
