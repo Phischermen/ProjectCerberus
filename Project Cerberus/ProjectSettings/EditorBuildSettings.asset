@@ -158,6 +158,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/TartarusBook.unity
     guid: c752b8719e667ea459d25de81e9a7677
+  - enabled: 1
+    path: Assets/Scenes/BonusStarReward.unity
+    guid: a86264275612ce44ab8a21137399f81e
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 90dfd16557c9de34499995dab2adeb9a,
       type: 2}
