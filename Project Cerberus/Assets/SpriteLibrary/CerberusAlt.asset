@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bf7c34a0dc4e6348bea04faa70406ee, type: 3}
+  m_Name: CerberusAlt
+  m_EditorClassIdentifier: 
+  m_Labels:
+  - m_Name: Cerberus
+    m_Hash: 2121263096
+    m_CategoryList:
+    - m_Name: 1
+      m_Hash: -2082672713
+      m_Sprite: {fileID: 6232698863604030887, guid: 10d7da59862b55c47a4870c6a82e16aa,
+        type: 3}
+    - m_Name: 2
+      m_Hash: 450215437
+      m_Sprite: {fileID: 2494474974061923504, guid: 10d7da59862b55c47a4870c6a82e16aa,
+        type: 3}
+    - m_Name: 3
+      m_Hash: 1842515611
+      m_Sprite: {fileID: 6751950366560050769, guid: 10d7da59862b55c47a4870c6a82e16aa,
+        type: 3}
+    - m_Name: 4
+      m_Hash: -206169288
+      m_Sprite: {fileID: 3037689236172898093, guid: 10d7da59862b55c47a4870c6a82e16aa,
+        type: 3}
+    - m_Name: 5
+      m_Hash: -2068763730
+      m_Sprite: {fileID: 5191208785477177795, guid: 10d7da59862b55c47a4870c6a82e16aa,
+        type: 3}
+    - m_Name: 6
+      m_Hash: 498629140
+      m_Sprite: {fileID: 2338603638800193308, guid: 10d7da59862b55c47a4870c6a82e16aa,
+        type: 3}
+    - m_Name: 7
+      m_Hash: 1790921346
+      m_Sprite: {fileID: -8922713741737914727, guid: 10d7da59862b55c47a4870c6a82e16aa,
+        type: 3}
