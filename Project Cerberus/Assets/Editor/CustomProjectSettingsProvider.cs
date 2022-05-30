@@ -30,6 +30,8 @@ namespace Editor
             EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.mainLevelSequence)));
             EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.multiplayerLevelSequence)));
             EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.dialogueDatabaseAsset)));
+            EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.normalSpriteLibrary)));
+            EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.alternateSpriteLibrary)));
             EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.defaultTalkAnimationCurve)));
             EditorGUILayout.LabelField("Prefabs");
             EditorGUILayout.PropertyField(_settings.FindProperty(nameof(CustomProjectSettings.puzzleContainerPrefab)));

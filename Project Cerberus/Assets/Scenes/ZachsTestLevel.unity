@@ -1129,6 +1129,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 367884014}
     m_Modifications:
+    - target: {fileID: 8890049998783526769, guid: faed9009b4827d0409d1efe61338cb59,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 3676592256303446908, guid: 5cb3c1bd4bae21a4b93230c46f3c8c66,
+        type: 3}
     - target: {fileID: 8890049998783526774, guid: faed9009b4827d0409d1efe61338cb59,
         type: 3}
       propertyPath: m_Name
@@ -4219,6 +4225,26 @@ PrefabInstance:
         type: 3}
       propertyPath: sceneViewId
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3860819361833613361, guid: eef179ac3b38ba642b88743486b798b3,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 4059205491703084246, guid: eef179ac3b38ba642b88743486b798b3,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796204304794197701, guid: eef179ac3b38ba642b88743486b798b3,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6436307546358880796, guid: eef179ac3b38ba642b88743486b798b3,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 14
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eef179ac3b38ba642b88743486b798b3, type: 3}

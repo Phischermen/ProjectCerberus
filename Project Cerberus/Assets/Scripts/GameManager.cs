@@ -453,6 +453,19 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
                 _cameraController.ToggleCameraMode();
             }
 
+            // Handle request to toggle skin
+            if (_input.toggleAlternateSkin)
+            {
+                foreach (var cerberus in availableCerberus)
+                {
+                    var libraryAsset = cerberus.spriteResolver.spriteLibraryAsset;
+                    cerberus.spriteResolver.spriteLibraryAsset =
+                        libraryAsset == CustomProjectSettings.i.alternateSpriteLibrary
+                            ? CustomProjectSettings.i.normalSpriteLibrary
+                            : CustomProjectSettings.i.alternateSpriteLibrary;
+                }
+            }
+
             if (nextMoveNeedsToStart)
             {
                 currentCerberus.StartMove();

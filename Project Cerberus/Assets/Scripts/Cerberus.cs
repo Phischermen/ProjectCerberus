@@ -6,6 +6,7 @@ using ExitGames.Client.Photon;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Experimental.U2D.Animation;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
@@ -244,6 +245,7 @@ public class Cerberus : PuzzleEntity
 
     private Sprite _cerberusSprite;
     public Sprite pentagramMarker;
+    public SpriteLibrary spriteResolver;
     public AudioSource walkSFX;
     public AudioSource pushFailSFX;
     public AnimationCurve talkAnimationCurve;
@@ -255,6 +257,7 @@ public class Cerberus : PuzzleEntity
         base.Awake();
         input = FindObjectOfType<PuzzleGameplayInput>();
         _cerberusSprite = GetComponent<SpriteRenderer>().sprite;
+        spriteResolver = GetComponent<SpriteLibrary>();
     }
 
     public override StateData GetUndoData()

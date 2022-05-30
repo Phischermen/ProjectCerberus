@@ -6,6 +6,7 @@
 
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Experimental.U2D.Animation;
 
 public class CustomProjectSettings : ScriptableObject
 {
@@ -23,6 +24,8 @@ public class CustomProjectSettings : ScriptableObject
     public static string resourcePath = "CustomProjectSettings";
     
     private static CustomProjectSettings _i;
+    public SpriteLibraryAsset normalSpriteLibrary;
+    public SpriteLibraryAsset alternateSpriteLibrary;
 
     public static CustomProjectSettings i
     {
