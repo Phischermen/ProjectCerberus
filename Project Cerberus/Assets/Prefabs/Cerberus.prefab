@@ -347,6 +347,8 @@ GameObject:
   - component: {fileID: 2367660277570903779}
   - component: {fileID: 2367660277570903781}
   - component: {fileID: 2367660277570903778}
+  - component: {fileID: 7504026081846732322}
+  - component: {fileID: 5258580800572918827}
   m_Layer: 0
   m_Name: Cerberus
   m_TagString: Untagged
@@ -462,6 +464,7 @@ MonoBehaviour:
       m_Calls: []
   doneWithMove: 0
   onTopOfGoal: 0
+  hasPerformedSpecial: 0
   isCerberusMajor: 1
   pentagramMarker: {fileID: -6472096782119243790, guid: f517efbb0e7cff84798d8ddd4641d42b,
     type: 3}
@@ -473,10 +476,44 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  onStandardMove:
+    m_PersistentCalls:
+      m_Calls: []
   jumpArrowSource: {fileID: 2367660276925026249}
   jumpSfx: {fileID: 1916535526250392718}
   mergeSfx: {fileID: 3067139819587035394}
   splitSfx: {fileID: 2457725144469875630}
+  onSingleJumpCompleted:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &7504026081846732322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2367660277570903776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed8b1ae4e4e52b34ea557c1c11e076fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CategoryHash: 7.9722485e+37
+  m_labelHash: -1.2985474e-36
+--- !u!114 &5258580800572918827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2367660277570903776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c29cff538c195c249b69c6f2236de67b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SpriteLibraryAsset: {fileID: 11400000, guid: a9a5c7b32b5d1df4d88ba0cf8c6cf581,
+    type: 2}
 --- !u!1 &2858484872254276593
 GameObject:
   m_ObjectHideFlags: 0
