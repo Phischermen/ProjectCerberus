@@ -9,9 +9,13 @@ public class BonusStarRewardController : MonoBehaviour
     int _starsAvailable = 0;
     private bool _starsAreDisplaying;
     public AudioClip rewardMusic;
+    private Gate _gate;
+    private BonusStar _star;
 
     private void Start()
     {
+        _star = FindObjectOfType<BonusStar>();
+        _gate = FindObjectOfType<Gate>();
         var levelSequence = MainMenuController.chosenLevelSequence;
         foreach (var world in levelSequence.worlds)
         {
@@ -40,35 +44,38 @@ public class BonusStarRewardController : MonoBehaviour
 
     public void DisplayStars()
     {
-        if (!_starsAreDisplaying)
+        if (!_starsAreDisplaying && !_gate.open)
             StartCoroutine(DisplayStarsRoutine());
     }
 
     IEnumerator DisplayStarsRoutine()
     {
-        _starsAreDisplaying = true;
-        var star = FindObjectOfType<BonusStar>();
-        var gate = FindObjectOfType<Gate>();
-        for (int i = 0; i < _starsEarned; i++)
+        if (!_gate.open)
         {
-            var popup = TextPopup.Create("<sprite index=28>", Color.yellow, true);
-            
-            popup.transform.position = gate.transform.position;
-            popup.PlayRiseAndFadeAnimation(i * 0.1f);
-            yield return null;
-        }
+            _starsAreDisplaying = true;
+            for (int i = 0; i < _starsEarned; i++)
+            {
+                var popup = TextPopup.Create("<sprite index=28>", Color.yellow, true);
 
-        if (_starsAvailable <= (_starsEarned + 1) && star.collected)
-        {
-            gate.OpenGate();
-            DiskJockey.PlayTrack(null);
-        }
+                popup.transform.position = _gate.transform.position;
+                popup.PlayRiseAndFadeAnimation(i * 0.1f);
+                yield return null;
+            }
 
-        _starsAreDisplaying = false;
+            if (_starsAvailable <= (_starsEarned + 1) && _star.collected)
+            {
+                _gate.OpenGate();
+                DiskJockey.PlayTrack(null);
+            }
+
+            _starsAreDisplaying = false;
+        }
     }
 
     public void PlayMusic()
     {
         DiskJockey.PlayTrack(rewardMusic);
+        PlayerPrefs.SetInt("UnlockedAltSkin", 1);
+        PlayerPrefs.Save();
     }
 }

@@ -456,7 +456,7 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
             }
 
             // Handle request to toggle skin
-            if (_input.toggleAlternateSkin)
+            if (_input.toggleAlternateSkin && PlayerPrefs.GetInt("UnlockedAltSkin") == 1)
             {
                 _altSkinActive = !_altSkinActive;
                 foreach (var cerberus in FindObjectsOfType<Cerberus>())
