@@ -45,31 +45,30 @@ public class BonusStarRewardController : MonoBehaviour
     public void DisplayStars()
     {
         if (!_starsAreDisplaying && !_gate.open)
+        {
             StartCoroutine(DisplayStarsRoutine());
+        }
     }
 
     IEnumerator DisplayStarsRoutine()
     {
-        if (!_gate.open)
+        _starsAreDisplaying = true;
+        for (int i = 0; i < _starsEarned; i++)
         {
-            _starsAreDisplaying = true;
-            for (int i = 0; i < _starsEarned; i++)
-            {
-                var popup = TextPopup.Create("<sprite index=28>", Color.yellow, true);
+            var popup = TextPopup.Create("<sprite index=28>", Color.yellow, true);
 
-                popup.transform.position = _gate.transform.position;
-                popup.PlayRiseAndFadeAnimation(i * 0.1f);
-                yield return null;
-            }
-
-            if (_starsAvailable <= (_starsEarned + 1) && _star.collected)
-            {
-                _gate.OpenGate();
-                DiskJockey.PlayTrack(null);
-            }
-
-            _starsAreDisplaying = false;
+            popup.transform.position = _gate.transform.position;
+            popup.PlayRiseAndFadeAnimation();
+            yield return new WaitForSeconds(0.1f);
         }
+
+        if (_starsAvailable <= (_starsEarned + 1) && _star.collected)
+        {
+            _gate.OpenGate();
+            DiskJockey.PlayTrack(null);
+        }
+
+        _starsAreDisplaying = false;
     }
 
     public void PlayMusic()
