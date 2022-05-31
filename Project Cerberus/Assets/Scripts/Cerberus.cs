@@ -242,9 +242,7 @@ public class Cerberus : PuzzleEntity
     [ShowInTileInspector] public bool isCerberusMajor;
 
     protected PuzzleGameplayInput input;
-
-    //private Sprite _cerberusSprite;
-    //public Sprite pentagramMarker;
+    
     [FormerlySerializedAs("spriteResolver")] public SpriteLibrary spriteLibrary;
     public SpriteResolver spriteResolver;
     public AudioSource walkSFX;
@@ -257,7 +255,6 @@ public class Cerberus : PuzzleEntity
     {
         base.Awake();
         input = FindObjectOfType<PuzzleGameplayInput>();
-        //_cerberusSprite = GetComponent<SpriteRenderer>().sprite;
         spriteLibrary = GetComponent<SpriteLibrary>();
         spriteResolver = GetComponent<SpriteResolver>();
     }
