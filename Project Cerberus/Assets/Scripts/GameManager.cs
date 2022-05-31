@@ -80,6 +80,8 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
     public int maxMovesBeforeStarLoss;
 
     public bool startInFixedCameraMode = true;
+    
+    private bool _altSkinActive;
 
     [SerializeField] private GameObject _uiPrefab;
     [SerializeField] private GameObject _gameOverEndCard;
@@ -456,13 +458,13 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
             // Handle request to toggle skin
             if (_input.toggleAlternateSkin)
             {
-                foreach (var cerberus in availableCerberus)
+                _altSkinActive = !_altSkinActive;
+                foreach (var cerberus in FindObjectsOfType<Cerberus>())
                 {
-                    var libraryAsset = cerberus.spriteResolver.spriteLibraryAsset;
-                    cerberus.spriteResolver.spriteLibraryAsset =
-                        libraryAsset == CustomProjectSettings.i.alternateSpriteLibrary
-                            ? CustomProjectSettings.i.normalSpriteLibrary
-                            : CustomProjectSettings.i.alternateSpriteLibrary;
+                    cerberus.spriteLibrary.spriteLibraryAsset =
+                        _altSkinActive
+                            ? CustomProjectSettings.i.alternateSpriteLibrary
+                            : CustomProjectSettings.i.normalSpriteLibrary;
                 }
             }
 
@@ -475,7 +477,7 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
         // Run timer
         if (_timerRunning)
         {
-            timer += Time.deltaTime;
+            timer += Time.deltaTime * (_altSkinActive ? 0.5f : 1f);
             if (PhotonNetwork.IsMasterClient)
             {
                 if (Time.frameCount % 960 == 0)

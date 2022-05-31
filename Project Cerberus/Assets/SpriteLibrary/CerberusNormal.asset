@@ -44,6 +44,10 @@ MonoBehaviour:
       m_Hash: 1790921346
       m_Sprite: {fileID: -2780310932881298978, guid: 7c73f98b85c0bba43ad9b4b4da92acc1,
         type: 3}
+    - m_Name: 8
+      m_Hash: -100641005
+      m_Sprite: {fileID: -6472096782119243790, guid: f517efbb0e7cff84798d8ddd4641d42b,
+        type: 3}
   - m_Name: Jack
     m_Hash: 138954470
     m_CategoryList:
@@ -74,6 +78,10 @@ MonoBehaviour:
     - m_Name: 7
       m_Hash: 1790921346
       m_Sprite: {fileID: -2780310932881298978, guid: 7c73f98b85c0bba43ad9b4b4da92acc1,
+        type: 3}
+    - m_Name: 8
+      m_Hash: -100641005
+      m_Sprite: {fileID: -1768482875118672931, guid: f517efbb0e7cff84798d8ddd4641d42b,
         type: 3}
   - m_Name: Kahuna
     m_Hash: 493643585
@@ -106,6 +114,10 @@ MonoBehaviour:
       m_Hash: 1790921346
       m_Sprite: {fileID: -2780310932881298978, guid: 7c73f98b85c0bba43ad9b4b4da92acc1,
         type: 3}
+    - m_Name: 8
+      m_Hash: -100641005
+      m_Sprite: {fileID: -1390903953286430042, guid: f517efbb0e7cff84798d8ddd4641d42b,
+        type: 3}
   - m_Name: Laguna
     m_Hash: 1477068719
     m_CategoryList:
@@ -136,4 +148,8 @@ MonoBehaviour:
     - m_Name: 7
       m_Hash: 1790921346
       m_Sprite: {fileID: -2780310932881298978, guid: 7c73f98b85c0bba43ad9b4b4da92acc1,
+        type: 3}
+    - m_Name: 8
+      m_Hash: -100641005
+      m_Sprite: {fileID: 34484248742796291, guid: f517efbb0e7cff84798d8ddd4641d42b,
         type: 3}

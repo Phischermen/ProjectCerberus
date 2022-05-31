@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ee42af7c51fae409d44daa119b5a17, type: 3}
   m_Name: CustomProjectSettings
   m_EditorClassIdentifier: 
-  mainLevelSequence: {fileID: 11400000, guid: 69d0841d38644974eb8633580cef0755, type: 2}
+  mainLevelSequence: {fileID: 11400000, guid: 5568e5dc0509a7147b471b176dad504d, type: 2}
   multiplayerLevelSequence: {fileID: 11400000, guid: dbc08bcd4121fea4198b51fb7509c417,
     type: 2}
   puzzleContainerPrefab: {fileID: 2715384113237483527, guid: eef179ac3b38ba642b88743486b798b3,
@@ -200,3 +200,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 1
     m_RotationOrder: 4
+  normalSpriteLibrary: {fileID: 11400000, guid: a9a5c7b32b5d1df4d88ba0cf8c6cf581,
+    type: 2}
+  alternateSpriteLibrary: {fileID: 11400000, guid: 4749ce4fc6d7eca4f9b643a4209cdebf,
+    type: 2}

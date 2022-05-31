@@ -243,9 +243,10 @@ public class Cerberus : PuzzleEntity
 
     protected PuzzleGameplayInput input;
 
-    private Sprite _cerberusSprite;
-    public Sprite pentagramMarker;
-    public SpriteLibrary spriteResolver;
+    //private Sprite _cerberusSprite;
+    //public Sprite pentagramMarker;
+    [FormerlySerializedAs("spriteResolver")] public SpriteLibrary spriteLibrary;
+    public SpriteResolver spriteResolver;
     public AudioSource walkSFX;
     public AudioSource pushFailSFX;
     public AnimationCurve talkAnimationCurve;
@@ -256,8 +257,9 @@ public class Cerberus : PuzzleEntity
     {
         base.Awake();
         input = FindObjectOfType<PuzzleGameplayInput>();
-        _cerberusSprite = GetComponent<SpriteRenderer>().sprite;
-        spriteResolver = GetComponent<SpriteLibrary>();
+        //_cerberusSprite = GetComponent<SpriteRenderer>().sprite;
+        spriteLibrary = GetComponent<SpriteLibrary>();
+        spriteResolver = GetComponent<SpriteResolver>();
     }
 
     public override StateData GetUndoData()
@@ -398,6 +400,8 @@ public class Cerberus : PuzzleEntity
         pushableByJacksSuperPush = !disableAndShowPentagram;
         pullable = !disableAndShowPentagram;
         jumpable = !disableAndShowPentagram;
-        GetComponent<SpriteRenderer>().sprite = disableAndShowPentagram ? pentagramMarker : _cerberusSprite;
+        var category = spriteResolver.GetCategory();
+        var label = disableAndShowPentagram ? "8" : "1";
+        spriteResolver.SetCategoryAndLabel(category, label);
     }
 }
