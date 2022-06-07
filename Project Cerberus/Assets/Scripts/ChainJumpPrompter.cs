@@ -46,6 +46,7 @@ public class ChainJumpPrompter : MonoBehaviour
                     var textMeshPro = popup.GetComponent<TextMeshPro>();
                     textMeshPro.enableAutoSizing = false;
                     textMeshPro.enableWordWrapping = false;
+                    // Hide popups until they're ready to be shown.
                     var color = textMeshPro.color;
                     color.a = 0f;
                     textMeshPro.color = color;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class BonusStarRewardController : MonoBehaviour
@@ -53,7 +54,8 @@ public class BonusStarRewardController : MonoBehaviour
     IEnumerator DisplayStarsRoutine()
     {
         _starsAreDisplaying = true;
-        for (int i = 0; i < _starsEarned; i++)
+        var earned = Mathf.Min(_starsAvailable, _starsEarned + (_star.collected ? 1 : 0));
+        for (int i = 0; i < earned; i++)
         {
             var popup = TextPopup.Create("<sprite index=28>", Color.yellow, true);
 
@@ -61,8 +63,16 @@ public class BonusStarRewardController : MonoBehaviour
             popup.PlayRiseAndFadeAnimation();
             yield return new WaitForSeconds(0.1f);
         }
+        yield return new WaitForSeconds(1f);
+        var popup1 = TextPopup.Create($"{earned}/{_starsAvailable}", Color.yellow);
+        // Adjust sizing to allow message to be seen.
+        var textMeshPro = popup1.GetComponent<TextMeshPro>();
+        textMeshPro.enableAutoSizing = false;
+        textMeshPro.enableWordWrapping = false;
+        popup1.transform.position = _gate.transform.position;
+        popup1.PlayRiseAndFadeAnimation();
 
-        if (_starsAvailable <= (_starsEarned + 1) && _star.collected)
+        if (_starsAvailable == (earned) && _star.collected)
         {
             _gate.OpenGate();
             DiskJockey.PlayTrack(null);

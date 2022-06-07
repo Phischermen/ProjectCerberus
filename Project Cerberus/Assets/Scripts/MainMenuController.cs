@@ -123,7 +123,7 @@ public class MainMenuController : MonoBehaviourPun
     {
         chosenLevelSequence = levelSequence;
         // Load Saved Data
-        availableLevels = PlayerPrefs.GetInt(levelSequence.name + "AvailableLevels", 0);
+        availableLevels = PlayerPrefs.GetInt(levelSequence.name + "AvailableLevels", 1);
         // Initialize Level Select Panel
         InstantiateWorldsAndLevelChoiceButtons(levelSequence);
         // Deactivate all but the first world container.
