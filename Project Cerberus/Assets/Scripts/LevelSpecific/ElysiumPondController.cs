@@ -100,6 +100,8 @@ public class ElysiumPondController : MonoBehaviour
         yield return DialoguePanel.i.DisplayDialogue(DialogueDatabase.hsa4);
         _cerberusMajor.FinishCurrentAnimation();
         DialoguePanel.i.EndConversation();
+        yield return new WaitForSeconds(5f);
+        FindObjectOfType<GameManager>().EndGameWithSuccessStatus();
     }
 
     public void OnHadesCatchesTarget()

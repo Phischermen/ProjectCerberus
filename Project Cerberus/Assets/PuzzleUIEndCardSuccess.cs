@@ -144,4 +144,9 @@ public class PuzzleUIEndCardSuccess : MonoBehaviour
     {
         _gameManager.ProceedToNextLevel();
     }
+    
+    private void OnDestroy()
+    {
+        _gameManager.gameOverEndCardDisplayed = false;
+    }
 }
