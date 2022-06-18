@@ -95,6 +95,7 @@ MonoBehaviour:
   canvasGroup: {fileID: 5652310627723560488}
   typing: 0
   displayingMessage: 0
+  networkedDismissalRequests: 0
 --- !u!225 &5652310627723560488
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -917,6 +918,6 @@ MonoBehaviour:
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: Hello World
