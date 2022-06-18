@@ -80,8 +80,6 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
     public int maxMovesBeforeStarLoss;
 
     public bool startInFixedCameraMode = true;
-    
-    private bool _altSkinActive;
 
     private bool _altSkinActive;
 
