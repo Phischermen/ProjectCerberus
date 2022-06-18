@@ -81,6 +81,8 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
 
     public bool startInFixedCameraMode = true;
 
+    private bool _altSkinActive;
+
     [SerializeField] private GameObject _uiPrefab;
     [SerializeField] private GameObject _gameOverEndCard;
     [SerializeField] private GameObject _victoryEndCard;
@@ -167,7 +169,7 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
 
         // Initialize availableCerberus
         availableCerberus = new List<Cerberus>();
-        cerberusToUserMap = new List<int>() {-1, -1, -1};
+        cerberusToUserMap = new List<int>() { -1, -1, -1 };
         if (_jack)
         {
             availableCerberus.Add(_jack);
@@ -453,6 +455,19 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
                 _cameraController.ToggleCameraMode();
             }
 
+            // Handle request to toggle skin
+            if (_input.toggleAlternateSkin && PlayerPrefs.GetInt("UnlockedAltSkin") == 1)
+            {
+                _altSkinActive = !_altSkinActive;
+                foreach (var cerberus in FindObjectsOfType<Cerberus>())
+                {
+                    cerberus.spriteLibrary.spriteLibraryAsset =
+                        _altSkinActive
+                            ? CustomProjectSettings.i.alternateSpriteLibrary
+                            : CustomProjectSettings.i.normalSpriteLibrary;
+                }
+            }
+
             if (nextMoveNeedsToStart)
             {
                 currentCerberus.StartMove();
@@ -462,7 +477,7 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
         // Run timer
         if (_timerRunning)
         {
-            timer += Time.deltaTime;
+            timer += Time.deltaTime * (_altSkinActive ? 0.5f : 1f);
             if (PhotonNetwork.IsMasterClient)
             {
                 if (Time.frameCount % 960 == 0)
@@ -506,13 +521,13 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
     // Gameover
     public void EndGameWithFailureStatus()
     {
-        // Disable gameplay
-        gameplayEnabled = false;
-        // Stop timer
-        _timerRunning = false;
         if (!gameOverEndCardDisplayed)
         {
             gameOverEndCardDisplayed = true;
+            // Disable gameplay
+            gameplayEnabled = false;
+            // Stop timer
+            _timerRunning = false;
             // Display game over end card.
             Instantiate(_gameOverEndCard);
         }
@@ -520,12 +535,16 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
 
     public void EndGameWithSuccessStatus()
     {
-        // Disable gameplay.
-        gameplayEnabled = false;
-        // Stop timer
-        _timerRunning = false;
-        // Display victory end card.
-        Instantiate(_victoryEndCard);
+        if (!gameOverEndCardDisplayed)
+        {
+            gameOverEndCardDisplayed = true;
+            // Disable gameplay.
+            gameplayEnabled = false;
+            // Stop timer
+            _timerRunning = false;
+            // Display victory end card.
+            Instantiate(_victoryEndCard);
+        }
     }
 
     // Comparison Delegate
@@ -632,7 +651,7 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
     // Multiplayer Callbacks + Methods
     public override void OnLeftRoom()
     {
-        SceneManager.LoadScene((int) Scenum.Scene.MainMenu);
+        SceneManager.LoadScene((int)Scenum.Scene.MainMenu);
     }
 
     public bool LeaveRoom()
@@ -640,9 +659,9 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
         if (PhotonNetwork.InRoom)
         {
             // Set dog as available for people that may join later.
-            var keys = new[] {"Jack", "Kahuna", "Laguna"};
+            var keys = new[] { "Jack", "Kahuna", "Laguna" };
             PhotonNetwork.CurrentRoom.SetCustomProperties(
-                new Hashtable() {{keys[MainMenuController.defaultDog], false}});
+                new Hashtable() { { keys[MainMenuController.defaultDog], false } });
             PhotonNetwork.LeaveRoom();
             Debug.Log("Room left.");
             return true;
@@ -656,15 +675,15 @@ public partial class GameManager : MonoBehaviourPunCallbacks, IUndoable
         var currentRoom = PhotonNetwork.CurrentRoom;
         var customProperties = currentRoom.CustomProperties;
         // Client will be syncing scene momentarily. Take this opportunity to assign them their dog.
-        var keysToCheck = new[] {"Jack", "Kahuna", "Laguna"};
+        var keysToCheck = new[] { "Jack", "Kahuna", "Laguna" };
         for (var i = 0; i < keysToCheck.Length; i++)
         {
             var s = keysToCheck[i];
-            if ((bool) customProperties[s]) continue;
+            if ((bool)customProperties[s]) continue;
             // A free character has been found.
             MainMenuController.defaultDog = i;
             // Claim it.
-            currentRoom.SetCustomProperties(new Hashtable() {{s, true}});
+            currentRoom.SetCustomProperties(new Hashtable() { { s, true } });
             break;
         }
     }
