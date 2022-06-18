@@ -60,7 +60,12 @@ public class Hades : PuzzleEntity
         // Check if on top of chase target.
         if (position == entityToChase.position)
         {
-            if (!_onTopOfTarget)
+            bool mayProceed = true;
+            if (entityToChase is CerberusMajor cerberusMajor)
+            {
+                mayProceed = !cerberusMajor.isJumping;
+            }
+            if (!_onTopOfTarget && mayProceed)
             {
                 _onTopOfTarget = true;
                 onCatchTarget.Invoke();

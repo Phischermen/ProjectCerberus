@@ -32,6 +32,7 @@ public class PuzzleGameplayInput : MonoBehaviour
         leftClicked,
         rightClicked,
         dialogueDismissed,
+        toggleAlternateSkin,
         pause;
 
     [HideInInspector] public Vector2Int clickedCell;
@@ -76,6 +77,7 @@ public class PuzzleGameplayInput : MonoBehaviour
             resetPressed = gamepad.leftTrigger.wasPressedThisFrame;
 
             toggleFixedCameraMode = gamepad.triangleButton.wasPressedThisFrame;
+            toggleAlternateSkin = gamepad.rightTrigger.wasPressedThisFrame;
 
             cycleCharacterBackward = gamepad.leftShoulder.wasPressedThisFrame;
             cycleCharacterForward = gamepad.rightShoulder.wasPressedThisFrame;
@@ -109,6 +111,7 @@ public class PuzzleGameplayInput : MonoBehaviour
             resetPressed = resetPressed || keyboard.rKey.wasPressedThisFrame;
 
             toggleFixedCameraMode = toggleFixedCameraMode || keyboard.spaceKey.wasPressedThisFrame;
+            toggleAlternateSkin = toggleAlternateSkin || keyboard.fKey.wasPressedThisFrame;
 
             cycleCharacterForward = cycleCharacterForward || keyboard.tabKey.wasPressedThisFrame;
             cycleCharacter0 = cycleCharacter0 || keyboard.digit1Key.wasPressedThisFrame;
@@ -171,6 +174,6 @@ public class PuzzleGameplayInput : MonoBehaviour
             downReleased = specialPressed = specialHeld = specialReleased = mergeOrSplit =
                 undoPressed = resetPressed = toggleFixedCameraMode = leftClicked = rightClicked = cycleCharacter =
                     cycleCharacterForward = cycleCharacterBackward = cycleCharacter0 = cycleCharacter1 =
-                        cycleCharacter2 = dialogueDismissed = pause = false;
+                        cycleCharacter2 = dialogueDismissed = toggleAlternateSkin = pause = false;
     }
 }

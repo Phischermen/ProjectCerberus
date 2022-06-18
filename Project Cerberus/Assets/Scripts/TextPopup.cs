@@ -19,11 +19,12 @@ public class TextPopup : MonoBehaviour
         _textMeshPro = gameObject.GetComponent<TextMeshPro>();
     }
 
-    public static TextPopup Create(string text, Color color)
+    public static TextPopup Create(string text, Color color, bool richText = false)
     {
         var gameObject = Instantiate(CustomProjectSettings.i.textPopupPrefab);
         var textPopup = gameObject.GetComponent<TextPopup>();
         textPopup._textMeshPro.text = text;
+        textPopup._textMeshPro.richText = richText;
         textPopup._color = color;
         return textPopup;
     }

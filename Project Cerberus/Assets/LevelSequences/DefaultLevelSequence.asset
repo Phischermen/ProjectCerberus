@@ -146,6 +146,9 @@ MonoBehaviour:
     music: {fileID: 8300000, guid: 093a3330e42fc874a9d23d5ad57e59fd, type: 3}
     expandedInInspector: 1
   - levels:
+    - idxForInstancing: 48
+      idxForDisplay: 51
+      isGameplay: 1
     - idxForInstancing: 41
       idxForDisplay: 44
       isGameplay: 1

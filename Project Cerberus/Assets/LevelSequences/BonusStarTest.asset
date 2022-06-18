@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9a255d5fea778548af13f5d1a64fbd8, type: 3}
+  m_Name: BonusStarTest
+  m_EditorClassIdentifier: 
+  worlds:
+  - levels:
+    - idxForInstancing: 45
+      idxForDisplay: 48
+      isGameplay: 0
+    - idxForInstancing: 37
+      idxForDisplay: 40
+      isGameplay: 1
+    - idxForInstancing: 48
+      idxForDisplay: 51
+      isGameplay: 1
+    music: {fileID: 8300000, guid: 093a3330e42fc874a9d23d5ad57e59fd, type: 3}
+    expandedInInspector: 1
