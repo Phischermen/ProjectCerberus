@@ -455,6 +455,64 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
         animationMustStop = false;
     }
 
+    public IEnumerator HopToDestination(Vector2Int destination, float speed)
+    {
+        if (PuzzleCameraController.i.currentCameraMode == PuzzleCameraController.CameraMode.ScrollingMode)
+        {
+            // If the camera is in scrolling mode, don't hop. (It's too queasy!)
+            yield return SlideToDestination(destination, speed);
+            yield break;
+        }
+        animationIsRunning = true;
+
+        // Use a bezier curve to model the jump path
+        var A = transform.position; // Start point
+        var B = A + Vector3.up * 0.2f; // Control point
+        var D = puzzle.GetCellCenterWorld(destination); // End Point
+        var C = D + Vector3.up * 0.2f; // Control point
+
+        // If End point is behind the player, flip.
+        if (D.x != transform.position.x)
+        {
+            if (this is Laguna)
+            {
+                // Laguna flips every turn because it's too damn funny.
+                spriteRenderer.flipX = !spriteRenderer.flipX;
+            }
+            else
+            {
+                if (spriteRenderer.flipX && D.x > transform.position.x)
+                {
+                    spriteRenderer.flipX = false;
+                }
+                else if (!spriteRenderer.flipX && D.x < transform.position.x)
+                {
+                    spriteRenderer.flipX = true;
+                }
+            }
+        }
+
+        // Calculate approximate distance to travel
+        var distanceTraveled = 0f;
+        var interpolation = 0f;
+        var distanceToTravel = AnimationUtility.ApproximateLengthOfBezierCurve(A, B, C, D);
+        while (distanceTraveled < distanceToTravel && animationMustStop == false)
+        {
+            // Increment distance travelled
+            var delta = speed * Time.deltaTime;
+            distanceTraveled += delta;
+            // Set position
+            interpolation = distanceTraveled / distanceToTravel;
+            transform.position = AnimationUtility.DeCasteljausAlgorithm(A, B, C, D, interpolation);
+            yield return new WaitForFixedUpdate();
+        }
+
+        // Goto final destination
+        transform.position = D;
+        animationIsRunning = false;
+        animationMustStop = false;
+    }
+
     public IEnumerator XxFallIntoPit(float fallDuration, float rotationSpeed, float finalScale)
     {
         animationIsRunning = true;

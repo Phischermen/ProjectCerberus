@@ -350,7 +350,7 @@ public class Cerberus : PuzzleEntity
                 puzzle.PushToUndoStack();
                 // Move one space
                 PlaySfx(walkSFX);
-                PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
+                PlayAnimation(HopToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                 Move(coord);
                 onStandardMove.Invoke();
                 DeclareDoneWithMove();
@@ -372,7 +372,7 @@ public class Cerberus : PuzzleEntity
                     pushableEntity.PlayAnimation(
                         pushableEntity.SlideToDestination(pushCoord, AnimationUtility.basicMoveAndPushSpeed));
                     PlaySfx(pushableEntity.pushedSfx);
-                    PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
+                    PlayAnimation(HopToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
 
                     pushableEntity.Move(pushCoord);
                     Move(coord);
