@@ -205,12 +205,14 @@ public class Kahuna : Cerberus
             else if (command.specialRight)
             {
                 fireArrow.transform.eulerAngles = new Vector3(0, 0, 0);
+                spriteRenderer.flipX = false;
                 aim = Vector2Int.right;
             }
 
             else if (command.specialLeft)
             {
                 fireArrow.transform.eulerAngles = new Vector3(0, 0, 180);
+                spriteRenderer.flipX = true;
                 aim = Vector2Int.left;
             }
 
