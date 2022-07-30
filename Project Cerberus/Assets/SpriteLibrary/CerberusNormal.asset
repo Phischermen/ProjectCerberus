@@ -77,11 +77,23 @@ MonoBehaviour:
         type: 3}
     - m_Name: 7
       m_Hash: 1790921346
-      m_Sprite: {fileID: -2780310932881298978, guid: 7c73f98b85c0bba43ad9b4b4da92acc1,
+      m_Sprite: {fileID: -8430796191725081510, guid: 5cb3c1bd4bae21a4b93230c46f3c8c66,
         type: 3}
     - m_Name: 8
       m_Hash: -100641005
       m_Sprite: {fileID: -1768482875118672931, guid: f517efbb0e7cff84798d8ddd4641d42b,
+        type: 3}
+    - m_Name: 9
+      m_Hash: -1928894587
+      m_Sprite: {fileID: 6002551312443388283, guid: 5cb3c1bd4bae21a4b93230c46f3c8c66,
+        type: 3}
+    - m_Name: 10
+      m_Hash: -1587730975
+      m_Sprite: {fileID: -4771735005813573149, guid: 5cb3c1bd4bae21a4b93230c46f3c8c66,
+        type: 3}
+    - m_Name: 11
+      m_Hash: -698739337
+      m_Sprite: {fileID: 7381285117087357530, guid: 5cb3c1bd4bae21a4b93230c46f3c8c66,
         type: 3}
   - m_Name: Kahuna
     m_Hash: 493643585

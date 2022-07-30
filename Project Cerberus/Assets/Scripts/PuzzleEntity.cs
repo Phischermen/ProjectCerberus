@@ -482,11 +482,11 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             }
             else
             {
-                if (spriteRenderer.flipX && D.x > transform.position.x)
+                if (D.x > transform.position.x)
                 {
                     spriteRenderer.flipX = false;
                 }
-                else if (!spriteRenderer.flipX && D.x < transform.position.x)
+                else if (D.x < transform.position.x)
                 {
                     spriteRenderer.flipX = true;
                 }
@@ -511,7 +511,6 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
                 var frame = (int)((cerberus.hopFrames.Length - 1) * interpolation);
                 var category = cerberus.spriteResolver.GetCategory();
                 var label = cerberus.hopFrames[frame];
-                Debug.Log(label);
                 cerberus.spriteResolver.SetCategoryAndLabel(category, label);
             }
             yield return new WaitForFixedUpdate();

@@ -7,6 +7,8 @@ public class Jack : Cerberus
     private static int _superPushRange = 32;
 
     public AudioSource _superPushSFX;
+    public string[] pushFrames;
+    public string[] pushInPlaceFrames;
 
     public Jack()
     {
@@ -136,7 +138,7 @@ public class Jack : Cerberus
         {
             puzzle.PushToUndoStack();
             PlaySfxPitchShift(walkSFX, 0.9f, 1.1f);
-            PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
+            PlayAnimation(HopToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
             Move(coord);
             onStandardMove.Invoke();
             DeclareDoneWithMove();
@@ -187,7 +189,18 @@ public class Jack : Cerberus
                 pushableEntity.isSuperPushed = !lastMove && !firstMove;
                 pushableEntity.Move(pushableEntity.position + offset, !lastMove, lastMove && !firstMove);
             }
-
+            
+            // Face right direction to push block.
+            if (pushableEntity.position.x > transform.position.x)
+            {
+                spriteRenderer.flipX = false;
+            }
+            else if (pushableEntity.position.x < transform.position.x)
+            {
+                spriteRenderer.flipX = true;
+            }
+            
+            PlayAnimation(SuperPushInPlace(AnimationUtility.superPushInPlaceDuration));
             hasPerformedSpecial = true;
             DeclareDoneWithMove();
         }
@@ -218,7 +231,7 @@ public class Jack : Cerberus
                 }
 
                 PlaySfxPitchShift(superPushedSfx, 0.9f, 1.1f);
-                PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
+                PlayAnimation(SuperPushToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                 Move(coord);
 
                 hasPerformedSpecial = true;
@@ -248,5 +261,58 @@ public class Jack : Cerberus
         }
 
         return entities;
+    }
+    
+    private IEnumerator SuperPushToDestination(Vector2Int destination, float speed)
+    {
+        animationIsRunning = true;
+
+        var startingPosition = transform.position;
+        var destinationPosition = puzzle.GetCellCenterWorld(destination);
+        var distanceToTravel = Vector3.Distance(startingPosition, destinationPosition);
+        var distanceTraveled = 0f;
+        while (distanceTraveled < distanceToTravel && animationMustStop == false)
+        {
+            // Increment distance travelled
+            var delta = speed * Time.deltaTime;
+            distanceTraveled += delta;
+            // Set position
+            var interpolation = distanceTraveled / distanceToTravel;
+            transform.position = Vector3.Lerp(startingPosition, destinationPosition, interpolation);
+            // Sprite animation
+            var frame = (int)((pushFrames.Length - 1) * interpolation);
+            var category = spriteResolver.GetCategory();
+            var label = pushFrames[frame];
+            spriteResolver.SetCategoryAndLabel(category, label);
+            yield return new WaitForFixedUpdate();
+        }
+
+        StopSfx(superPushedSfx);
+        // Goto final destination
+        transform.position = destinationPosition;
+        animationIsRunning = false;
+        animationMustStop = false;
+    }
+    
+    private IEnumerator SuperPushInPlace(float duration)
+    {
+        animationIsRunning = true;
+
+        var timeEllapsed = 0f;
+        while (timeEllapsed < duration && animationMustStop == false)
+        {
+            // Increment time ellapsed
+            timeEllapsed += Time.deltaTime;
+
+            var interpolation = timeEllapsed / duration;
+            // Sprite animation
+            var frame = (int)((pushInPlaceFrames.Length - 1) * interpolation);
+            var category = spriteResolver.GetCategory();
+            var label = pushInPlaceFrames[frame];
+            spriteResolver.SetCategoryAndLabel(category, label);
+            yield return new WaitForFixedUpdate();
+        }
+        animationIsRunning = false;
+        animationMustStop = false;
     }
 }

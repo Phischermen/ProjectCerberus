@@ -680,6 +680,16 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   _superPushSFX: {fileID: 7794549068068122440}
+  pushFrames:
+  - 9
+  - 10
+  - 11
+  - 1
+  pushInPlaceFrames:
+  - 5
+  - 11
+  - 7
+  - 1
 --- !u!114 &4755471662995758549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -707,4 +717,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_CategoryHash: 6.026865e-34
-  m_labelHash: 4.883062e-21
+  m_labelHash: -1.2985474e-36
