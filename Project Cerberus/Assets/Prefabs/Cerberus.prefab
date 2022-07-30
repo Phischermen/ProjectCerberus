@@ -469,9 +469,11 @@ MonoBehaviour:
   spriteLibrary: {fileID: 0}
   spriteResolver: {fileID: 0}
   hopFrames:
-  - 5
+  - 6
+  - 7
   - 3
   - 4
+  - 5
   - 1
   walkSFX: {fileID: 6400553590769029574}
   pushFailSFX: {fileID: 0}
