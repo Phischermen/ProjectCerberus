@@ -5347,8 +5347,13 @@ MonoBehaviour:
   onTopOfGoal: 0
   hasPerformedSpecial: 0
   isCerberusMajor: 0
-  pentagramMarker: {fileID: -1768482875118672931, guid: f517efbb0e7cff84798d8ddd4641d42b,
-    type: 3}
+  spriteLibrary: {fileID: 0}
+  spriteResolver: {fileID: 0}
+  hopFrames:
+  - 5
+  - 3
+  - 4
+  - 1
   walkSFX: {fileID: 1109043834303915764}
   pushFailSFX: {fileID: 3820381951920776045}
   talkAnimationCurve:

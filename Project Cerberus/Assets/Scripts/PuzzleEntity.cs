@@ -13,6 +13,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
@@ -504,6 +505,15 @@ public abstract class PuzzleEntity : MonoBehaviour, IUndoable
             // Set position
             interpolation = distanceTraveled / distanceToTravel;
             transform.position = AnimationUtility.DeCasteljausAlgorithm(A, B, C, D, interpolation);
+            // Sprite animation
+            if (this is Cerberus cerberus)
+            {
+                var frame = (int)((cerberus.hopFrames.Length - 1) * interpolation);
+                var category = cerberus.spriteResolver.GetCategory();
+                var label = cerberus.hopFrames[frame];
+                Debug.Log(label);
+                cerberus.spriteResolver.SetCategoryAndLabel(category, label);
+            }
             yield return new WaitForFixedUpdate();
         }
 

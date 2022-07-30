@@ -3,7 +3,7 @@
 public static class AnimationUtility
 {
     public static float superPushAnimationSpeed = 16f;
-    public static float basicMoveAndPushSpeed = 8f;
+    public static float basicMoveAndPushSpeed = 3f;
     public static float jumpSpeed = 8f;
     public static float spikedSpeed = 16f;
     public static float spikedRotationSpeed = 180f;

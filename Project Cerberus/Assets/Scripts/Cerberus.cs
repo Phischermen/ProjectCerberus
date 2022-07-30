@@ -245,6 +245,7 @@ public class Cerberus : PuzzleEntity
     
     [FormerlySerializedAs("spriteResolver")] public SpriteLibrary spriteLibrary;
     public SpriteResolver spriteResolver;
+    public string[] hopFrames;
     public AudioSource walkSFX;
     public AudioSource pushFailSFX;
     public AnimationCurve talkAnimationCurve;
