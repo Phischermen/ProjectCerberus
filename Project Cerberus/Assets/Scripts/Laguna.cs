@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 
 public class Laguna : Cerberus
 {
+    public string[] pullFrames;
     public Laguna()
     {
         entityRules = "Laguna can pull objects.";
@@ -141,7 +143,7 @@ public class Laguna : Cerberus
 
                     entityToPull.onPulled.Invoke();
 
-                    PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
+                    PlayAnimation(PullToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                     entityToPull.PlayAnimation(entityToPull.SlideToDestination(p,
                         AnimationUtility.basicMoveAndPushSpeed));
                     PlaySfx(walkSFX);
@@ -168,7 +170,7 @@ public class Laguna : Cerberus
                         pushableEntity.onStandardPushed.Invoke();
                         entityToPull.onPulled.Invoke();
 
-                        PlayAnimation(SlideToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
+                        PlayAnimation(PullToDestination(coord, AnimationUtility.basicMoveAndPushSpeed));
                         pushableEntity.PlayAnimation(
                             pushableEntity.SlideToDestination(pushCoord, AnimationUtility.basicMoveAndPushSpeed));
                         entityToPull.PlayAnimation(
@@ -191,5 +193,35 @@ public class Laguna : Cerberus
                 }
             }
         }
+    }
+    
+    private IEnumerator PullToDestination(Vector2Int destination, float speed)
+    {
+        animationIsRunning = true;
+
+        var startingPosition = transform.position;
+        var destinationPosition = puzzle.GetCellCenterWorld(destination);
+        var distanceToTravel = Vector3.Distance(startingPosition, destinationPosition);
+        var distanceTraveled = 0f;
+        while (distanceTraveled < distanceToTravel && animationMustStop == false)
+        {
+            // Increment distance travelled
+            var delta = speed * Time.deltaTime;
+            distanceTraveled += delta;
+            // Set position
+            var interpolation = distanceTraveled / distanceToTravel;
+            transform.position = Vector3.Lerp(startingPosition, destinationPosition, interpolation);
+            // Sprite animation
+            var frame = (int)((pullFrames.Length - 1) * interpolation);
+            var category = spriteResolver.GetCategory();
+            var label = pullFrames[frame];
+            spriteResolver.SetCategoryAndLabel(category, label);
+            yield return new WaitForFixedUpdate();
+        }
+        
+        // Goto final destination
+        transform.position = destinationPosition;
+        animationIsRunning = false;
+        animationMustStop = false;
     }
 }
