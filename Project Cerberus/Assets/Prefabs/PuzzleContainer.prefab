@@ -1,5 +1,76 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &570269155250439680
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4192548553064418681}
+  - component: {fileID: 1173376910579196978}
+  - component: {fileID: 1959586089162579824}
+  m_Layer: 0
+  m_Name: Background
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &4192548553064418681
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 570269155250439680}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6436307546358880796}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 32, y: 32}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &1173376910579196978
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 570269155250439680}
+  m_CullTransparentMesh: 0
+--- !u!114 &1959586089162579824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 570269155250439680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: 64b2c051fa2311a45983cfe8af83be27, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Texture: {fileID: 2800000, guid: bc377666bf53c844aa1711a6c8daa879, type: 3}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 4
+    height: 4
 --- !u!1 &2715384112936394370
 GameObject:
   m_ObjectHideFlags: 0
@@ -284,6 +355,7 @@ MonoBehaviour:
   leftClicked: 0
   rightClicked: 0
   dialogueDismissed: 0
+  toggleAlternateSkin: 0
   pause: 0
   clickedCell: {x: 0, y: 0}
   clickedCerberus: {fileID: 0}
@@ -346,16 +418,15 @@ MonoBehaviour:
     type: 3}
   idxOfLastControlledDog: 0
   currentCerberus: {fileID: 0}
-  joinAndSplitEnabled: 0
   wantsToJoin: 0
   wantsToSplit: 0
   wantsToCycleCharacter: 0
   wantsToUndo: 0
+  joinAndSplitEnabled: 0
   collectedStar: 0
   gameplayEnabled: 0
   gameOverEndCardDisplayed: 0
   playMusicAtStart: 0
-  testAudio: {fileID: 8300000, guid: 50c1edd9c0d0c454ba38b3fe9d53a202, type: 3}
 --- !u!114 &2814524327749792703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -408,7 +479,8 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 4192548553064418681}
   m_Father: {fileID: 2715384113237483522}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
