@@ -38,6 +38,8 @@ public class PuzzleUI : MonoBehaviour
     }
 
     public Text turnCounter;
+    public Text timeCounter;
+    public Text bonusStarLabel;
 
     public Text firstDog;
     public Text secondDog;
@@ -84,12 +86,12 @@ public class PuzzleUI : MonoBehaviour
     void Update()
     {
         // Update turn counter
-        turnCounter.text = "";
+        turnCounter.text = _manager.move.ToString();
+        timeCounter.text = _manager.timer.ToString("F1");
         if (_bonusStar != null)
         {
-            turnCounter.text += _bonusStar.GetStatusMessageForUI();
+            bonusStarLabel.text = _bonusStar.GetStatusMessageForUI();
         }
-        turnCounter.text += $"\nMove: {_manager.move}\nTimer: {_manager.timer,3:000}";
 
         // Hide all dog status initially
         foreach (var dogStatus in dogStatusArray)
